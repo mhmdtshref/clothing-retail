@@ -7,8 +7,8 @@ import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 export default function LayoutShell({ children }) {
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
-      <AppBar position="static" color="default" elevation={0}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default', width: '100%' }}>
+      <AppBar position="static" color="default" elevation={0} sx={{ width: '100%' }}>
         <Toolbar sx={{ gap: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Clothing Retail Accounting
@@ -24,7 +24,7 @@ export default function LayoutShell({ children }) {
         </Toolbar>
       </AppBar>
 
-      <Container component="main" maxWidth="lg" sx={{ py: 3 }}>
+      <Container component="main" maxWidth="lg" sx={{ py: 3, width: '100%' }}>
         {children}
       </Container>
     </Box>

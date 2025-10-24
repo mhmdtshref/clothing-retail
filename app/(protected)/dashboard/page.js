@@ -1,4 +1,3 @@
-import Header from '@/components/Header';
 import { auth } from '@clerk/nextjs/server';
 
 export default async function Dashboard() {
@@ -6,7 +5,6 @@ export default async function Dashboard() {
 
   return (
     <main style={{ padding: 24 }}>
-      <Header />
       <section style={{
         marginTop: 16, padding: 16, background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12
       }}>
