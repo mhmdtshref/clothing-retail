@@ -1,0 +1,36 @@
+// CSS reset-ish + theme tokens
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+body {
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Helvetica,
+    Arial,
+    'Apple Color Emoji',
+    'Segoe UI Emoji';
+  background: #fafafa;
+  color: #111;
+}
+:root {
+  --container-px: 24px;
+  --primary: #111827; // slate-900
+  --muted: #6b7280; // gray-500
+  --bg: #fafafa;
+  --card: #ffffff;
+  --border: #e5e7eb;
+}
+main {
+  padding: var(--container-px);
+}

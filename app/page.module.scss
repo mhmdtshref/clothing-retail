@@ -1,0 +1,18 @@
+.wrap {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.title {
+  margin: 0;
+  font-size: 28px;
+  color: var(--primary);
+}
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+}
