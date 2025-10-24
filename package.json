@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "db:ping": "node --env-file=.env.local scripts/db-ping.js"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.34.0",
@@ -16,6 +17,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
+    "mongoose": "^8.19.2",
     "next": "16.0.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
