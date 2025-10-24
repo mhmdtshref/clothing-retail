@@ -1,14 +1,16 @@
-import Header from '@/components/Header';
-import styles from './page.module.scss';
+import { Paper, Typography, Stack } from '@mui/material';
 
 export default function Home() {
   return (
-    <main>
-      <Header />
-      <section className={styles.wrap}>
-        <h1 className={styles.title}>Clothing Retail Accounting</h1>
-        <p className={styles.subtitle}>Auth powered by Clerk. Next: UI & DB.</p>
-      </section>
-    </main>
+    <Stack spacing={2}>
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          Clothing Retail Accounting
+        </Typography>
+        <Typography color="text.secondary">
+          MUI v7 theming and layout are configured. Next: DB wiring and models.
+        </Typography>
+      </Paper>
+    </Stack>
   );
 }

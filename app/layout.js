@@ -1,4 +1,6 @@
 import { ClerkProvider } from '@clerk/nextjs';
+import ThemeRegistry from '@/components/ThemeRegistry';
+import LayoutShell from '@/components/LayoutShell';
 import './globals.scss';
 
 export const metadata = {
@@ -11,7 +13,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <ClerkProvider>
-          {children}
+          <ThemeRegistry>
+            <LayoutShell>{children}</LayoutShell>
+          </ThemeRegistry>
         </ClerkProvider>
       </body>
     </html>
