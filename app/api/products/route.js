@@ -25,7 +25,7 @@ export async function POST(req) {
     const parsed = ProductCreateSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'ValidationError', issues: parsed.error.flatten() },
+        { error: 'ValidationError', issues: parsed.error.format() },
         { status: 400 },
       );
     }
