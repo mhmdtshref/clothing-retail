@@ -8,10 +8,10 @@ const VariantSchema = new Schema({
   color: { type: String, required: true, trim: true },
 }, { timestamps: true });
 
-// Ensure one size/color per product
-VariantSchema.index({ productId: 1, size: 1, color: 1 }, { unique: true });
-// Helpful filter
+// One supplier-company per size/color for a product
+VariantSchema.index({ productId: 1, size: 1, color: 1, companyId: 1 }, { unique: true });
 VariantSchema.index({ companyId: 1 });
+VariantSchema.index({ productId: 1 });
 
 export default mongoose.models.Variant || mongoose.model('Variant', VariantSchema);
 
