@@ -1,6 +1,6 @@
 export const runtime = 'nodejs';
 
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { connectToDB } from '@/lib/mongoose';
 import Company from '@/models/company';
