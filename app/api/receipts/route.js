@@ -117,7 +117,7 @@ export async function POST(req) {
       note: note || undefined,
     };
 
-    const totals = computeReceiptTotals(receiptPayload);
+    const { totals, items: pricedItems } = computeReceiptTotals(receiptPayload, { includeItems: true });
 
     const doc = await Receipt.create(receiptPayload);
 
@@ -144,6 +144,7 @@ export async function POST(req) {
           updatedAt: doc.updatedAt,
         },
         totals,
+        pricing: { items: pricedItems },
       },
       { status: 201 },
     );
