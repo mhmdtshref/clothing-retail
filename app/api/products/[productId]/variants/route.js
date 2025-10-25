@@ -7,7 +7,7 @@ import { connectToDB } from '@/lib/mongoose';
 import Variant from '@/models/variant';
 import Company from '@/models/company';
 
-export async function GET(req, { params }) {
+export async function GET(req, context) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -15,8 +15,9 @@ export async function GET(req, { params }) {
     await connectToDB();
     const url = new URL(req.url);
     const vendorId = url.searchParams.get('vendorId') || null;
+    const { productId } = await context.params;
 
-    const filter = { productId: new mongoose.Types.ObjectId(params.productId) };
+    const filter = { productId: new mongoose.Types.ObjectId(productId) };
     if (vendorId) filter.companyId = new mongoose.Types.ObjectId(vendorId);
 
     const variants = await Variant.aggregate([
