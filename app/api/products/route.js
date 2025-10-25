@@ -16,7 +16,7 @@ const ProductCreateSchema = z.object({
 export async function POST(req) {
   try {
     // AuthN guard
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
