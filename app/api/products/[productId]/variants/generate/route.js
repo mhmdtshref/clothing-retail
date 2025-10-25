@@ -11,13 +11,14 @@ const Schema = z.object({
   companyIds: z.array(z.string().min(1)).min(1),
 });
 
-export async function POST(req, { params }) {
+export async function POST(req, context) {
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
+    const { productId } = await context.params;
     const body = await req.json();
     const parsed = Schema.safeParse(body);
     if (!parsed.success) {
@@ -28,7 +29,7 @@ export async function POST(req, { params }) {
     }
 
     const result = await generateVariantsForProduct({
-      productId: params.productId,
+      productId,
       sizes: parsed.data.sizes,
       colors: parsed.data.colors,
       companyIds: parsed.data.companyIds,

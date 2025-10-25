@@ -25,17 +25,6 @@ const genSchema = z.object({
   companyIds: z.array(z.string().min(1)),
 });
 
-function tokenize(str) {
-  return Array.from(
-    new Set(
-      String(str || '')
-        .split(/[\,\n]/g)
-        .map(s => s.trim())
-        .filter(Boolean)
-    )
-  );
-}
-
 function cartesianPreview(sizes, colors, companies, limit = 10) {
   const rows = [];
   let total = 0;
@@ -59,16 +48,16 @@ export default function CreateProductForm({ companies }) {
     name: '',
     basePrice: '',
     status: 'active',
-    sizesStr: '',
-    colorsStr: '',
+    sizes: [],
+    colors: [],
     companyIds: [],
   });
 
   const [submitting, setSubmitting] = React.useState(false);
   const [snack, setSnack] = React.useState({ open: false, message: '', severity: 'success' });
 
-  const sizes = React.useMemo(() => tokenize(values.sizesStr), [values.sizesStr]);
-  const colors = React.useMemo(() => tokenize(values.colorsStr), [values.colorsStr]);
+  const sizes = values.sizes;
+  const colors = values.colors;
   const selectedCompanies = React.useMemo(
     () => companies.filter(c => values.companyIds.includes(c._id)),
     [companies, values.companyIds]
@@ -188,23 +177,39 @@ export default function CreateProductForm({ companies }) {
 
           <Typography variant="subtitle1">Variant generation</Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <TextField
-              label="Sizes (comma/newline separated)"
-              placeholder="S, M, L, XL"
-              value={values.sizesStr}
-              onChange={handleChange('sizesStr')}
-              multiline
-              minRows={1}
+            <Autocomplete
+              multiple
+              freeSolo
+              options={[]}
+              value={values.sizes}
+              onChange={(_, newVal) =>
+                setValues(v => ({
+                  ...v,
+                  sizes: Array.from(new Set(newVal.map(x => String(x).trim()).filter(Boolean)))
+                }))
+              }
               fullWidth
+              sx={{ flex: 1, minWidth: 0 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Sizes" placeholder="Type and press Enter" fullWidth />
+              )}
             />
-            <TextField
-              label="Colors (comma/newline separated)"
-              placeholder="Black, White"
-              value={values.colorsStr}
-              onChange={handleChange('colorsStr')}
-              multiline
-              minRows={1}
+            <Autocomplete
+              multiple
+              freeSolo
+              options={[]}
+              value={values.colors}
+              onChange={(_, newVal) =>
+                setValues(v => ({
+                  ...v,
+                  colors: Array.from(new Set(newVal.map(x => String(x).trim()).filter(Boolean)))
+                }))
+              }
               fullWidth
+              sx={{ flex: 1, minWidth: 0 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Colors" placeholder="Type and press Enter" fullWidth />
+              )}
             />
           </Stack>
 
@@ -214,11 +219,6 @@ export default function CreateProductForm({ companies }) {
             getOptionLabel={(o) => o.name}
             value={companies.filter(c => values.companyIds.includes(c._id))}
             onChange={(_, newVal) => setValues(v => ({ ...v, companyIds: newVal.map(x => x._id) }))}
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip key={option._id} label={option.name} {...getTagProps({ index })} />
-              ))
-            }
             renderInput={(params) => (
               <TextField {...params} label="Companies (suppliers)" placeholder="Select one or more" />
             )}
@@ -261,7 +261,7 @@ export default function CreateProductForm({ companies }) {
               onClick={() =>
                 setValues({
                   code: '', name: '', basePrice: '', status: 'active',
-                  sizesStr: '', colorsStr: '', companyIds: []
+                  sizes: [], colors: [], companyIds: []
                 })
               }
             >
