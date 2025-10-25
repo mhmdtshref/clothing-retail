@@ -7,7 +7,7 @@ import Company from '@/models/company';
 import CreateProductForm from '@/components/products/CreateProductForm';
 
 export default async function NewProductPage() {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) redirect('/sign-in?redirect_url=/products/new');
 
   await connectToDB();

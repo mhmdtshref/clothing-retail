@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 
 export async function GET() {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) {
     return new Response(JSON.stringify({ authenticated: false }), {
       status: 200,
