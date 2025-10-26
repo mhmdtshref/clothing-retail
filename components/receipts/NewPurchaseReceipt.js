@@ -28,6 +28,7 @@ async function searchProducts(params) {
 
 export default function NewPurchaseReceipt({ companies }) {
   const [companyId, setCompanyId] = React.useState(companies[0]?._id || '');
+  const [status, setStatus] = React.useState('ordered');
   const [note, setNote] = React.useState('');
   const [taxPercent, setTaxPercent] = React.useState(0);
   const [billDiscount, setBillDiscount] = React.useState({ mode: 'amount', value: 0 });
@@ -118,6 +119,7 @@ export default function NewPurchaseReceipt({ companies }) {
     try {
       const payload = {
         type: 'purchase',
+        status,
         companyId,
         items: items.map((it) => ({
           variantId: it.variantId,
@@ -142,6 +144,7 @@ export default function NewPurchaseReceipt({ companies }) {
       setSelectedProduct(null);
       setVariantOptions([]);
       setNote('');
+      setStatus('ordered');
       setTaxPercent(0);
       setBillDiscount({ mode: 'amount', value: 0 });
     } catch (err) {
@@ -162,6 +165,14 @@ export default function NewPurchaseReceipt({ companies }) {
               <InputLabel id="company-label">Company</InputLabel>
               <Select labelId="company-label" label="Company" value={companyId} onChange={(e) => setCompanyId(e.target.value)} required>
                 {companies.map((c) => (<MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel id="status-label">Status</InputLabel>
+              <Select labelId="status-label" label="Status" value={status} onChange={(e) => setStatus(e.target.value)}>
+                <MenuItem value="ordered">Ordered</MenuItem>
+                <MenuItem value="on_delivery">On delivery</MenuItem>
+                <MenuItem value="completed">Completed</MenuItem>
               </Select>
             </FormControl>
             <TextField label="Note" value={note} onChange={(e) => setNote(e.target.value)} fullWidth />
@@ -285,7 +296,7 @@ export default function NewPurchaseReceipt({ companies }) {
           </Box>
 
           <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button variant="outlined" onClick={() => { setItems([]); setSelectedProduct(null); setVariantOptions([]); setNote(''); setTaxPercent(0); setBillDiscount({ mode: 'amount', value: 0 }); }}>Reset</Button>
+            <Button variant="outlined" onClick={() => { setItems([]); setSelectedProduct(null); setVariantOptions([]); setNote(''); setStatus('ordered'); setTaxPercent(0); setBillDiscount({ mode: 'amount', value: 0 }); }}>Reset</Button>
             <Button type="submit" variant="contained" disabled={submitting || !companyId}>{submitting ? 'Saving…' : 'Save Purchase Receipt'}</Button>
           </Stack>
         </Stack>

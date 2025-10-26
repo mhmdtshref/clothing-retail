@@ -27,6 +27,7 @@ const ItemSchema = z.object({
 const BodySchema = z.object({
   type: z.enum(['purchase', 'sale']).default('purchase'),
   date: z.coerce.date().optional(),
+  status: z.enum(['ordered', 'on_delivery', 'completed']).optional().default('ordered'),
   companyId: z.string().min(1).optional(),
   items: z.array(ItemSchema).min(1, 'At least one item is required'),
   billDiscount: DiscountSchema.optional(),
@@ -51,7 +52,7 @@ export async function POST(req) {
     );
   }
 
-  const { type, date, companyId, items, billDiscount, taxPercent, note } = parsed;
+  const { type, date, status, companyId, items, billDiscount, taxPercent, note } = parsed;
 
   if (type === 'purchase' && !companyId) {
     return NextResponse.json(
@@ -110,6 +111,7 @@ export async function POST(req) {
     const receiptPayload = {
       type,
       date: date || new Date(),
+      status,
       companyId: type === 'purchase' ? companyId : undefined,
       items: receiptItems,
       billDiscount: billDiscount ? { mode: billDiscount.mode, value: Number(billDiscount.value || 0) } : undefined,
@@ -128,6 +130,7 @@ export async function POST(req) {
           _id: doc._id,
           type: doc.type,
           date: doc.date,
+          status: doc.status,
           companyId: doc.companyId || null,
           items: doc.items.map((it) => ({
             variantId: it.variantId,
