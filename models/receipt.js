@@ -43,6 +43,8 @@ const ReceiptSchema = new Schema({
 ReceiptSchema.index({ type: 1, date: -1 });
 ReceiptSchema.index({ 'items.variantId': 1 });
 ReceiptSchema.index({ companyId: 1 });
+ReceiptSchema.index({ status: 1, date: -1 });
+ReceiptSchema.index({ companyId: 1, date: -1 });
 ReceiptSchema.index({ status: 1 });
 
 export default mongoose.models.Receipt || mongoose.model('Receipt', ReceiptSchema);
