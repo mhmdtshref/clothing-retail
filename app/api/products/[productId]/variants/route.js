@@ -14,11 +14,11 @@ export async function GET(req, context) {
   try {
     await connectToDB();
     const url = new URL(req.url);
-    const vendorId = url.searchParams.get('vendorId') || null;
+    const companyId = url.searchParams.get('companyId') || null;
     const { productId } = await context.params;
 
     const filter = { productId: new mongoose.Types.ObjectId(productId) };
-    if (vendorId) filter.companyId = new mongoose.Types.ObjectId(vendorId);
+    if (companyId) filter.companyId = new mongoose.Types.ObjectId(companyId);
 
     const variants = await Variant.aggregate([
       { $match: filter },

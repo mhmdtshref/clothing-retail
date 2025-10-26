@@ -11,9 +11,9 @@ export default async function NewReceiptPurchasePage() {
   if (!userId) redirect('/sign-in?redirect_url=/receipts/new');
 
   await connectToDB();
-  const vendors = await Company.find({}, { name: 1 }).sort({ name: 1 }).lean();
+  const companies = await Company.find({}, { name: 1 }).sort({ name: 1 }).lean();
 
-  return <NewPurchaseReceipt vendors={vendors.map(v => ({ _id: String(v._id), name: v.name }))} />;
+  return <NewPurchaseReceipt companies={companies.map(c => ({ _id: String(c._id), name: c.name }))} />;
 }
 
 

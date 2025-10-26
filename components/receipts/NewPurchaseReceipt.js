@@ -26,8 +26,8 @@ async function searchProducts(params) {
   return res.json();
 }
 
-export default function NewPurchaseReceipt({ vendors }) {
-  const [vendorId, setVendorId] = React.useState(vendors[0]?._id || '');
+export default function NewPurchaseReceipt({ companies }) {
+  const [companyId, setCompanyId] = React.useState(companies[0]?._id || '');
   const [note, setNote] = React.useState('');
   const [taxPercent, setTaxPercent] = React.useState(0);
   const [billDiscount, setBillDiscount] = React.useState({ mode: 'amount', value: 0 });
@@ -57,11 +57,11 @@ export default function NewPurchaseReceipt({ vendors }) {
     return () => clearTimeout(t);
   }, [productQuery]);
 
-  async function loadVariants(productId, vendorId) {
+  async function loadVariants(productId, companyId) {
     if (!productId) return setVariantOptions([]);
     setLoadingVariants(true);
     try {
-      const res = await fetch(`/api/products/${productId}/variants?vendorId=${vendorId}`, { cache: 'no-store' });
+      const res = await fetch(`/api/products/${productId}/variants?companyId=${companyId}`, { cache: 'no-store' });
       const json = await res.json();
       setVariantOptions(json.items || []);
     } finally {
@@ -70,12 +70,12 @@ export default function NewPurchaseReceipt({ vendors }) {
   }
 
   React.useEffect(() => {
-    if (selectedProduct?._id && vendorId) {
-      loadVariants(selectedProduct._id, vendorId);
+    if (selectedProduct?._id && companyId) {
+      loadVariants(selectedProduct._id, companyId);
     } else {
       setVariantOptions([]);
     }
-  }, [selectedProduct?._id, vendorId]);
+  }, [selectedProduct?._id, companyId]);
 
   const addBlankItem = () => {
     setItems((arr) => [
@@ -102,8 +102,8 @@ export default function NewPurchaseReceipt({ vendors }) {
 
   async function onSubmit(e) {
     e.preventDefault();
-    if (!vendorId) {
-      setSnack({ open: true, severity: 'error', message: 'Please select a vendor.' });
+    if (!companyId) {
+      setSnack({ open: true, severity: 'error', message: 'Please select a company.' });
       return;
     }
     if (items.length === 0) {
@@ -118,7 +118,7 @@ export default function NewPurchaseReceipt({ vendors }) {
     try {
       const payload = {
         type: 'purchase',
-        vendorId,
+        companyId,
         items: items.map((it) => ({
           variantId: it.variantId,
           qty: Number(it.qty) || 0,
@@ -159,9 +159,9 @@ export default function NewPurchaseReceipt({ vendors }) {
         <Stack spacing={2}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <FormControl fullWidth>
-              <InputLabel id="vendor-label">Vendor</InputLabel>
-              <Select labelId="vendor-label" label="Vendor" value={vendorId} onChange={(e) => setVendorId(e.target.value)} required>
-                {vendors.map((v) => (<MenuItem key={v._id} value={v._id}>{v.name}</MenuItem>))}
+              <InputLabel id="company-label">Company</InputLabel>
+              <Select labelId="company-label" label="Company" value={companyId} onChange={(e) => setCompanyId(e.target.value)} required>
+                {companies.map((c) => (<MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>))}
               </Select>
             </FormControl>
             <TextField label="Note" value={note} onChange={(e) => setNote(e.target.value)} fullWidth />
@@ -209,7 +209,7 @@ export default function NewPurchaseReceipt({ vendors }) {
                 <TableRow>
                   <TableCell colSpan={7}>
                     <Typography color="text.secondary" sx={{ py: 2 }}>
-                      Add a line, pick a variant (filtered to the selected vendor), set qty/cost/discount.
+                      Add a line, pick a variant (filtered to the selected company), set qty/cost/discount.
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -230,7 +230,7 @@ export default function NewPurchaseReceipt({ vendors }) {
                         options={variantOptions}
                         getOptionLabel={(o) => `${o.size} / ${o.color} — ${o.companyName || ''}`}
                         value={variantOptions.find(v => v._id === row.variantId) || null}
-                        onOpen={() => { if (selectedProduct?._id && vendorId) loadVariants(selectedProduct._id, vendorId); }}
+                        onOpen={() => { if (selectedProduct?._id && companyId) loadVariants(selectedProduct._id, companyId); }}
                         onChange={(_, val) => updateItem(row.id, { variantId: val?._id || '', variantLabel: val ? `${val.size}/${val.color}` : '' })}
                         renderInput={(params) => <TextField {...params} label="Variant" />}
                         sx={{ minWidth: 240 }}
@@ -286,7 +286,7 @@ export default function NewPurchaseReceipt({ vendors }) {
 
           <Stack direction="row" spacing={2} justifyContent="flex-end">
             <Button variant="outlined" onClick={() => { setItems([]); setSelectedProduct(null); setVariantOptions([]); setNote(''); setTaxPercent(0); setBillDiscount({ mode: 'amount', value: 0 }); }}>Reset</Button>
-            <Button type="submit" variant="contained" disabled={submitting || !vendorId}>{submitting ? 'Saving…' : 'Save Purchase Receipt'}</Button>
+            <Button type="submit" variant="contained" disabled={submitting || !companyId}>{submitting ? 'Saving…' : 'Save Purchase Receipt'}</Button>
           </Stack>
         </Stack>
       </Box>

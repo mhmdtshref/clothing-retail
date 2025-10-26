@@ -27,7 +27,7 @@ const ItemSchema = z.object({
 const BodySchema = z.object({
   type: z.enum(['purchase', 'sale']).default('purchase'),
   date: z.coerce.date().optional(),
-  vendorId: z.string().min(1).optional(),
+  companyId: z.string().min(1).optional(),
   items: z.array(ItemSchema).min(1, 'At least one item is required'),
   billDiscount: DiscountSchema.optional(),
   taxPercent: z.number().min(0).max(100).default(0),
@@ -51,11 +51,11 @@ export async function POST(req) {
     );
   }
 
-  const { type, date, vendorId, items, billDiscount, taxPercent, note } = parsed;
+  const { type, date, companyId, items, billDiscount, taxPercent, note } = parsed;
 
-  if (type === 'purchase' && !vendorId) {
+  if (type === 'purchase' && !companyId) {
     return NextResponse.json(
-      { error: 'ValidationError', message: 'vendorId is required for purchase receipts' },
+      { error: 'ValidationError', message: 'companyId is required for purchase receipts' },
       { status: 400 },
     );
   }
@@ -64,10 +64,10 @@ export async function POST(req) {
     await connectToDB();
 
     if (type === 'purchase') {
-      const vendorExists = await Company.exists({ _id: vendorId });
-      if (!vendorExists) {
+      const companyExists = await Company.exists({ _id: companyId });
+      if (!companyExists) {
         return NextResponse.json(
-          { error: 'ValidationError', message: 'vendorId does not exist' },
+          { error: 'ValidationError', message: 'companyId does not exist' },
           { status: 400 },
         );
       }
@@ -110,7 +110,7 @@ export async function POST(req) {
     const receiptPayload = {
       type,
       date: date || new Date(),
-      vendorId: type === 'purchase' ? vendorId : undefined,
+      companyId: type === 'purchase' ? companyId : undefined,
       items: receiptItems,
       billDiscount: billDiscount ? { mode: billDiscount.mode, value: Number(billDiscount.value || 0) } : undefined,
       taxPercent: Number(taxPercent || 0),
@@ -128,7 +128,7 @@ export async function POST(req) {
           _id: doc._id,
           type: doc.type,
           date: doc.date,
-          vendorId: doc.vendorId || null,
+          companyId: doc.companyId || null,
           items: doc.items.map((it) => ({
             variantId: it.variantId,
             qty: it.qty,

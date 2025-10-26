@@ -28,8 +28,8 @@ const ReceiptSchema = new Schema({
   type: { type: String, enum: ['purchase', 'sale'], required: true, default: 'purchase' },
   date: { type: Date, default: () => new Date() },
 
-  // Purchase context
-  vendorId: { type: Types.ObjectId, ref: 'Company' }, // who we buy from
+// Purchase context
+  companyId: { type: Types.ObjectId, ref: 'Company' }, // who we buy from
   // Future: customerId for sales
 
   items: { type: [ReceiptItemSchema], validate: v => Array.isArray(v) && v.length > 0 },
@@ -41,7 +41,7 @@ const ReceiptSchema = new Schema({
 
 ReceiptSchema.index({ type: 1, date: -1 });
 ReceiptSchema.index({ 'items.variantId': 1 });
-ReceiptSchema.index({ vendorId: 1 });
+ReceiptSchema.index({ companyId: 1 });
 
 export default mongoose.models.Receipt || mongoose.model('Receipt', ReceiptSchema);
 
