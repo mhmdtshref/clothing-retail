@@ -93,7 +93,6 @@ export async function GET(req) {
             },
             { $addFields: { companyName: { $ifNull: [{ $arrayElemAt: ['$company.name', 0] }, '' ] } } },
             { $project: {
-                company: 0,
                 _id: 1,
                 date: 1,
                 createdAt: 1,
