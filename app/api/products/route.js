@@ -84,7 +84,10 @@ const QuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(100).optional().default(20),
   sort: z.enum(['createdAt', 'code', 'name']).optional().default('createdAt'),
   order: z.enum(['asc', 'desc']).optional().default('desc'),
-  includeVariantCounts: z.union([z.literal('true'), z.literal('false')]).optional().default('true'),
+  includeVariantCounts: z
+    .union([z.literal('true'), z.literal('false')])
+    .optional()
+    .default('true'),
 });
 
 export async function GET(req) {
@@ -104,15 +107,7 @@ export async function GET(req) {
     );
   }
 
-  const {
-    query: q,
-    status,
-    page,
-    limit,
-    sort,
-    order,
-    includeVariantCounts,
-  } = parsed.data;
+  const { query: q, status, page, limit, sort, order, includeVariantCounts } = parsed.data;
 
   const filter = {};
   if (q) {
@@ -198,5 +193,3 @@ export async function GET(req) {
     );
   }
 }
-
-

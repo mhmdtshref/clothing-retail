@@ -14,10 +14,6 @@ export default async function NewProductPage() {
   const companies = await Company.find({}, { name: 1 }).sort({ name: 1 }).lean();
 
   return (
-    <CreateProductForm
-      companies={companies.map(c => ({ _id: String(c._id), name: c.name }))}
-    />
+    <CreateProductForm companies={companies.map((c) => ({ _id: String(c._id), name: c.name }))} />
   );
 }
-
-

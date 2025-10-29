@@ -3,18 +3,36 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Paper, Stack, TextField, Button, Typography, MenuItem,
-  Chip, Box, Divider, Table, TableHead, TableRow, TableCell, TableBody,
-  Snackbar, Alert, Autocomplete
+  Paper,
+  Stack,
+  TextField,
+  Button,
+  Typography,
+  MenuItem,
+  Chip,
+  Box,
+  Divider,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Snackbar,
+  Alert,
+  Autocomplete,
 } from '@mui/material';
 import { z } from 'zod';
 
 const productSchema = z.object({
-  code: z.string().min(1).max(120).transform(s => s.trim()),
+  code: z
+    .string()
+    .min(1)
+    .max(120)
+    .transform((s) => s.trim()),
   name: z.string().max(200).optional().default(''),
   basePrice: z.preprocess(
     (v) => (typeof v === 'string' ? Number(v) : v),
-    z.number().nonnegative().default(0)
+    z.number().nonnegative().default(0),
   ),
   status: z.enum(['active', 'archived']).default('active'),
 });
@@ -59,13 +77,13 @@ export default function CreateProductForm({ companies }) {
   const sizes = values.sizes;
   const colors = values.colors;
   const selectedCompanies = React.useMemo(
-    () => companies.filter(c => values.companyIds.includes(c._id)),
-    [companies, values.companyIds]
+    () => companies.filter((c) => values.companyIds.includes(c._id)),
+    [companies, values.companyIds],
   );
 
   const preview = React.useMemo(
     () => cartesianPreview(sizes, colors, selectedCompanies, 10),
-    [sizes, colors, selectedCompanies]
+    [sizes, colors, selectedCompanies],
   );
 
   const handleChange = (field) => (e) => {
@@ -90,7 +108,11 @@ export default function CreateProductForm({ companies }) {
         companyIds: values.companyIds,
       });
 
-      if (genInput.sizes.length === 0 || genInput.colors.length === 0 || genInput.companyIds.length === 0) {
+      if (
+        genInput.sizes.length === 0 ||
+        genInput.colors.length === 0 ||
+        genInput.companyIds.length === 0
+      ) {
         throw new Error('Please provide at least one Size, Color, and Company.');
       }
 
@@ -115,11 +137,16 @@ export default function CreateProductForm({ companies }) {
       });
       const data2 = await res2.json();
       if (!res2.ok) {
-        const msg = data2?.message || data2?.error || 'Product created but variant generation failed';
+        const msg =
+          data2?.message || data2?.error || 'Product created but variant generation failed';
         throw new Error(msg);
       }
 
-      setSnack({ open: true, severity: 'success', message: `Created: ${data1.product.code}. Variants: ${data2.created} created, ${data2.skippedExisting} skipped.` });
+      setSnack({
+        open: true,
+        severity: 'success',
+        message: `Created: ${data1.product.code}. Variants: ${data2.created} created, ${data2.skippedExisting} skipped.`,
+      });
       // Optionally redirect to dashboard or a future product detail page
       setTimeout(() => {
         router.push('/dashboard');
@@ -133,7 +160,9 @@ export default function CreateProductForm({ companies }) {
 
   return (
     <Paper sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom>Create Product</Typography>
+      <Typography variant="h5" gutterBottom>
+        Create Product
+      </Typography>
       <Box component="form" onSubmit={onSubmit}>
         <Stack spacing={2}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -144,12 +173,7 @@ export default function CreateProductForm({ companies }) {
               required
               fullWidth
             />
-            <TextField
-              label="Name"
-              value={values.name}
-              onChange={handleChange('name')}
-              fullWidth
-            />
+            <TextField label="Name" value={values.name} onChange={handleChange('name')} fullWidth />
           </Stack>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -183,9 +207,9 @@ export default function CreateProductForm({ companies }) {
               options={[]}
               value={values.sizes}
               onChange={(_, newVal) =>
-                setValues(v => ({
+                setValues((v) => ({
                   ...v,
-                  sizes: Array.from(new Set(newVal.map(x => String(x).trim()).filter(Boolean)))
+                  sizes: Array.from(new Set(newVal.map((x) => String(x).trim()).filter(Boolean))),
                 }))
               }
               fullWidth
@@ -200,15 +224,20 @@ export default function CreateProductForm({ companies }) {
               options={[]}
               value={values.colors}
               onChange={(_, newVal) =>
-                setValues(v => ({
+                setValues((v) => ({
                   ...v,
-                  colors: Array.from(new Set(newVal.map(x => String(x).trim()).filter(Boolean)))
+                  colors: Array.from(new Set(newVal.map((x) => String(x).trim()).filter(Boolean))),
                 }))
               }
               fullWidth
               sx={{ flex: 1, minWidth: 0 }}
               renderInput={(params) => (
-                <TextField {...params} label="Colors" placeholder="Type and press Enter" fullWidth />
+                <TextField
+                  {...params}
+                  label="Colors"
+                  placeholder="Type and press Enter"
+                  fullWidth
+                />
               )}
             />
           </Stack>
@@ -217,10 +246,16 @@ export default function CreateProductForm({ companies }) {
             multiple
             options={companies}
             getOptionLabel={(o) => o.name}
-            value={companies.filter(c => values.companyIds.includes(c._id))}
-            onChange={(_, newVal) => setValues(v => ({ ...v, companyIds: newVal.map(x => x._id) }))}
+            value={companies.filter((c) => values.companyIds.includes(c._id))}
+            onChange={(_, newVal) =>
+              setValues((v) => ({ ...v, companyIds: newVal.map((x) => x._id) }))
+            }
             renderInput={(params) => (
-              <TextField {...params} label="Companies (suppliers)" placeholder="Select one or more" />
+              <TextField
+                {...params}
+                label="Companies (suppliers)"
+                placeholder="Select one or more"
+              />
             )}
           />
 
@@ -260,8 +295,13 @@ export default function CreateProductForm({ companies }) {
               variant="outlined"
               onClick={() =>
                 setValues({
-                  code: '', name: '', basePrice: '', status: 'active',
-                  sizes: [], colors: [], companyIds: []
+                  code: '',
+                  name: '',
+                  basePrice: '',
+                  status: 'active',
+                  sizes: [],
+                  colors: [],
+                  companyIds: [],
                 })
               }
             >
@@ -277,10 +317,10 @@ export default function CreateProductForm({ companies }) {
       <Snackbar
         open={snack.open}
         autoHideDuration={3000}
-        onClose={() => setSnack(s => ({ ...s, open: false }))}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
       >
         <Alert
-          onClose={() => setSnack(s => ({ ...s, open: false }))}
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
           severity={snack.severity}
           variant="filled"
         >
@@ -290,5 +330,3 @@ export default function CreateProductForm({ companies }) {
     </Paper>
   );
 }
-
-

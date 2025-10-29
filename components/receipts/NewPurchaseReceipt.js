@@ -2,9 +2,28 @@
 
 import * as React from 'react';
 import {
-  Paper, Stack, TextField, Button, Typography, MenuItem, Box, Divider,
-  Autocomplete, Chip, Table, TableHead, TableRow, TableCell, TableBody,
-  IconButton, InputAdornment, Snackbar, Alert, Select, FormControl, InputLabel
+  Paper,
+  Stack,
+  TextField,
+  Button,
+  Typography,
+  MenuItem,
+  Box,
+  Divider,
+  Autocomplete,
+  Chip,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  IconButton,
+  InputAdornment,
+  Snackbar,
+  Alert,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -62,7 +81,9 @@ export default function NewPurchaseReceipt({ companies }) {
     if (!productId) return setVariantOptions([]);
     setLoadingVariants(true);
     try {
-      const res = await fetch(`/api/products/${productId}/variants?companyId=${companyId}`, { cache: 'no-store' });
+      const res = await fetch(`/api/products/${productId}/variants?companyId=${companyId}`, {
+        cache: 'no-store',
+      });
       const json = await res.json();
       setVariantOptions(json.items || []);
     } finally {
@@ -81,23 +102,40 @@ export default function NewPurchaseReceipt({ companies }) {
   const addBlankItem = () => {
     setItems((arr) => [
       ...arr,
-      { id: crypto.randomUUID(), variantId: '', variantLabel: '', qty: 1, unitCost: 0, discount: { mode: 'amount', value: 0 } },
+      {
+        id: crypto.randomUUID(),
+        variantId: '',
+        variantLabel: '',
+        qty: 1,
+        unitCost: 0,
+        discount: { mode: 'amount', value: 0 },
+      },
     ]);
   };
 
   const removeItem = (id) => setItems((arr) => arr.filter((x) => x.id !== id));
-  const updateItem = (id, patch) => setItems((arr) => arr.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  const updateItem = (id, patch) =>
+    setItems((arr) => arr.map((x) => (x.id === id ? { ...x, ...patch } : x)));
 
-  const pricingPayload = React.useMemo(() => ({
-    type: 'purchase',
-    items: items.map((it) => ({
-      qty: Number(it.qty) || 0,
-      unitCost: Number(it.unitCost) || 0,
-      discount: it.discount && Number(it.discount.value) > 0 ? { mode: it.discount.mode, value: Number(it.discount.value) } : undefined,
-    })),
-    billDiscount: billDiscount && Number(billDiscount.value) > 0 ? { mode: billDiscount.mode, value: Number(billDiscount.value) } : undefined,
-    taxPercent: Number(taxPercent) || 0,
-  }), [items, billDiscount, taxPercent]);
+  const pricingPayload = React.useMemo(
+    () => ({
+      type: 'purchase',
+      items: items.map((it) => ({
+        qty: Number(it.qty) || 0,
+        unitCost: Number(it.unitCost) || 0,
+        discount:
+          it.discount && Number(it.discount.value) > 0
+            ? { mode: it.discount.mode, value: Number(it.discount.value) }
+            : undefined,
+      })),
+      billDiscount:
+        billDiscount && Number(billDiscount.value) > 0
+          ? { mode: billDiscount.mode, value: Number(billDiscount.value) }
+          : undefined,
+      taxPercent: Number(taxPercent) || 0,
+    }),
+    [items, billDiscount, taxPercent],
+  );
 
   const { totals } = computeReceiptTotals(pricingPayload);
 
@@ -125,9 +163,15 @@ export default function NewPurchaseReceipt({ companies }) {
           variantId: it.variantId,
           qty: Number(it.qty) || 0,
           unitCost: Number(it.unitCost) || 0,
-          discount: it.discount && Number(it.discount.value) > 0 ? { mode: it.discount.mode, value: Number(it.discount.value) } : undefined,
+          discount:
+            it.discount && Number(it.discount.value) > 0
+              ? { mode: it.discount.mode, value: Number(it.discount.value) }
+              : undefined,
         })),
-        billDiscount: billDiscount && Number(billDiscount.value) > 0 ? { mode: billDiscount.mode, value: Number(billDiscount.value) } : undefined,
+        billDiscount:
+          billDiscount && Number(billDiscount.value) > 0
+            ? { mode: billDiscount.mode, value: Number(billDiscount.value) }
+            : undefined,
         taxPercent: Number(taxPercent) || 0,
         note: note || undefined,
       };
@@ -139,7 +183,11 @@ export default function NewPurchaseReceipt({ companies }) {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to create receipt');
-      setSnack({ open: true, severity: 'success', message: `Receipt created. Total: ${json.totals.grandTotal}` });
+      setSnack({
+        open: true,
+        severity: 'success',
+        message: `Receipt created. Total: ${json.totals.grandTotal}`,
+      });
       setItems([]);
       setSelectedProduct(null);
       setVariantOptions([]);
@@ -156,26 +204,48 @@ export default function NewPurchaseReceipt({ companies }) {
 
   return (
     <Paper sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom>New Receipt (Purchase)</Typography>
+      <Typography variant="h5" gutterBottom>
+        New Receipt (Purchase)
+      </Typography>
 
       <Box component="form" onSubmit={onSubmit}>
         <Stack spacing={2}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <FormControl fullWidth>
               <InputLabel id="company-label">Company</InputLabel>
-              <Select labelId="company-label" label="Company" value={companyId} onChange={(e) => setCompanyId(e.target.value)} required>
-                {companies.map((c) => (<MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>))}
+              <Select
+                labelId="company-label"
+                label="Company"
+                value={companyId}
+                onChange={(e) => setCompanyId(e.target.value)}
+                required
+              >
+                {companies.map((c) => (
+                  <MenuItem key={c._id} value={c._id}>
+                    {c.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl sx={{ minWidth: 200 }}>
               <InputLabel id="status-label">Status</InputLabel>
-              <Select labelId="status-label" label="Status" value={status} onChange={(e) => setStatus(e.target.value)}>
+              <Select
+                labelId="status-label"
+                label="Status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
                 <MenuItem value="ordered">Ordered</MenuItem>
                 <MenuItem value="on_delivery">On delivery</MenuItem>
                 <MenuItem value="completed">Completed</MenuItem>
               </Select>
             </FormControl>
-            <TextField label="Note" value={note} onChange={(e) => setNote(e.target.value)} fullWidth />
+            <TextField
+              label="Note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              fullWidth
+            />
           </Stack>
 
           <Divider />
@@ -186,7 +256,13 @@ export default function NewPurchaseReceipt({ companies }) {
               placeholder="Type code or name"
               value={productQuery}
               onChange={(e) => setProductQuery(e.target.value)}
-              InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>) }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
               fullWidth
             />
             <Autocomplete
@@ -198,7 +274,12 @@ export default function NewPurchaseReceipt({ companies }) {
               renderInput={(params) => <TextField {...params} label="Choose product" />}
               sx={{ minWidth: 320 }}
             />
-            <Button variant="outlined" startIcon={<AddIcon />} disabled={!selectedProduct} onClick={addBlankItem}>
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              disabled={!selectedProduct}
+              onClick={addBlankItem}
+            >
               Add Line
             </Button>
           </Stack>
@@ -207,11 +288,19 @@ export default function NewPurchaseReceipt({ companies }) {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ width: 260 }}>Variant</TableCell>
-                <TableCell align="right" sx={{ width: 90 }}>Qty</TableCell>
-                <TableCell align="right" sx={{ width: 140 }}>Unit Cost</TableCell>
+                <TableCell align="right" sx={{ width: 90 }}>
+                  Qty
+                </TableCell>
+                <TableCell align="right" sx={{ width: 140 }}>
+                  Unit Cost
+                </TableCell>
                 <TableCell sx={{ width: 200 }}>Item Discount</TableCell>
-                <TableCell align="right" sx={{ width: 120 }}>Line</TableCell>
-                <TableCell align="right" sx={{ width: 120 }}>Net</TableCell>
+                <TableCell align="right" sx={{ width: 120 }}>
+                  Line
+                </TableCell>
+                <TableCell align="right" sx={{ width: 120 }}>
+                  Net
+                </TableCell>
                 <TableCell sx={{ width: 56 }} />
               </TableRow>
             </TableHead>
@@ -220,7 +309,8 @@ export default function NewPurchaseReceipt({ companies }) {
                 <TableRow>
                   <TableCell colSpan={7}>
                     <Typography color="text.secondary" sx={{ py: 2 }}>
-                      Add a line, pick a variant (filtered to the selected company), set qty/cost/discount.
+                      Add a line, pick a variant (filtered to the selected company), set
+                      qty/cost/discount.
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -230,7 +320,8 @@ export default function NewPurchaseReceipt({ companies }) {
                 const lineCalc = computeLine({
                   qty: Number(row.qty) || 0,
                   unit: Number(row.unitCost) || 0,
-                  discount: row.discount && Number(row.discount.value) > 0 ? row.discount : undefined,
+                  discount:
+                    row.discount && Number(row.discount.value) > 0 ? row.discount : undefined,
                 });
 
                 return (
@@ -240,32 +331,85 @@ export default function NewPurchaseReceipt({ companies }) {
                         loading={loadingVariants}
                         options={variantOptions}
                         getOptionLabel={(o) => `${o.size} / ${o.color} — ${o.companyName || ''}`}
-                        value={variantOptions.find(v => v._id === row.variantId) || null}
-                        onOpen={() => { if (selectedProduct?._id && companyId) loadVariants(selectedProduct._id, companyId); }}
-                        onChange={(_, val) => updateItem(row.id, { variantId: val?._id || '', variantLabel: val ? `${val.size}/${val.color}` : '' })}
+                        value={variantOptions.find((v) => v._id === row.variantId) || null}
+                        onOpen={() => {
+                          if (selectedProduct?._id && companyId)
+                            loadVariants(selectedProduct._id, companyId);
+                        }}
+                        onChange={(_, val) =>
+                          updateItem(row.id, {
+                            variantId: val?._id || '',
+                            variantLabel: val ? `${val.size}/${val.color}` : '',
+                          })
+                        }
                         renderInput={(params) => <TextField {...params} label="Variant" />}
                         sx={{ minWidth: 240 }}
                       />
                     </TableCell>
                     <TableCell align="right">
-                      <TextField type="number" value={row.qty} onChange={(e) => updateItem(row.id, { qty: Math.max(0, Number(e.target.value)) })} inputProps={{ min: 0, step: 1 }} size="small" />
+                      <TextField
+                        type="number"
+                        value={row.qty}
+                        onChange={(e) =>
+                          updateItem(row.id, { qty: Math.max(0, Number(e.target.value)) })
+                        }
+                        inputProps={{ min: 0, step: 1 }}
+                        size="small"
+                      />
                     </TableCell>
                     <TableCell align="right">
-                      <TextField type="number" value={row.unitCost} onChange={(e) => updateItem(row.id, { unitCost: Math.max(0, Number(e.target.value)) })} inputProps={{ min: 0, step: '0.01' }} size="small" />
+                      <TextField
+                        type="number"
+                        value={row.unitCost}
+                        onChange={(e) =>
+                          updateItem(row.id, { unitCost: Math.max(0, Number(e.target.value)) })
+                        }
+                        inputProps={{ min: 0, step: '0.01' }}
+                        size="small"
+                      />
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
-                        <Select size="small" value={row.discount?.mode || 'amount'} onChange={(e) => updateItem(row.id, { discount: { mode: e.target.value, value: Number(row.discount?.value || 0) } })} sx={{ width: 120 }}>
+                        <Select
+                          size="small"
+                          value={row.discount?.mode || 'amount'}
+                          onChange={(e) =>
+                            updateItem(row.id, {
+                              discount: {
+                                mode: e.target.value,
+                                value: Number(row.discount?.value || 0),
+                              },
+                            })
+                          }
+                          sx={{ width: 120 }}
+                        >
                           <MenuItem value="amount">amount</MenuItem>
                           <MenuItem value="percent">percent</MenuItem>
                         </Select>
-                        <TextField size="small" type="number" value={row.discount?.value || 0} onChange={(e) => updateItem(row.id, { discount: { mode: row.discount?.mode || 'amount', value: Math.max(0, Number(e.target.value)) } })} inputProps={{ min: 0, step: '0.01' }} />
+                        <TextField
+                          size="small"
+                          type="number"
+                          value={row.discount?.value || 0}
+                          onChange={(e) =>
+                            updateItem(row.id, {
+                              discount: {
+                                mode: row.discount?.mode || 'amount',
+                                value: Math.max(0, Number(e.target.value)),
+                              },
+                            })
+                          }
+                          inputProps={{ min: 0, step: '0.01' }}
+                        />
                       </Stack>
                     </TableCell>
-                    <TableCell align="right">{(Number(row.qty || 0) * Number(row.unitCost || 0)).toFixed(2)}</TableCell>
+                    <TableCell align="right">
+                      {(Number(row.qty || 0) * Number(row.unitCost || 0)).toFixed(2)}
+                    </TableCell>
                     <TableCell align="right">{lineCalc.net.toFixed(2)}</TableCell>
                     <TableCell align="center">
-                      <IconButton color="error" onClick={() => removeItem(row.id)}><DeleteIcon /></IconButton>
+                      <IconButton color="error" onClick={() => removeItem(row.id)}>
+                        <DeleteIcon />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 );
@@ -278,35 +422,79 @@ export default function NewPurchaseReceipt({ companies }) {
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <FormControl sx={{ minWidth: 160 }}>
               <InputLabel id="bill-discount-mode-label">Bill Discount</InputLabel>
-              <Select labelId="bill-discount-mode-label" label="Bill Discount" value={billDiscount.mode} onChange={(e) => setBillDiscount((d) => ({ ...d, mode: e.target.value }))}>
+              <Select
+                labelId="bill-discount-mode-label"
+                label="Bill Discount"
+                value={billDiscount.mode}
+                onChange={(e) => setBillDiscount((d) => ({ ...d, mode: e.target.value }))}
+              >
                 <MenuItem value="amount">amount</MenuItem>
                 <MenuItem value="percent">percent</MenuItem>
               </Select>
             </FormControl>
-            <TextField label="Bill Discount Value" type="number" value={billDiscount.value} onChange={(e) => setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value)) }))} inputProps={{ min: 0, step: '0.01' }} />
-            <TextField label="Tax %" type="number" value={taxPercent} onChange={(e) => setTaxPercent(Math.max(0, Math.min(100, Number(e.target.value))))} inputProps={{ min: 0, max: 100, step: '0.01' }} />
+            <TextField
+              label="Bill Discount Value"
+              type="number"
+              value={billDiscount.value}
+              onChange={(e) =>
+                setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value)) }))
+              }
+              inputProps={{ min: 0, step: '0.01' }}
+            />
+            <TextField
+              label="Tax %"
+              type="number"
+              value={taxPercent}
+              onChange={(e) => setTaxPercent(Math.max(0, Math.min(100, Number(e.target.value))))}
+              inputProps={{ min: 0, max: 100, step: '0.01' }}
+            />
           </Stack>
 
           <Box sx={{ textAlign: 'right' }}>
             <Typography>Item Subtotal: {totals.itemSubtotal.toFixed(2)}</Typography>
             <Typography>Item Discounts: −{totals.itemDiscountTotal.toFixed(2)}</Typography>
             <Typography>Bill Discount: −{totals.billDiscountTotal.toFixed(2)}</Typography>
-            <Typography>Tax ({totals.taxPercent}%): {totals.taxTotal.toFixed(2)}</Typography>
+            <Typography>
+              Tax ({totals.taxPercent}%): {totals.taxTotal.toFixed(2)}
+            </Typography>
             <Typography variant="h6">Grand Total: {totals.grandTotal.toFixed(2)}</Typography>
           </Box>
 
           <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button variant="outlined" onClick={() => { setItems([]); setSelectedProduct(null); setVariantOptions([]); setNote(''); setStatus('ordered'); setTaxPercent(0); setBillDiscount({ mode: 'amount', value: 0 }); }}>Reset</Button>
-            <Button type="submit" variant="contained" disabled={submitting || !companyId}>{submitting ? 'Saving…' : 'Save Purchase Receipt'}</Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setItems([]);
+                setSelectedProduct(null);
+                setVariantOptions([]);
+                setNote('');
+                setStatus('ordered');
+                setTaxPercent(0);
+                setBillDiscount({ mode: 'amount', value: 0 });
+              }}
+            >
+              Reset
+            </Button>
+            <Button type="submit" variant="contained" disabled={submitting || !companyId}>
+              {submitting ? 'Saving…' : 'Save Purchase Receipt'}
+            </Button>
           </Stack>
         </Stack>
       </Box>
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack((s) => ({ ...s, open: false }))}>
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant="filled">{snack.message}</Alert>
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.severity}
+          variant="filled"
+        >
+          {snack.message}
+        </Alert>
       </Snackbar>
     </Paper>
   );
 }
-
-

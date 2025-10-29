@@ -17,11 +17,6 @@ export async function GET() {
       ping,
     });
   } catch (err) {
-    return NextResponse.json(
-      { ok: false, error: err?.message || String(err) },
-      { status: 500 },
-    );
+    return NextResponse.json({ ok: false, error: err?.message || String(err) }, { status: 500 });
   }
 }
-
-

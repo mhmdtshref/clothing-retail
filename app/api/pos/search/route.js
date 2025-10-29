@@ -73,7 +73,11 @@ export async function GET(req) {
                   {
                     $group: {
                       _id: null,
-                      purchased: { $sum: { $cond: [{ $in: ['$_id', ['purchase', 'sale_return']] }, '$qty', 0] } },
+                      purchased: {
+                        $sum: {
+                          $cond: [{ $in: ['$_id', ['purchase', 'sale_return']] }, '$qty', 0],
+                        },
+                      },
                       sold: { $sum: { $cond: [{ $eq: ['$_id', 'sale'] }, '$qty', 0] } },
                     },
                   },
@@ -166,5 +170,3 @@ export async function GET(req) {
     );
   }
 }
-
-

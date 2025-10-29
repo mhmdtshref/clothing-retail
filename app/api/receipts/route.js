@@ -38,17 +38,7 @@ export async function GET(req) {
     );
   }
 
-  const {
-    query: q,
-    status,
-    companyId,
-    dateFrom,
-    dateTo,
-    page,
-    limit,
-    sort,
-    order,
-  } = parsed.data;
+  const { query: q, status, companyId, dateFrom, dateTo, page, limit, sort, order } = parsed.data;
 
   const filter = {};
   if (status !== 'all') filter.status = status;
@@ -91,8 +81,13 @@ export async function GET(req) {
                 as: 'company',
               },
             },
-            { $addFields: { companyName: { $ifNull: [{ $arrayElemAt: ['$company.name', 0] }, '' ] } } },
-            { $project: {
+            {
+              $addFields: {
+                companyName: { $ifNull: [{ $arrayElemAt: ['$company.name', 0] }, ''] },
+              },
+            },
+            {
+              $project: {
                 _id: 1,
                 date: 1,
                 createdAt: 1,
@@ -103,10 +98,10 @@ export async function GET(req) {
                 items: 1,
                 billDiscount: 1,
                 taxPercent: 1,
-              }
+              },
             },
           ],
-          total: [ { $count: 'n' } ],
+          total: [{ $count: 'n' }],
         },
       },
       { $project: { items: 1, total: { $ifNull: [{ $arrayElemAt: ['$total.n', 0] }, 0] } } },
@@ -122,9 +117,13 @@ export async function GET(req) {
           qty: Number(it.qty) || 0,
           unitCost: Number(it.unitCost || 0),
           unitPrice: Number(it.unitPrice || 0),
-          discount: it.discount ? { mode: it.discount.mode, value: Number(it.discount.value || 0) } : undefined,
+          discount: it.discount
+            ? { mode: it.discount.mode, value: Number(it.discount.value || 0) }
+            : undefined,
         })),
-        billDiscount: r.billDiscount ? { mode: r.billDiscount.mode, value: Number(r.billDiscount.value || 0) } : undefined,
+        billDiscount: r.billDiscount
+          ? { mode: r.billDiscount.mode, value: Number(r.billDiscount.value || 0) }
+          : undefined,
         taxPercent: Number(r.taxPercent || 0),
       });
 
@@ -207,7 +206,18 @@ export async function POST(req) {
     );
   }
 
-  const { type, date, status, companyId, vendorId, items, billDiscount, taxPercent, note, returnReason } = parsed;
+  const {
+    type,
+    date,
+    status,
+    companyId,
+    vendorId,
+    items,
+    billDiscount,
+    taxPercent,
+    note,
+    returnReason,
+  } = parsed;
 
   const supplierId = companyId || vendorId || undefined;
   if (type === 'purchase' && !supplierId) {
@@ -231,7 +241,9 @@ export async function POST(req) {
     }
 
     const variantIds = items.map((i) => new mongoose.Types.ObjectId(i.variantId));
-    const variants = await Variant.find({ _id: { $in: variantIds } }).lean().exec();
+    const variants = await Variant.find({ _id: { $in: variantIds } })
+      .lean()
+      .exec();
     if (variants.length !== variantIds.length) {
       return NextResponse.json(
         { error: 'ValidationError', message: 'One or more variantId not found' },
@@ -241,7 +253,9 @@ export async function POST(req) {
 
     const productIdSet = new Set(variants.map((v) => String(v.productId)));
     const productIds = [...productIdSet].map((id) => new mongoose.Types.ObjectId(id));
-    const products = await Product.find({ _id: { $in: productIds } }, { code: 1, name: 1 }).lean().exec();
+    const products = await Product.find({ _id: { $in: productIds } }, { code: 1, name: 1 })
+      .lean()
+      .exec();
     const productMap = new Map(products.map((p) => [String(p._id), p]));
     const variantMap = new Map(variants.map((v) => [String(v._id), v]));
 
@@ -254,7 +268,9 @@ export async function POST(req) {
         qty: i.qty,
         unitCost: Number(i.unitCost || 0),
         unitPrice: Number(i.unitPrice || 0),
-        discount: i.discount ? { mode: i.discount.mode, value: Number(i.discount.value || 0) } : undefined,
+        discount: i.discount
+          ? { mode: i.discount.mode, value: Number(i.discount.value || 0) }
+          : undefined,
         snapshot: {
           productCode: p?.code || '',
           productName: p?.name || '',
@@ -271,13 +287,17 @@ export async function POST(req) {
       status: computedStatus,
       companyId: type === 'purchase' ? supplierId : undefined,
       items: receiptItems,
-      billDiscount: billDiscount ? { mode: billDiscount.mode, value: Number(billDiscount.value || 0) } : undefined,
+      billDiscount: billDiscount
+        ? { mode: billDiscount.mode, value: Number(billDiscount.value || 0) }
+        : undefined,
       taxPercent: Number(taxPercent || 0),
       note: note || undefined,
       ...(type === 'sale_return' && returnReason ? { returnReason } : {}),
     };
 
-    const { totals, items: pricedItems } = computeReceiptTotals(receiptPayload, { includeItems: true });
+    const { totals, items: pricedItems } = computeReceiptTotals(receiptPayload, {
+      includeItems: true,
+    });
 
     const doc = await Receipt.create(receiptPayload);
 
@@ -316,5 +336,3 @@ export async function POST(req) {
     );
   }
 }
-
-

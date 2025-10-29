@@ -13,7 +13,7 @@ export default async function NewReceiptPurchasePage() {
   await connectToDB();
   const companies = await Company.find({}, { name: 1 }).sort({ name: 1 }).lean();
 
-  return <NewPurchaseReceipt companies={companies.map(c => ({ _id: String(c._id), name: c.name }))} />;
+  return (
+    <NewPurchaseReceipt companies={companies.map((c) => ({ _id: String(c._id), name: c.name }))} />
+  );
 }
-
-

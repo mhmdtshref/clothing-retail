@@ -14,10 +14,6 @@ export default async function ReceiptsPage() {
   const companies = await Company.find({}, { name: 1 }).sort({ name: 1 }).lean();
 
   return (
-    <ReceiptsListPage
-      companies={companies.map(c => ({ _id: String(c._id), name: c.name }))}
-    />
+    <ReceiptsListPage companies={companies.map((c) => ({ _id: String(c._id), name: c.name }))} />
   );
 }
-
-

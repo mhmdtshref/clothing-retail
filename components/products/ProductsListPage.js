@@ -3,9 +3,26 @@
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
-  Paper, Toolbar, TextField, InputAdornment, IconButton, Stack,
-  MenuItem, Button, Table, TableHead, TableRow, TableCell, TableBody,
-  Typography, CircularProgress, Box, Pagination, Select, FormControl, InputLabel
+  Paper,
+  Toolbar,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Stack,
+  MenuItem,
+  Button,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Typography,
+  CircularProgress,
+  Box,
+  Pagination,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -59,7 +76,9 @@ export default function ProductsListPage() {
   const [data, setData] = React.useState({ items: [], meta: { total: 0, pages: 1 } });
 
   const [queryInput, setQueryInput] = React.useState(state.query);
-  React.useEffect(() => { setQueryInput(state.query); }, [state.query]);
+  React.useEffect(() => {
+    setQueryInput(state.query);
+  }, [state.query]);
 
   React.useEffect(() => {
     const t = setTimeout(() => {
@@ -68,7 +87,7 @@ export default function ProductsListPage() {
       }
     }, 500);
     return () => clearTimeout(t);
-  }, [queryInput]);
+  }, [queryInput, state.query, setState]);
 
   const fetchList = React.useCallback(async () => {
     setLoading(true);
@@ -94,9 +113,12 @@ export default function ProductsListPage() {
     }
   }, [state.query, state.status, state.sort, state.order, state.page, state.limit]);
 
-  React.useEffect(() => { fetchList(); }, [fetchList]);
+  React.useEffect(() => {
+    fetchList();
+  }, [fetchList]);
 
-  const switchOrder = () => setState((s) => ({ ...s, order: s.order === 'asc' ? 'desc' : 'asc', page: 1 }));
+  const switchOrder = () =>
+    setState((s) => ({ ...s, order: s.order === 'asc' ? 'desc' : 'asc', page: 1 }));
   const onLimitChange = (e) => setState((s) => ({ ...s, limit: Number(e.target.value), page: 1 }));
   const onStatusChange = (e) => setState((s) => ({ ...s, status: e.target.value, page: 1 }));
   const onSortChange = (e) => setState((s) => ({ ...s, sort: e.target.value, page: 1 }));
@@ -141,7 +163,11 @@ export default function ProductsListPage() {
             label="Sort by"
             value={state.sort}
             onChange={onSortChange}
-            startAdornment={<InputAdornment position="start"><SortIcon fontSize="small" /></InputAdornment>}
+            startAdornment={
+              <InputAdornment position="start">
+                <SortIcon fontSize="small" />
+              </InputAdornment>
+            }
           >
             <MenuItem value="createdAt">createdAt</MenuItem>
             <MenuItem value="code">code</MenuItem>
@@ -150,12 +176,21 @@ export default function ProductsListPage() {
         </FormControl>
 
         <IconButton size="small" onClick={switchOrder} aria-label="toggle order">
-          {state.order === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />}
+          {state.order === 'asc' ? (
+            <ArrowUpwardIcon fontSize="small" />
+          ) : (
+            <ArrowDownwardIcon fontSize="small" />
+          )}
         </IconButton>
 
         <FormControl size="small" sx={{ minWidth: 120, ml: 'auto' }}>
           <InputLabel id="limit-label">Per page</InputLabel>
-          <Select labelId="limit-label" label="Per page" value={state.limit} onChange={onLimitChange}>
+          <Select
+            labelId="limit-label"
+            label="Per page"
+            value={state.limit}
+            onChange={onLimitChange}
+          >
             <MenuItem value={10}>10</MenuItem>
             <MenuItem value={20}>20</MenuItem>
             <MenuItem value={50}>50</MenuItem>
@@ -223,7 +258,12 @@ export default function ProductsListPage() {
               </TableBody>
             </Table>
 
-            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: 2, py: 2 }}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ px: 2, py: 2 }}
+            >
               <Typography variant="body2" color="text.secondary">
                 Total: {data.meta.total} • Page {state.page} of {data.meta.pages}
               </Typography>
@@ -243,5 +283,3 @@ export default function ProductsListPage() {
     </Paper>
   );
 }
-
-

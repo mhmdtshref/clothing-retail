@@ -40,7 +40,12 @@ export async function POST(req, context) {
     // Handle duplicate key races gracefully
     if (err?.code === 11000) {
       return NextResponse.json(
-        { ok: true, created: 0, skippedExisting: 'some or all existed (11000)', requested: 'unknown' },
+        {
+          ok: true,
+          created: 0,
+          skippedExisting: 'some or all existed (11000)',
+          requested: 'unknown',
+        },
         { status: 200 },
       );
     }
@@ -50,5 +55,3 @@ export async function POST(req, context) {
     );
   }
 }
-
-

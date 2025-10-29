@@ -30,14 +30,14 @@ export async function GET(req, context) {
           as: 'company',
         },
       },
-      { $addFields: { companyName: { $ifNull: [{ $arrayElemAt: ['$company.name', 0] }, '' ] } } },
+      { $addFields: { companyName: { $ifNull: [{ $arrayElemAt: ['$company.name', 0] }, ''] } } },
       { $project: { company: 0 } },
       { $sort: { size: 1, color: 1 } },
     ]);
 
     return NextResponse.json({
       ok: true,
-      items: variants.map(v => ({
+      items: variants.map((v) => ({
         _id: v._id,
         productId: v.productId,
         companyId: v.companyId,
@@ -47,8 +47,9 @@ export async function GET(req, context) {
       })),
     });
   } catch (err) {
-    return NextResponse.json({ error: 'InternalServerError', message: err?.message || String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: 'InternalServerError', message: err?.message || String(err) },
+      { status: 500 },
+    );
   }
 }
-
-
