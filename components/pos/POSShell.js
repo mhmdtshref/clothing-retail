@@ -6,6 +6,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import WifiIcon from '@mui/icons-material/Wifi';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
 import { useUser } from '@clerk/nextjs';
+import POSCatalog from '@/components/pos/POSCatalog';
 
 function useClock() {
   const [now, setNow] = React.useState(() => new Date());
@@ -37,6 +38,12 @@ export default function POSShell() {
   const { user } = useUser();
   const now = useClock();
   const online = useOnline();
+  const [pickedCount, setPickedCount] = React.useState(0);
+  const handlePickVariant = React.useCallback((variant, product) => {
+    setPickedCount((n) => n + 1);
+    // eslint-disable-next-line no-console
+    console.log('Picked variant:', { variant, product });
+  }, []);
 
   React.useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -58,6 +65,7 @@ export default function POSShell() {
             color={online ? 'success' : 'default'}
           />
           <Box sx={{ flexGrow: 1 }} />
+          <Chip size="small" label={`Picked: ${pickedCount}`} />
           <Typography variant="body2" sx={{ mr: 2 }} suppressHydrationWarning>
             {now.toLocaleString()}
           </Typography>
@@ -93,21 +101,7 @@ export default function POSShell() {
               Catalog
             </Typography>
             <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
-              {/* TODO: Step 2 - search & scan results */}
-              <Box
-                sx={{
-                  flex: 1,
-                  border: '1px dashed',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'text.secondary',
-                }}
-              >
-                Catalog / Search will appear here
-              </Box>
+              <POSCatalog onPickVariant={handlePickVariant} />
             </Stack>
           </Paper>
         </Box>
