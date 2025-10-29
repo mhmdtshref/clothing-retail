@@ -102,30 +102,33 @@ export default function POSCatalog({ onPickVariant }) {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {(p.variants || []).map((v) => (
-                        <TableRow key={v._id} hover>
-                          <TableCell>{v.company?.name || '-'}</TableCell>
-                          <TableCell>{v.size}</TableCell>
-                          <TableCell>{v.color}</TableCell>
-                          <TableCell align="right">
-                            <Chip size="small" color={v.qty > 0 ? 'success' : 'default'} label={v.qty} />
-                          </TableCell>
-                          <TableCell align="right">
-                            <Tooltip title={v.qty <= 0 ? 'Out of stock' : 'Add to cart'}>
-                              <span>
-                                <Button
-                                  size="small"
-                                  variant="contained"
-                                  disabled={v.qty <= 0}
-                                  onClick={() => onPickVariant && onPickVariant(v, p)}
-                                >
-                                  Add
-                                </Button>
-                              </span>
-                            </Tooltip>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {(p.variants || []).map((v) => {
+                        const out = Number(v.qty || 0) <= 0;
+                        return (
+                          <TableRow key={v._id} hover>
+                            <TableCell>{v.company?.name || '-'}</TableCell>
+                            <TableCell>{v.size}</TableCell>
+                            <TableCell>{v.color}</TableCell>
+                            <TableCell align="right">
+                              <Chip size="small" color={out ? 'error' : 'success'} label={v.qty} />
+                            </TableCell>
+                            <TableCell align="right">
+                              <Tooltip title={out ? 'Out of stock (allowed to add)' : 'Add to cart'}>
+                                <span>
+                                  <Button
+                                    size="small"
+                                    variant="contained"
+                                    color={out ? 'warning' : 'primary'}
+                                    onClick={() => onPickVariant && onPickVariant(v, p)}
+                                  >
+                                    Add
+                                  </Button>
+                                </span>
+                              </Tooltip>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </AccordionDetails>
