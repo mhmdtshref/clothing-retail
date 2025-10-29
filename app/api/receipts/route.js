@@ -299,7 +299,38 @@ export async function POST(req) {
       includeItems: true,
     });
 
-    const doc = await Receipt.create(receiptPayload);
+    // Build inventory adjustment ops: purchase/sale_return => +qty; sale => -qty
+    const sign = type === 'sale' ? -1 : 1;
+    const deltaByVariant = new Map();
+    for (const it of receiptItems) {
+      const key = String(it.variantId);
+      const prev = deltaByVariant.get(key) || 0;
+      deltaByVariant.set(key, prev + sign * Number(it.qty || 0));
+    }
+    const ops = Array.from(deltaByVariant.entries()).map(([variantId, delta]) => ({
+      updateOne: {
+        filter: { _id: new mongoose.Types.ObjectId(variantId) },
+        update: { $inc: { qty: delta } },
+      },
+    }));
+
+    let doc;
+    // Try to commit receipt creation and inventory update atomically
+    const session = await mongoose.startSession().catch(() => null);
+    if (session) {
+      try {
+        await session.withTransaction(async () => {
+          const created = await Receipt.create([receiptPayload], { session });
+          doc = created[0];
+          if (ops.length) await Variant.bulkWrite(ops, { session });
+        });
+      } finally {
+        await session.endSession();
+      }
+    } else {
+      doc = await Receipt.create(receiptPayload);
+      if (ops.length) await Variant.bulkWrite(ops);
+    }
 
     return NextResponse.json(
       {

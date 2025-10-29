@@ -6,7 +6,7 @@ import { connectToDB } from '@/lib/mongoose';
 import Product from '@/models/product';
 import Variant from '@/models/variant';
 import Company from '@/models/company';
-import Receipt from '@/models/receipt';
+// Receipts no longer needed for qty; using denormalized Variant.qty
 
 function escapeRx(s = '') {
   return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -61,33 +61,7 @@ export async function GET(req) {
               },
             },
             { $project: { company: 0 } },
-            // Compute on-hand qty from receipts: purchases (+) - sales (-)
-            {
-              $lookup: {
-                from: Receipt.collection.name,
-                let: { vid: '$_id' },
-                pipeline: [
-                  { $unwind: '$items' },
-                  { $match: { $expr: { $eq: ['$items.variantId', '$$vid'] } } },
-                  { $group: { _id: '$type', qty: { $sum: '$items.qty' } } },
-                  {
-                    $group: {
-                      _id: null,
-                      purchased: {
-                        $sum: {
-                          $cond: [{ $in: ['$_id', ['purchase', 'sale_return']] }, '$qty', 0],
-                        },
-                      },
-                      sold: { $sum: { $cond: [{ $eq: ['$_id', 'sale'] }, '$qty', 0] } },
-                    },
-                  },
-                  { $project: { _id: 0, onHand: { $subtract: ['$purchased', '$sold'] } } },
-                ],
-                as: 'inv',
-              },
-            },
-            { $addFields: { qty: { $ifNull: [{ $arrayElemAt: ['$inv.onHand', 0] }, 0] } } },
-            { $project: { inv: 0 } },
+            { $addFields: { qty: { $ifNull: ['$qty', 0] } } },
           ],
           as: 'variants',
         },

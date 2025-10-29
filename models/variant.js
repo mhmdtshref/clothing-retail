@@ -7,6 +7,7 @@ const VariantSchema = new Schema(
     companyId: { type: Types.ObjectId, ref: 'Company', required: true }, // who supplies this product variant
     size: { type: String, required: true, trim: true },
     color: { type: String, required: true, trim: true },
+    qty: { type: Number, default: 0 },
   },
   { timestamps: true },
 );
