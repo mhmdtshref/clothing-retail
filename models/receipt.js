@@ -25,7 +25,7 @@ const ReceiptItemSchema = new Schema({
 }, { _id: false });
 
 const ReceiptSchema = new Schema({
-  type: { type: String, enum: ['purchase', 'sale'], required: true, default: 'purchase' },
+  type: { type: String, enum: ['purchase', 'sale', 'sale_return'], required: true, default: 'purchase' },
   date: { type: Date, default: () => new Date() },
   status: { type: String, enum: ['ordered', 'on_delivery', 'completed'], default: 'ordered' },
 

@@ -121,6 +121,7 @@ export async function GET(req) {
         items: (r.items || []).map((it) => ({
           qty: Number(it.qty) || 0,
           unitCost: Number(it.unitCost || 0),
+          unitPrice: Number(it.unitPrice || 0),
           discount: it.discount ? { mode: it.discount.mode, value: Number(it.discount.value || 0) } : undefined,
         })),
         billDiscount: r.billDiscount ? { mode: r.billDiscount.mode, value: Number(r.billDiscount.value || 0) } : undefined,
@@ -177,14 +178,16 @@ const ItemSchema = z.object({
 });
 
 const BodySchema = z.object({
-  type: z.enum(['purchase', 'sale']).default('purchase'),
+  type: z.enum(['purchase', 'sale', 'sale_return']).default('purchase'),
   date: z.coerce.date().optional(),
-  status: z.enum(['ordered', 'on_delivery', 'completed']).optional().default('ordered'),
+  status: z.enum(['ordered', 'on_delivery', 'completed']).optional(),
   companyId: z.string().min(1).optional(),
+  vendorId: z.string().min(1).optional(),
   items: z.array(ItemSchema).min(1, 'At least one item is required'),
   billDiscount: DiscountSchema.optional(),
   taxPercent: z.number().min(0).max(100).default(0),
   note: z.string().max(1000).optional(),
+  returnReason: z.string().max(500).optional(),
 });
 
 export async function POST(req) {
@@ -204,9 +207,10 @@ export async function POST(req) {
     );
   }
 
-  const { type, date, status, companyId, items, billDiscount, taxPercent, note } = parsed;
+  const { type, date, status, companyId, vendorId, items, billDiscount, taxPercent, note, returnReason } = parsed;
 
-  if (type === 'purchase' && !companyId) {
+  const supplierId = companyId || vendorId || undefined;
+  if (type === 'purchase' && !supplierId) {
     return NextResponse.json(
       { error: 'ValidationError', message: 'companyId is required for purchase receipts' },
       { status: 400 },
@@ -217,7 +221,7 @@ export async function POST(req) {
     await connectToDB();
 
     if (type === 'purchase') {
-      const companyExists = await Company.exists({ _id: companyId });
+      const companyExists = await Company.exists({ _id: supplierId });
       if (!companyExists) {
         return NextResponse.json(
           { error: 'ValidationError', message: 'companyId does not exist' },
@@ -260,15 +264,17 @@ export async function POST(req) {
       };
     });
 
+    const computedStatus = status || (type === 'purchase' ? 'ordered' : 'completed');
     const receiptPayload = {
       type,
       date: date || new Date(),
-      status,
-      companyId: type === 'purchase' ? companyId : undefined,
+      status: computedStatus,
+      companyId: type === 'purchase' ? supplierId : undefined,
       items: receiptItems,
       billDiscount: billDiscount ? { mode: billDiscount.mode, value: Number(billDiscount.value || 0) } : undefined,
       taxPercent: Number(taxPercent || 0),
       note: note || undefined,
+      ...(type === 'sale_return' && returnReason ? { returnReason } : {}),
     };
 
     const { totals, items: pricedItems } = computeReceiptTotals(receiptPayload, { includeItems: true });
