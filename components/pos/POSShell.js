@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip, Button } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import WifiIcon from '@mui/icons-material/Wifi';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
@@ -9,6 +9,9 @@ import { useUser } from '@clerk/nextjs';
 import POSCatalog from '@/components/pos/POSCatalog';
 import CartView from '@/components/pos/CartView';
 import { useCart } from '@/components/pos/useCart';
+import CheckoutDialog from '@/components/pos/CheckoutDialog';
+import CheckoutSuccess from '@/components/pos/CheckoutSuccess';
+import { computeReceiptTotals } from '@/lib/pricing';
 
 function useClock() {
   const [now, setNow] = React.useState(() => new Date());
@@ -49,6 +52,68 @@ export default function POSShell() {
   const [billDiscount, setBillDiscount] = React.useState({ mode: 'amount', value: 0 });
   const [taxPercent, setTaxPercent] = React.useState(0);
 
+  // Checkout state
+  const [checkingOut, setCheckingOut] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [success, setSuccess] = React.useState(null); // { receipt, totals }
+
+  const canCheckout = cart.items.length > 0 && cart.items.every((l) => Number(l.qty) > 0);
+
+  const clientTotals = computeReceiptTotals({
+    type: 'sale',
+    items: cart.items.map((l) => ({
+      qty: Number(l.qty) || 0,
+      unitPrice: Number(l.unitPrice) || 0,
+      discount: l.discount && Number(l.discount.value) > 0 ? l.discount : undefined,
+    })),
+    billDiscount: billDiscount && Number(billDiscount.value) > 0 ? billDiscount : undefined,
+    taxPercent: Number(taxPercent) || 0,
+  }).totals;
+
+  async function submitSale({ method, note }) {
+    setSubmitting(true);
+    try {
+      const payload = {
+        type: 'sale',
+        status: 'completed',
+        items: cart.items.map((l) => ({
+          variantId: l.variantId,
+          qty: Number(l.qty) || 0,
+          unitPrice: Number(l.unitPrice) || 0,
+          discount: l.discount && Number(l.discount.value) > 0
+            ? { mode: l.discount.mode, value: Number(l.discount.value) }
+            : undefined,
+        })),
+        billDiscount: billDiscount && Number(billDiscount.value) > 0
+          ? { mode: billDiscount.mode, value: Number(billDiscount.value) }
+          : undefined,
+        taxPercent: Number(taxPercent) || 0,
+        note: [method, note].filter(Boolean).join(' • '),
+      };
+
+      const res = await fetch('/api/receipts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to create sale receipt');
+      setSuccess({ receipt: json.receipt, totals: json.totals });
+      setCheckingOut(false);
+      cart.clear();
+      setBillDiscount({ mode: 'amount', value: 0 });
+      setTaxPercent(0);
+    } catch (e) {
+      alert(e?.message || String(e));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function startNewSale() {
+    setSuccess(null);
+  }
+
   React.useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -76,6 +141,11 @@ export default function POSShell() {
           <Typography variant="body2">
             {user?.fullName || user?.primaryEmailAddress?.emailAddress || 'User'}
           </Typography>
+          {!success && (
+            <Button color="inherit" variant="outlined" disabled={!canCheckout || submitting} onClick={() => setCheckingOut(true)}>
+              Checkout
+            </Button>
+          )}
           <IconButton color="inherit" title="Refresh">
             <RefreshIcon />
           </IconButton>
@@ -105,27 +175,43 @@ export default function POSShell() {
               Catalog
             </Typography>
             <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
-              <POSCatalog onPickVariant={handlePickVariant} />
+              {!success ? (
+                <POSCatalog onPickVariant={handlePickVariant} />
+              ) : (
+                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>
+                  Sale completed. Use the right panel to print or start a new sale.
+                </Box>
+              )}
             </Stack>
           </Paper>
         </Box>
         <Box sx={{ height: '100%' }}>
           <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6" gutterBottom>
-              Cart
+              {success ? 'Receipt' : 'Cart'}
             </Typography>
             <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
-              <CartView
-                {...cart}
-                billDiscount={billDiscount}
-                setBillDiscount={setBillDiscount}
-                taxPercent={taxPercent}
-                setTaxPercent={setTaxPercent}
-              />
+              {!success ? (
+                <CartView
+                  {...cart}
+                  billDiscount={billDiscount}
+                  setBillDiscount={setBillDiscount}
+                  taxPercent={taxPercent}
+                  setTaxPercent={setTaxPercent}
+                />
+              ) : (
+                <CheckoutSuccess receipt={success.receipt} totals={success.totals} onNewSale={startNewSale} />
+              )}
             </Stack>
           </Paper>
         </Box>
       </Box>
+      <CheckoutDialog
+        open={checkingOut}
+        onClose={() => setCheckingOut(false)}
+        onConfirm={submitSale}
+        grandTotal={clientTotals.grandTotal}
+      />
     </Box>
   );
 }
