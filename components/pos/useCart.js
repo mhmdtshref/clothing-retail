@@ -17,7 +17,7 @@ function newLineFromPick(variant, product) {
     companyName: variant.company?.name || '',
     onHand: Number(variant.qty ?? 0),
     qty: 1,
-    unitPrice: 0,
+    unitPrice: Number(product.basePrice || 0),
     discount: { mode: 'amount', value: 0 },
   };
 }
