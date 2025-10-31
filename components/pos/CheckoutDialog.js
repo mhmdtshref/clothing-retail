@@ -12,14 +12,16 @@ const METHODS = [
   { value: 'other', label: 'Other' },
 ];
 
-export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal }) {
+export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, isReturn = false }) {
   const [method, setMethod] = React.useState('cash');
   const [note, setNote] = React.useState('');
+  const [reason, setReason] = React.useState('');
 
   React.useEffect(() => {
     if (open) {
       setMethod('cash');
       setNote('');
+      setReason('');
     }
   }, [open]);
 
@@ -34,12 +36,15 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal })
             ))}
           </TextField>
           <TextField label="Note" value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
+          {isReturn && (
+            <TextField label="Return Reason (optional)" value={reason} onChange={(e) => setReason(e.target.value)} multiline minRows={2} />
+          )}
           <Typography variant="h6" sx={{ textAlign: 'right' }}>Total: {Number(grandTotal || 0).toFixed(2)}</Typography>
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={() => onConfirm({ method, note })}>Confirm & Pay</Button>
+        <Button variant="contained" onClick={() => onConfirm({ method, note, reason })}>{isReturn ? 'Confirm Return' : 'Confirm & Pay'}</Button>
       </DialogActions>
     </Dialog>
   );

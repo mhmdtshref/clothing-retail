@@ -20,7 +20,7 @@ function useDebounced(value, delay = 400) {
   return v;
 }
 
-export default function POSCatalog({ onPickVariant }) {
+export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
   const [query, setQuery] = React.useState('');
   const q = useDebounced(query);
   const [page, setPage] = React.useState(1);
@@ -113,12 +113,13 @@ export default function POSCatalog({ onPickVariant }) {
                               <Chip size="small" color={out ? 'error' : 'success'} label={v.qty} />
                             </TableCell>
                             <TableCell align="right">
-                              <Tooltip title={out ? 'Out of stock (allowed to add)' : 'Add to cart'}>
+                              <Tooltip title={!isReturnMode && out ? 'Out of stock' : 'Add to cart'}>
                                 <span>
                                   <Button
                                     size="small"
                                     variant="contained"
                                     color={out ? 'warning' : 'primary'}
+                                    disabled={!isReturnMode && out}
                                     onClick={() => onPickVariant && onPickVariant(v, p)}
                                   >
                                     Add

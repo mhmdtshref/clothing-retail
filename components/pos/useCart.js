@@ -24,19 +24,21 @@ function newLineFromPick(variant, product) {
 
 export function useCart() {
   const [items, setItems] = React.useState([]);
+  const [mode, setMode] = React.useState('sale'); // 'sale' | 'sale_return'
 
   const addVariant = React.useCallback((variant, product) => {
     setItems((prev) => {
       const id = `${variant._id}`;
       const exist = prev.find((l) => l.id === id);
       if (exist) {
-        const nextQty = (exist.qty || 0) + 1; // allow exceeding on-hand (warn in UI)
+        const nextQty = mode === 'sale' ? Math.min(exist.onHand, (exist.qty || 0) + 1) : (exist.qty || 0) + 1;
         return prev.map((l) => (l.id === id ? { ...l, qty: nextQty } : l));
       }
       const line = newLineFromPick(variant, product);
+      if (mode === 'sale' && line.onHand <= 0) return prev; // in sale mode only
       return [...prev, line];
     });
-  }, []);
+  }, [mode]);
 
   const removeLine = React.useCallback((id) => {
     setItems((prev) => prev.filter((l) => l.id !== id));
@@ -48,15 +50,21 @@ export function useCart() {
     setItems((prev) =>
       prev.map((l) =>
         l.id === id
-          ? { ...l, qty: Math.max(0, Math.floor(Number(qty) || 0)) }
+          ? {
+              ...l,
+              qty: Math.max(
+                0,
+                mode === 'sale' ? Math.min(l.onHand, Math.floor(Number(qty) || 0)) : Math.floor(Number(qty) || 0),
+              ),
+            }
           : l,
       ),
     );
-  }, []);
+  }, [mode]);
 
   const inc = React.useCallback((id) => {
-    setItems((prev) => prev.map((l) => (l.id === id ? { ...l, qty: (l.qty || 0) + 1 } : l)));
-  }, []);
+    setItems((prev) => prev.map((l) => (l.id === id ? { ...l, qty: mode === 'sale' ? Math.min(l.onHand, (l.qty || 0) + 1) : (l.qty || 0) + 1 } : l)));
+  }, [mode]);
 
   const dec = React.useCallback((id) => {
     setItems((prev) => prev.map((l) => (l.id === id ? { ...l, qty: Math.max(0, (l.qty || 0) - 1) } : l)));
@@ -70,7 +78,7 @@ export function useCart() {
     setItems((prev) => prev.map((l) => (l.id === id ? { ...l, discount: { ...l.discount, ...patch } } : l)));
   }, []);
 
-  return { items, addVariant, removeLine, clear, setQty, inc, dec, setUnitPrice, setDiscount };
+  return { items, mode, setMode, addVariant, removeLine, clear, setQty, inc, dec, setUnitPrice, setDiscount };
 }
 
 

@@ -8,11 +8,11 @@ export default function CheckoutSuccess({ receipt, totals, onNewSale }) {
   const onPrint = () => {
     window.print();
   };
-
+  const isReturn = receipt?.type === 'sale_return';
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-        <Typography variant="h6">Sale Completed</Typography>
+        <Typography variant="h6">{isReturn ? 'Return Completed' : 'Sale Completed'}</Typography>
         <Stack direction="row" spacing={1}>
           <Button variant="outlined" onClick={onPrint}>Print</Button>
           <Button variant="contained" onClick={onNewSale}>New sale</Button>
@@ -20,7 +20,7 @@ export default function CheckoutSuccess({ receipt, totals, onNewSale }) {
       </Stack>
       <Divider sx={{ mb: 2 }} />
       <Box ref={printRef} sx={{ bgColor: 'white' }}>
-        <Typography variant="subtitle2" color="text.secondary">Receipt #{String(receipt?._id || '').slice(-6)}</Typography>
+        <Typography variant="subtitle2" color="text.secondary">{isReturn ? 'Return' : 'Receipt'} #{String(receipt?._id || '').slice(-6)}</Typography>
         <Typography variant="body2">Date: {new Date(receipt?.date || Date.now()).toLocaleString()}</Typography>
         <Divider sx={{ my: 1 }} />
         <Table size="small">

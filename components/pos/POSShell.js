@@ -60,7 +60,7 @@ export default function POSShell() {
   const canCheckout = cart.items.length > 0 && cart.items.every((l) => Number(l.qty) > 0);
 
   const clientTotals = computeReceiptTotals({
-    type: 'sale',
+    type: cart.mode === 'sale_return' ? 'sale_return' : 'sale',
     items: cart.items.map((l) => ({
       qty: Number(l.qty) || 0,
       unitPrice: Number(l.unitPrice) || 0,
@@ -70,11 +70,11 @@ export default function POSShell() {
     taxPercent: Number(taxPercent) || 0,
   }).totals;
 
-  async function submitSale({ method, note }) {
+  async function submitSale({ method, note, reason }) {
     setSubmitting(true);
     try {
       const payload = {
-        type: 'sale',
+        type: cart.mode === 'sale_return' ? 'sale_return' : 'sale',
         status: 'completed',
         items: cart.items.map((l) => ({
           variantId: l.variantId,
@@ -89,6 +89,7 @@ export default function POSShell() {
           : undefined,
         taxPercent: Number(taxPercent) || 0,
         note: [method, note].filter(Boolean).join(' • '),
+        ...(cart.mode === 'sale_return' && reason ? { returnReason: reason } : {}),
       };
 
       const res = await fetch('/api/receipts', {
@@ -141,6 +142,9 @@ export default function POSShell() {
           <Typography variant="body2">
             {user?.fullName || user?.primaryEmailAddress?.emailAddress || 'User'}
           </Typography>
+          <Button color={cart.mode === 'sale_return' ? 'warning' : 'inherit'} variant="outlined" onClick={() => cart.setMode(cart.mode === 'sale' ? 'sale_return' : 'sale')}>
+            {cart.mode === 'sale_return' ? 'Return Mode' : 'Sale Mode'}
+          </Button>
           {!success && (
             <Button color="inherit" variant="outlined" disabled={!canCheckout || submitting} onClick={() => setCheckingOut(true)}>
               Checkout
@@ -176,7 +180,7 @@ export default function POSShell() {
             </Typography>
             <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
               {!success ? (
-                <POSCatalog onPickVariant={handlePickVariant} />
+                <POSCatalog onPickVariant={handlePickVariant} isReturnMode={cart.mode === 'sale_return'} />
               ) : (
                 <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>
                   Sale completed. Use the right panel to print or start a new sale.
@@ -188,7 +192,7 @@ export default function POSShell() {
         <Box sx={{ height: '100%' }}>
           <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6" gutterBottom>
-              {success ? 'Receipt' : 'Cart'}
+              {success ? 'Receipt' : (cart.mode === 'sale_return' ? 'Cart (Return)' : 'Cart')}
             </Typography>
             <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
               {!success ? (
@@ -211,6 +215,7 @@ export default function POSShell() {
         onClose={() => setCheckingOut(false)}
         onConfirm={submitSale}
         grandTotal={clientTotals.grandTotal}
+        isReturn={cart.mode === 'sale_return'}
       />
     </Box>
   );
