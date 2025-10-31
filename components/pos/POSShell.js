@@ -45,6 +45,10 @@ export default function POSShell() {
     cart.addVariant(variant, product);
   }, [cart]);
 
+  // Bill-level modifiers state
+  const [billDiscount, setBillDiscount] = React.useState({ mode: 'amount', value: 0 });
+  const [taxPercent, setTaxPercent] = React.useState(0);
+
   React.useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -111,7 +115,13 @@ export default function POSShell() {
               Cart
             </Typography>
             <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
-              <CartView {...cart} />
+              <CartView
+                {...cart}
+                billDiscount={billDiscount}
+                setBillDiscount={setBillDiscount}
+                taxPercent={taxPercent}
+                setTaxPercent={setTaxPercent}
+              />
             </Stack>
           </Paper>
         </Box>

@@ -9,10 +9,23 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
-import { computeLine } from '@/lib/pricing';
+import { computeLine, computeReceiptTotals } from '@/lib/pricing';
 
-export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDiscount, removeLine, clear }) {
+export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDiscount, removeLine, clear, billDiscount, setBillDiscount, taxPercent, setTaxPercent }) {
   const subtotal = items.reduce((sum, l) => sum + (computeLine({ qty: l.qty, unit: l.unitPrice, discount: l.discount }).net || 0), 0);
+
+  const pricingPayload = React.useMemo(() => ({
+    type: 'sale',
+    items: items.map((l) => ({
+      qty: Number(l.qty) || 0,
+      unitPrice: Number(l.unitPrice) || 0,
+      discount: l.discount && Number(l.discount.value) > 0 ? l.discount : undefined,
+    })),
+    billDiscount: billDiscount && Number(billDiscount.value) > 0 ? billDiscount : undefined,
+    taxPercent: Number(taxPercent) || 0,
+  }), [items, billDiscount, taxPercent]);
+
+  const { totals } = computeReceiptTotals(pricingPayload);
 
   return (
     <Stack spacing={2} sx={{ height: '100%' }}>
@@ -105,9 +118,40 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
           </TableBody>
         </Table>
       </Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Typography variant="subtitle1">Subtotal (after per-item discounts): {subtotal.toFixed(2)}</Typography>
+      {/* Bill-level modifiers */}
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ xs: 'stretch', sm: 'center' }}>
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ flexGrow: 1 }}>
+          <Select size="small" value={billDiscount.mode} onChange={(e) => setBillDiscount((d) => ({ ...d, mode: e.target.value }))}>
+            <MenuItem value="amount">amount</MenuItem>
+            <MenuItem value="percent">percent</MenuItem>
+          </Select>
+          <TextField
+            size="small"
+            label="Bill Discount"
+            type="number"
+            value={billDiscount.value}
+            onChange={(e) => setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value) || 0) }))}
+            inputProps={{ min: 0, step: '0.01', style: { width: 120 } }}
+          />
+          <TextField
+            size="small"
+            label="Tax %"
+            type="number"
+            value={taxPercent}
+            onChange={(e) => setTaxPercent(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
+            inputProps={{ min: 0, max: 100, step: '0.01', style: { width: 120 } }}
+          />
+        </Stack>
         <Button startIcon={<ClearAllIcon />} variant="outlined" color="warning" onClick={clear} disabled={items.length === 0}>Clear cart</Button>
+      </Stack>
+
+      {/* Totals */}
+      <Stack spacing={0.5} alignItems="flex-end">
+        <Typography>Item Subtotal: {totals.itemSubtotal.toFixed(2)}</Typography>
+        <Typography>Item Discounts: −{totals.itemDiscountTotal.toFixed(2)}</Typography>
+        <Typography>Bill Discount: −{totals.billDiscountTotal.toFixed(2)}</Typography>
+        <Typography>Tax ({totals.taxPercent}%): {totals.taxTotal.toFixed(2)}</Typography>
+        <Typography variant="h6">Grand Total: {totals.grandTotal.toFixed(2)}</Typography>
       </Stack>
     </Stack>
   );
