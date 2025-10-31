@@ -315,7 +315,7 @@ export async function POST(req) {
     }));
 
     let doc;
-    // Try to commit receipt creation and inventory update atomically
+    // Try to commit receipt creation and inventory update atomically when supported
     const session = await mongoose.startSession().catch(() => null);
     if (session) {
       try {
@@ -324,6 +324,10 @@ export async function POST(req) {
           doc = created[0];
           if (ops.length) await Variant.bulkWrite(ops, { session });
         });
+      } catch (txErr) {
+        // Fallback for standalone servers without transaction support
+        doc = await Receipt.create(receiptPayload);
+        if (ops.length) await Variant.bulkWrite(ops);
       } finally {
         await session.endSession();
       }
