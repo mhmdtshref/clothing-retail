@@ -15,6 +15,7 @@ import { computeReceiptTotals } from '@/lib/pricing';
 const QuerySchema = z.object({
   query: z.string().trim().optional().default(''),
   status: z.enum(['ordered', 'on_delivery', 'completed', 'all']).optional().default('all'),
+  type: z.enum(['purchase', 'sale', 'sale_return', 'all']).optional().default('all'),
   companyId: z.string().trim().optional().default(''),
   dateFrom: z.string().trim().optional().default(''),
   dateTo: z.string().trim().optional().default(''),
@@ -38,10 +39,11 @@ export async function GET(req) {
     );
   }
 
-  const { query: q, status, companyId, dateFrom, dateTo, page, limit, sort, order } = parsed.data;
+  const { query: q, status, type, companyId, dateFrom, dateTo, page, limit, sort, order } = parsed.data;
 
   const filter = {};
   if (status !== 'all') filter.status = status;
+  if (type !== 'all') filter.type = type;
   if (companyId) filter.companyId = new mongoose.Types.ObjectId(companyId);
 
   if (dateFrom || dateTo) {
@@ -131,6 +133,7 @@ export async function GET(req) {
         _id: r._id,
         date: r.date,
         status: r.status,
+        type: r.type,
         company: { id: r.companyId, name: r.companyName },
         itemCount: Array.isArray(r.items) ? r.items.length : 0,
         grandTotal: totals.grandTotal,
