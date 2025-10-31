@@ -145,12 +145,21 @@ export default function POSShell() {
           <ToggleButtonGroup
             size="small"
             exclusive
-            color={cart.mode === 'sale_return' ? 'warning' : 'primary'}
             value={cart.mode}
             onChange={(_e, val) => { if (val) cart.setMode(val); }}
           >
-            <ToggleButton value="sale">Sale</ToggleButton>
-            <ToggleButton value="sale_return">Return</ToggleButton>
+            <ToggleButton
+              value="sale"
+              sx={{ '&.Mui-selected': { bgcolor: 'primary.main', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.dark' } } }}
+            >
+              Sale
+            </ToggleButton>
+            <ToggleButton
+              value="sale_return"
+              sx={{ '&.Mui-selected': { bgcolor: 'warning.main', color: 'warning.contrastText', '&:hover': { bgcolor: 'warning.dark' } } }}
+            >
+              Return
+            </ToggleButton>
           </ToggleButtonGroup>
           {!success && (
             <Button color="inherit" variant="outlined" disabled={!canCheckout || submitting} onClick={() => setCheckingOut(true)}>

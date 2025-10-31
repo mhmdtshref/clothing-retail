@@ -113,13 +113,13 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
                               <Chip size="small" color={out ? 'error' : 'success'} label={v.qty} />
                             </TableCell>
                             <TableCell align="right">
-                              <Tooltip title={!isReturnMode && out ? 'Out of stock' : 'Add to cart'}>
+                              <Tooltip title={out ? 'Out of stock (allowed to add)' : 'Add to cart'}>
                                 <span>
                                   <Button
                                     size="small"
                                     variant="contained"
                                     color={out ? 'warning' : 'primary'}
-                                    disabled={!isReturnMode && out}
+                                    disabled={false}
                                     onClick={() => onPickVariant && onPickVariant(v, p)}
                                   >
                                     Add

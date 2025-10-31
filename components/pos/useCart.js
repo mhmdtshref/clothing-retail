@@ -31,14 +31,13 @@ export function useCart() {
       const id = `${variant._id}`;
       const exist = prev.find((l) => l.id === id);
       if (exist) {
-        const nextQty = mode === 'sale' ? Math.min(exist.onHand, (exist.qty || 0) + 1) : (exist.qty || 0) + 1;
+        const nextQty = (exist.qty || 0) + 1; // allow exceeding on-hand; stock may go negative
         return prev.map((l) => (l.id === id ? { ...l, qty: nextQty } : l));
       }
       const line = newLineFromPick(variant, product);
-      if (mode === 'sale' && line.onHand <= 0) return prev; // in sale mode only
       return [...prev, line];
     });
-  }, [mode]);
+  }, []);
 
   const removeLine = React.useCallback((id) => {
     setItems((prev) => prev.filter((l) => l.id !== id));
@@ -48,23 +47,13 @@ export function useCart() {
 
   const setQty = React.useCallback((id, qty) => {
     setItems((prev) =>
-      prev.map((l) =>
-        l.id === id
-          ? {
-              ...l,
-              qty: Math.max(
-                0,
-                mode === 'sale' ? Math.min(l.onHand, Math.floor(Number(qty) || 0)) : Math.floor(Number(qty) || 0),
-              ),
-            }
-          : l,
-      ),
+      prev.map((l) => (l.id === id ? { ...l, qty: Math.max(0, Math.floor(Number(qty) || 0)) } : l)),
     );
-  }, [mode]);
+  }, []);
 
   const inc = React.useCallback((id) => {
-    setItems((prev) => prev.map((l) => (l.id === id ? { ...l, qty: mode === 'sale' ? Math.min(l.onHand, (l.qty || 0) + 1) : (l.qty || 0) + 1 } : l)));
-  }, [mode]);
+    setItems((prev) => prev.map((l) => (l.id === id ? { ...l, qty: (l.qty || 0) + 1 } : l)));
+  }, []);
 
   const dec = React.useCallback((id) => {
     setItems((prev) => prev.map((l) => (l.id === id ? { ...l, qty: Math.max(0, (l.qty || 0) - 1) } : l)));
