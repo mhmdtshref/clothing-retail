@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip, Button } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip, Button, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import WifiIcon from '@mui/icons-material/Wifi';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
@@ -142,9 +142,16 @@ export default function POSShell() {
           <Typography variant="body2">
             {user?.fullName || user?.primaryEmailAddress?.emailAddress || 'User'}
           </Typography>
-          <Button color={cart.mode === 'sale_return' ? 'warning' : 'inherit'} variant="outlined" onClick={() => cart.setMode(cart.mode === 'sale' ? 'sale_return' : 'sale')}>
-            {cart.mode === 'sale_return' ? 'Return Mode' : 'Sale Mode'}
-          </Button>
+          <ToggleButtonGroup
+            size="small"
+            exclusive
+            color={cart.mode === 'sale_return' ? 'warning' : 'primary'}
+            value={cart.mode}
+            onChange={(_e, val) => { if (val) cart.setMode(val); }}
+          >
+            <ToggleButton value="sale">Sale</ToggleButton>
+            <ToggleButton value="sale_return">Return</ToggleButton>
+          </ToggleButtonGroup>
           {!success && (
             <Button color="inherit" variant="outlined" disabled={!canCheckout || submitting} onClick={() => setCheckingOut(true)}>
               Checkout
@@ -174,7 +181,7 @@ export default function POSShell() {
         }}
       >
         <Box sx={{ height: '100%' }}>
-          <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', ...(cart.mode === 'sale_return' ? { border: '1px solid', borderColor: 'warning.main', bgcolor: 'warning.light' } : {}) }}>
             <Typography variant="h6" gutterBottom>
               Catalog
             </Typography>
