@@ -50,7 +50,7 @@ export default function POSHistoryPage() {
       const res = await fetch(`/api/receipts?${qs.toString()}`, { cache: 'no-store' });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to load receipts');
-      let items = json.items || [];
+      let items = (json.items || []).map((r) => ({ ...r, _id: String(r._id) }));
       if (type === 'sales') {
         items = items.filter((r) => ['sale', 'sale_return'].includes(r?.type));
       }
@@ -66,7 +66,7 @@ export default function POSHistoryPage() {
   React.useEffect(() => { fetchList(); }, [fetchList]);
 
   const onPrint = (id) => {
-    setDetailsId(id);
+    setDetailsId(String(id));
   };
 
   return (
@@ -124,7 +124,7 @@ export default function POSHistoryPage() {
                 <TableRow><TableCell colSpan={5}><Typography color="text.secondary" sx={{ py: 2 }}>No receipts.</Typography></TableCell></TableRow>
               )}
               {rows.map((r) => (
-                <TableRow key={r._id} hover>
+                <TableRow key={String(r._id)} hover>
                   <TableCell>{new Date(r.date).toLocaleString()}</TableCell>
                   <TableCell>
                     <Chip size="small" label={r.status} color={r.status === 'completed' ? 'success' : 'default'} />
@@ -132,8 +132,8 @@ export default function POSHistoryPage() {
                   <TableCell align="right">{r.itemCount}</TableCell>
                   <TableCell align="right">{Number(r.grandTotal || 0).toFixed(2)}</TableCell>
                   <TableCell align="right">
-                    <Button size="small" startIcon={<VisibilityIcon />} onClick={() => setDetailsId(r._id)}>View</Button>
-                    <Button size="small" startIcon={<PrintIcon />} onClick={() => onPrint(r._id)}>Print</Button>
+                    <Button size="small" startIcon={<VisibilityIcon />} onClick={() => setDetailsId(String(r._id))}>View</Button>
+                    <Button size="small" startIcon={<PrintIcon />} onClick={() => onPrint(String(r._id))}>Print</Button>
                   </TableCell>
                 </TableRow>
               ))}

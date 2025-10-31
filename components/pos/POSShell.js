@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip, Button, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import Link from 'next/link';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import WifiIcon from '@mui/icons-material/Wifi';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
@@ -135,7 +136,7 @@ export default function POSShell() {
             color={online ? 'success' : 'default'}
           />
           <Box sx={{ flexGrow: 1 }} />
-          <Chip size="small" label={`Items: ${cart.items.length}`} />
+          <Chip size="small" label={`Items: ${cart.items.length}`} color="secondary" />
           <Typography variant="body2" sx={{ mr: 2 }} suppressHydrationWarning>
             {now.toLocaleString()}
           </Typography>
@@ -147,6 +148,7 @@ export default function POSShell() {
             exclusive
             value={cart.mode}
             onChange={(_e, val) => { if (val) cart.setMode(val); }}
+            sx={{ '& .MuiToggleButton-root': { color: 'common.white', borderColor: 'rgba(255,255,255,0.3)' } }}
           >
             <ToggleButton
               value="sale"
@@ -161,8 +163,16 @@ export default function POSShell() {
               Return
             </ToggleButton>
           </ToggleButtonGroup>
+          <Button component={Link} href="/pos/history" color="inherit" variant="outlined">
+            History
+          </Button>
           {!success && (
-            <Button color="inherit" variant="outlined" disabled={!canCheckout || submitting} onClick={() => setCheckingOut(true)}>
+            <Button
+              variant={(!canCheckout || submitting) ? 'outlined' : 'contained'}
+              color={cart.mode === 'sale_return' ? 'warning' : 'secondary'}
+              disabled={!canCheckout || submitting}
+              onClick={() => setCheckingOut(true)}
+            >
               Checkout
             </Button>
           )}
