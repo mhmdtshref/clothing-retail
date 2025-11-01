@@ -44,6 +44,7 @@ export async function GET(req, context) {
         companyName: v.companyName,
         size: v.size,
         color: v.color,
+        qty: v.qty ?? 0,
       })),
     });
   } catch (err) {

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import {
   Box, Card, CardContent, Typography, Chip, Stack, Pagination, TextField, InputAdornment, IconButton, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
@@ -92,22 +93,24 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
             <Typography color="text.secondary">No products found.</Typography>
           )}
           {!loading && items.map((p) => (
-            <Card key={p._id} variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ width: '100%', height: THUMB_HEIGHT, bgcolor: 'background.default', borderBottom: '1px solid', borderColor: 'divider', overflow: 'hidden', position: 'relative' }}>
-                {p.image?.url ? (
-                  <Box sx={{ position: 'absolute', inset: 0, backgroundImage: `url(${p.image.url})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
-                ) : (
-                  <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>No Image</Box>
-                )}
-              </Box>
-              <CardContent sx={{ flex: 1 }}>
-                <Stack spacing={0.5}>
-                  <Typography variant="subtitle1" fontWeight={700}>{p.code}</Typography>
-                  <Typography variant="body2" color="text.secondary">{p.name || '\u00A0'}</Typography>
-                  <Chip size="small" label={p.status} color={p.status === 'active' ? 'success' : (p.status === 'archived' ? 'default' : 'warning')} sx={{ alignSelf: 'flex-start' }} />
-                </Stack>
-              </CardContent>
-            </Card>
+            <Link key={p._id} href={`/products/${p._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ width: '100%', height: THUMB_HEIGHT, bgcolor: 'background.default', borderBottom: '1px solid', borderColor: 'divider', overflow: 'hidden', position: 'relative' }}>
+                  {p.image?.url ? (
+                    <Box sx={{ position: 'absolute', inset: 0, backgroundImage: `url(${p.image.url})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
+                  ) : (
+                    <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>No Image</Box>
+                  )}
+                </Box>
+                <CardContent sx={{ flex: 1 }}>
+                  <Stack spacing={0.5}>
+                    <Typography variant="subtitle1" fontWeight={700}>{p.code}</Typography>
+                    <Typography variant="body2" color="text.secondary">{p.name || '\u00A0'}</Typography>
+                    <Chip size="small" label={p.status} color={p.status === 'active' ? 'success' : (p.status === 'archived' ? 'default' : 'warning')} sx={{ alignSelf: 'flex-start' }} />
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </Box>
       )}
@@ -117,7 +120,8 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
           {loading && <Typography color="text.secondary">Loading…</Typography>}
           {!loading && items.length === 0 && <Typography color="text.secondary">No products found.</Typography>}
           {!loading && items.map((p) => (
-            <Stack key={p._id} direction="row" spacing={2} alignItems="center" sx={{ p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+            <Link key={p._id} href={`/products/${p._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
               <Box sx={{ width: 72, height: 72, borderRadius: 1, overflow: 'hidden', border: '1px solid', borderColor: 'divider', bgcolor: 'background.default', flex: '0 0 auto', position: 'relative' }}>
                 {p.image?.url ? (
                   <Box sx={{ position: 'absolute', inset: 0, backgroundImage: `url(${p.image.url})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
@@ -130,7 +134,8 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
                 <Typography variant="body2" color="text.secondary">{p.name || '\u00A0'}</Typography>
               </Box>
               <Chip size="small" label={p.status} />
-            </Stack>
+              </Stack>
+            </Link>
           ))}
         </Stack>
       )}
