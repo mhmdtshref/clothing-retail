@@ -60,24 +60,19 @@ export default function ProductImageUploader({ productId, value, onChange, disab
 
   async function uploadToS3(f, dims) {
     setUploading(true); setProgress(0); setError('');
-    const presignRes = await fetch('/api/uploads/s3/presign', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contentType: f.type, productId, ext: mimeToExt(f.type) }),
-    });
-    const presign = await presignRes.json();
-    if (!presignRes.ok || !presign?.ok) {
-      throw new Error(presign?.message || presign?.error || 'Failed to get presigned POST');
-    }
-    if (typeof presign.maxBytes === 'number' && f.size > presign.maxBytes) {
-      throw new Error(`File is too large. Max ${Math.round(presign.maxBytes/1024/1024)} MB`);
-    }
 
-    await xhrFormUpload({ url: presign.url, fields: presign.fields, file: f, onProgress: setProgress });
+    // Upload to our Next API; it will forward to S3 server-side
+    const form = new FormData();
+    form.append('file', f);
+    if (productId) form.append('productId', productId);
+    form.append('ext', mimeToExt(f.type));
+
+    const result = await xhrFormUploadJSON({ url: '/api/uploads/s3/upload', form, onProgress: setProgress });
+    if (!result?.ok) throw new Error(result?.error || 'Upload failed');
 
     const image = {
-      url: presign.publicUrl,
-      key: presign.key,
+      url: result.publicUrl,
+      key: result.key,
       width: dims.width,
       height: dims.height,
       contentType: f.type,
@@ -156,8 +151,37 @@ async function xhrFormUpload({ url, fields, file, onProgress }) {
     };
     xhr.onreadystatechange = () => {
       if (xhr.readyState === 4) {
-        if (xhr.status >= 200 && xhr.status < 300) resolve();
-        else reject(new Error(`S3 upload failed (${xhr.status})`));
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve();
+        } else {
+          const msg = xhr.responseText ? `: ${xhr.responseText}` : '';
+          reject(new Error(`S3 upload failed (${xhr.status})${msg}`));
+        }
+      }
+    };
+    xhr.onerror = () => reject(new Error('Network error during upload'));
+    xhr.send(form);
+  });
+}
+
+async function xhrFormUploadJSON({ url, form, onProgress }) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+    xhr.upload.onprogress = (evt) => {
+      if (!evt.lengthComputable) return;
+      const pct = (evt.loaded / evt.total) * 100;
+      onProgress && onProgress(pct);
+    };
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        try {
+          const data = xhr.responseText ? JSON.parse(xhr.responseText) : null;
+          if (xhr.status >= 200 && xhr.status < 300) resolve(data);
+          else reject(new Error(data?.error || `Upload failed (${xhr.status})`));
+        } catch (e) {
+          reject(new Error(`Upload failed (${xhr.status})`));
+        }
       }
     };
     xhr.onerror = () => reject(new Error('Network error during upload'));
