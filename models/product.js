@@ -1,6 +1,18 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
+// Optional embedded image schema for a product
+const ImageSchema = new Schema(
+  {
+    url: { type: String, trim: true },
+    key: { type: String, trim: true },
+    width: { type: Number, min: 0 },
+    height: { type: Number, min: 0 },
+    contentType: { type: String, trim: true },
+  },
+  { _id: false },
+);
+
 const ProductSchema = new Schema(
   {
     code: { type: String, required: true, trim: true }, // merchant product code (globally unique)
@@ -11,6 +23,7 @@ const ProductSchema = new Schema(
       enum: ['active', 'archived'],
       default: 'active',
     },
+    image: { type: ImageSchema, default: undefined },
   },
   { timestamps: true },
 );

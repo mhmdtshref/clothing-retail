@@ -12,6 +12,8 @@
     "db:ping": "node --env-file=.env.local scripts/db-ping.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.922.0",
+    "@aws-sdk/s3-presigned-post": "^3.922.0",
     "@clerk/nextjs": "^6.34.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
