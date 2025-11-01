@@ -106,6 +106,7 @@ export async function GET(req) {
                 code: 1,
                 name: 1,
                 status: 1,
+                image: 1,
                 basePrice: { $ifNull: ['$basePrice', 0] },
                 variants: {
                   $map: {
