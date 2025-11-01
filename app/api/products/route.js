@@ -177,6 +177,7 @@ export async function GET(req) {
       name: doc.name ?? '',
       basePrice: doc.basePrice ?? 0,
       status: doc.status,
+      image: doc.image || undefined,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
       ...(withCounts ? { variantCount: doc.variantCount ?? 0 } : {}),
