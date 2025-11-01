@@ -7,11 +7,22 @@ import { connectToDB } from '@/lib/mongoose';
 import Product from '@/models/product';
 import Variant from '@/models/variant';
 
+const ImageSchema = z
+  .object({
+    url: z.string().url(),
+    key: z.string().min(1),
+    width: z.number().int().nonnegative().optional().default(0),
+    height: z.number().int().nonnegative().optional().default(0),
+    contentType: z.string().regex(/^image\//),
+  })
+  .optional();
+
 const ProductCreateSchema = z.object({
   code: z.string().min(1, 'code is required').max(120).trim(),
   name: z.string().max(200).trim().optional().default(''),
   basePrice: z.number().nonnegative().default(0),
   status: z.enum(['active', 'archived']).optional().default('active'),
+  image: ImageSchema,
 });
 
 export async function POST(req) {
@@ -31,7 +42,7 @@ export async function POST(req) {
       );
     }
 
-    const { code, name, basePrice, status } = parsed.data;
+    const { code, name, basePrice, status, image } = parsed.data;
 
     await connectToDB();
 
@@ -44,7 +55,7 @@ export async function POST(req) {
       );
     }
 
-    const doc = await Product.create({ code, name, basePrice, status });
+    const doc = await Product.create({ code, name, basePrice, status, image: image || undefined });
     // Normalize output
     return NextResponse.json(
       {

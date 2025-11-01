@@ -22,6 +22,7 @@ import {
   Autocomplete,
 } from '@mui/material';
 import { z } from 'zod';
+import { ProductImageUploader } from '@/components/uploads';
 
 const productSchema = z.object({
   code: z
@@ -70,6 +71,7 @@ export default function CreateProductForm({ companies }) {
     colors: [],
     companyIds: [],
   });
+  const [image, setImage] = React.useState(null);
 
   const [submitting, setSubmitting] = React.useState(false);
   const [snack, setSnack] = React.useState({ open: false, message: '', severity: 'success' });
@@ -120,7 +122,7 @@ export default function CreateProductForm({ companies }) {
       const res1 = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(prodInput),
+        body: JSON.stringify({ ...prodInput, image: image || undefined }),
       });
       const data1 = await res1.json();
       if (!res1.ok) {
@@ -165,6 +167,13 @@ export default function CreateProductForm({ companies }) {
       </Typography>
       <Box component="form" onSubmit={onSubmit}>
         <Stack spacing={2}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            <Box sx={{ width: '100%' }}>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>Product Image (optional)</Typography>
+              <ProductImageUploader value={image} onChange={setImage} />
+            </Box>
+          </Stack>
+
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <TextField
               label="Code"
