@@ -15,9 +15,7 @@ export default async function POSPrintPage({ params }) {
   await connectToDB();
   const r = await Receipt.findById(params.id).lean();
   if (!r) {
-    return (
-      <html><body><p>Receipt not found</p></body></html>
-    );
+    return <div style={{ padding: 16 }}>Receipt not found</div>;
   }
   if (r.companyId) {
     const c = await Company.findById(r.companyId, { name: 1 }).lean();
@@ -25,19 +23,7 @@ export default async function POSPrintPage({ params }) {
   }
   const { totals } = computeReceiptTotals(r);
 
-  return (
-    <html>
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Print #{String(r._id).slice(-6)}</title>
-      </head>
-      <body>
-        <ReceiptPrintTemplate receipt={r} totals={totals} />
-        <script dangerouslySetInnerHTML={{ __html: `window.addEventListener('load', () => { setTimeout(() => window.print(), 50); });` }} />
-      </body>
-    </html>
-  );
+  return <ReceiptPrintTemplate receipt={r} totals={totals} autoPrint />;
 }
 
 

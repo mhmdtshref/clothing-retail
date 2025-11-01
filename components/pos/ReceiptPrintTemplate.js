@@ -3,11 +3,18 @@
 import * as React from 'react';
 import POS_RECEIPT from '@/config/pos-receipt';
 
-export default function ReceiptPrintTemplate({ receipt, totals }) {
+export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = false }) {
   const isReturn = receipt?.type === 'sale_return';
   const isSale = receipt?.type === 'sale';
   const currency = (n) => Number(n || 0).toFixed(2);
   const shortId = String(receipt?._id || '').slice(-6);
+
+  React.useEffect(() => {
+    if (autoPrint && typeof window !== 'undefined') {
+      const t = setTimeout(() => window.print(), 50);
+      return () => clearTimeout(t);
+    }
+  }, [autoPrint]);
 
   return (
     <div className="receipt-80mm">
