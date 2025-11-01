@@ -13,7 +13,8 @@ export default async function POSPrintPage({ params }) {
   if (!userId) redirect('/sign-in?redirect_url=/pos');
 
   await connectToDB();
-  const r = await Receipt.findById(params.id).lean();
+  const { id } = await params;
+  const r = await Receipt.findById(id).lean();
   if (!r) {
     return <div style={{ padding: 16 }}>Receipt not found</div>;
   }
