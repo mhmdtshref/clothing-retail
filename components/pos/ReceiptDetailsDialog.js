@@ -27,7 +27,12 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
     load();
   }, [open, id]);
 
-  const onPrint = () => window.print();
+  const onPrint = () => {
+    const id = data?.receipt?._id;
+    if (!id) return;
+    const w = window.open(`/pos/print/${id}`, '_blank', 'noopener,noreferrer');
+    if (w) w.focus();
+  };
 
   const r = data?.receipt || {}; const t = data?.totals || {};
 

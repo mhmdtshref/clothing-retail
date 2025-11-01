@@ -8,11 +8,11 @@ import Receipt from '@/models/receipt';
 import Company from '@/models/company';
 import { computeReceiptTotals } from '@/lib/pricing';
 
-export async function GET(_req, { params }) {
+export async function GET(_req, context) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const id = params?.id;
+  const { id } = await context.params;
   if (!id || !mongoose.isValidObjectId(id)) {
     return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
   }

@@ -6,7 +6,9 @@ import { Box, Stack, Typography, Button, Divider, Table, TableHead, TableRow, Ta
 export default function CheckoutSuccess({ receipt, totals, onNewSale }) {
   const printRef = React.useRef(null);
   const onPrint = () => {
-    window.print();
+    if (!receipt?._id) return;
+    const w = window.open(`/pos/print/${receipt._id}`, '_blank', 'noopener,noreferrer');
+    if (w) w.focus();
   };
   const isReturn = receipt?.type === 'sale_return';
   return (
