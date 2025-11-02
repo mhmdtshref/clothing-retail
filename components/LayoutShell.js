@@ -36,6 +36,9 @@ export default function LayoutShell({ children }) {
             <Button component={Link} href="/products" color="inherit">
               Products
             </Button>
+            <Button component={Link} href="/expenses" color="inherit">
+              Expenses
+            </Button>
             <Button component={Link} href="/receipts/new" color="inherit">
               New Purchase
             </Button>
