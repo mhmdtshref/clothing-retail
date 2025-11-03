@@ -25,11 +25,19 @@ export default async function POSPrintPage({ params }) {
   }
   if (r.customerId) {
     const cu = await Customer.findById(r.customerId, { name: 1, phone: 1 }).lean();
-    r.customer = cu ? { _id: cu._id, name: cu.name || '', phone: cu.phone } : null;
+    r.customer = cu ? { _id: String(cu._id), name: cu.name || '', phone: cu.phone } : null;
   }
   const { totals } = computeReceiptTotals(r);
 
-  return <ReceiptPrintTemplate receipt={r} totals={totals} autoPrint />;
+  const receipt = {
+    ...r,
+    _id: String(r._id),
+    companyId: r.companyId ? String(r.companyId) : undefined,
+    customerId: r.customerId ? String(r.customerId) : undefined,
+    items: (r.items || []).map((it) => ({ ...it, variantId: String(it.variantId) })),
+  };
+
+  return <ReceiptPrintTemplate receipt={receipt} totals={totals} autoPrint />;
 }
 
 

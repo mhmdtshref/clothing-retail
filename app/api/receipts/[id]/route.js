@@ -32,7 +32,7 @@ export async function GET(_req, context) {
     let customer = null;
     if (r.customerId) {
       const c = await Customer.findById(r.customerId, { name: 1, phone: 1 }).lean();
-      customer = c ? { _id: c._id, name: c.name || '', phone: c.phone } : null;
+      customer = c ? { _id: String(c._id), name: c.name || '', phone: c.phone } : null;
     }
 
     const { totals } = computeReceiptTotals(r);
