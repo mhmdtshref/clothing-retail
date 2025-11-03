@@ -19,7 +19,7 @@ const CustomerSchema = new Schema(
   { timestamps: true },
 );
 
-CustomerSchema.index({ phone: 1 }, { unique: true });
+// Unique index is already created via the path option `unique: true` on `phone`.
 
 export default mongoose.models.Customer || mongoose.model('Customer', CustomerSchema);
 
