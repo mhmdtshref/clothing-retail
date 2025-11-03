@@ -3,7 +3,7 @@
 import * as React from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, Stack, TextField, MenuItem, Typography,
+  Button, Stack, TextField, MenuItem, Typography, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
 
 const METHODS = [
@@ -16,12 +16,16 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
   const [method, setMethod] = React.useState('cash');
   const [note, setNote] = React.useState('');
   const [reason, setReason] = React.useState('');
+  const [payMode, setPayMode] = React.useState('full'); // 'full' | 'deposit'
+  const [depositAmount, setDepositAmount] = React.useState('');
 
   React.useEffect(() => {
     if (open) {
       setMethod('cash');
       setNote('');
       setReason('');
+      setPayMode('full');
+      setDepositAmount('');
     }
   }, [open]);
 
@@ -30,11 +34,32 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
       <DialogTitle>Checkout</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
+          {!isReturn && (
+            <ToggleButtonGroup
+              exclusive
+              color="primary"
+              size="small"
+              value={payMode}
+              onChange={(_e, v) => { if (v) setPayMode(v); }}
+            >
+              <ToggleButton value="full">Full payment</ToggleButton>
+              <ToggleButton value="deposit">Deposit</ToggleButton>
+            </ToggleButtonGroup>
+          )}
           <TextField select label="Payment Method" value={method} onChange={(e) => setMethod(e.target.value)}>
             {METHODS.map((m) => (
               <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
             ))}
           </TextField>
+          {!isReturn && payMode === 'deposit' && (
+            <TextField
+              label="Amount paid now"
+              type="number"
+              inputProps={{ min: 0, step: '0.01' }}
+              value={depositAmount}
+              onChange={(e) => setDepositAmount(e.target.value)}
+            />
+          )}
           <TextField label="Note" value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
           {isReturn && (
             <TextField label="Return Reason (optional)" value={reason} onChange={(e) => setReason(e.target.value)} multiline minRows={2} />
@@ -44,7 +69,12 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={() => onConfirm({ method, note, reason })}>{isReturn ? 'Confirm Return' : 'Confirm & Pay'}</Button>
+        <Button
+          variant="contained"
+          onClick={() => onConfirm({ method, note, reason, payMode, depositAmount: Number(depositAmount || 0) })}
+        >
+          {isReturn ? 'Confirm Return' : 'Confirm & Pay'}
+        </Button>
       </DialogActions>
     </Dialog>
   );

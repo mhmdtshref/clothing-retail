@@ -39,7 +39,7 @@ const ReceiptSchema = new Schema(
       default: 'purchase',
     },
     date: { type: Date, default: () => new Date() },
-    status: { type: String, enum: ['ordered', 'on_delivery', 'completed'], default: 'ordered' },
+    status: { type: String, enum: ['ordered', 'on_delivery', 'completed', 'pending'], default: 'ordered' },
 
     // Purchase context
     companyId: { type: Types.ObjectId, ref: 'Company' }, // who we buy from
@@ -51,6 +51,22 @@ const ReceiptSchema = new Schema(
     billDiscount: { type: DiscountSchema, default: undefined },
     taxPercent: { type: Number, default: 0 }, // percentage 0-100
     note: { type: String },
+
+    // Payments (sales deposits and settlements)
+    payments: {
+      type: [
+        new Schema(
+          {
+            amount: { type: Number, required: true, min: 0 },
+            method: { type: String },
+            note: { type: String },
+            at: { type: Date, default: () => new Date() },
+          },
+          { _id: false },
+        ),
+      ],
+      default: [],
+    },
   },
   { timestamps: true },
 );

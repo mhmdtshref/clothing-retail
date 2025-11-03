@@ -10,6 +10,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PrintIcon from '@mui/icons-material/Print';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import PaymentsIcon from '@mui/icons-material/Payments';
+import CollectPaymentDialog from '@/components/pos/CollectPaymentDialog';
 import ReceiptDetailsDialog from '@/components/pos/ReceiptDetailsDialog';
 
 function formatYYYYMMDD(d = new Date()) {
@@ -33,6 +35,8 @@ export default function POSHistoryPage() {
   const [rows, setRows] = React.useState([]);
   const [meta, setMeta] = React.useState({ total: 0, pages: 1 });
   const [detailsId, setDetailsId] = React.useState(null);
+  const [collectOpen, setCollectOpen] = React.useState(false);
+  const [collectInfo, setCollectInfo] = React.useState({ id: null, due: 0 });
 
   const fetchList = React.useCallback(async () => {
     setLoading(true); setError('');
@@ -88,6 +92,7 @@ export default function POSHistoryPage() {
             <MenuItem value="completed">completed</MenuItem>
             <MenuItem value="ordered">ordered</MenuItem>
             <MenuItem value="on_delivery">on_delivery</MenuItem>
+            <MenuItem value="pending">pending</MenuItem>
           </Select>
         </FormControl>
 
@@ -134,6 +139,15 @@ export default function POSHistoryPage() {
                   <TableCell align="right">
                     <Button size="small" startIcon={<VisibilityIcon />} onClick={() => setDetailsId(String(r._id))}>View</Button>
                     <Button size="small" startIcon={<PrintIcon />} onClick={() => onPrint(String(r._id))}>Print</Button>
+                    {r.type === 'sale' && r.status === 'pending' && (
+                      <Button
+                        size="small"
+                        startIcon={<PaymentsIcon />}
+                        onClick={() => { setCollectInfo({ id: String(r._id), due: Number(r.dueTotal || 0) }); setCollectOpen(true); }}
+                      >
+                        Collect payment
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -146,6 +160,13 @@ export default function POSHistoryPage() {
       )}
 
       <ReceiptDetailsDialog id={detailsId} open={Boolean(detailsId)} onClose={() => setDetailsId(null)} />
+      <CollectPaymentDialog
+        open={collectOpen}
+        onClose={() => setCollectOpen(false)}
+        receiptId={collectInfo.id}
+        dueTotal={collectInfo.due}
+        onDone={() => { setCollectOpen(false); fetchList(); }}
+      />
     </Paper>
   );
 }

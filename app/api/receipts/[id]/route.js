@@ -36,7 +36,11 @@ export async function GET(_req, context) {
     }
 
     const { totals } = computeReceiptTotals(r);
-    return NextResponse.json({ ok: true, receipt: { ...r, companyName, customer }, totals });
+    const paidTotal = Array.isArray(r.payments)
+      ? r.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
+      : 0;
+    const dueTotal = Math.max(0, Number(totals?.grandTotal || 0) - paidTotal);
+    return NextResponse.json({ ok: true, receipt: { ...r, companyName, customer }, totals, paidTotal, dueTotal });
   } catch (err) {
     return NextResponse.json(
       { error: 'InternalServerError', message: err?.message || String(err) },

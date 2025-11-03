@@ -35,6 +35,14 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
   };
 
   const r = data?.receipt || {}; const t = data?.totals || {};
+  const paidTotal = Number(
+    Number.isFinite(Number(data?.paidTotal))
+      ? Number(data?.paidTotal)
+      : Array.isArray(r?.payments)
+        ? r.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
+        : 0,
+  );
+  const dueTotal = Math.max(0, Number(t?.grandTotal || 0) - Number(paidTotal || 0));
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -92,7 +100,39 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
               <Typography>Bill Discount: -{Number(t.billDiscountTotal||0).toFixed(2)}</Typography>
               <Typography>Tax ({Number(t.taxPercent||0)}%): {Number(t.taxTotal||0).toFixed(2)}</Typography>
               <Typography variant="h6">Grand Total: {Number(t.grandTotal||0).toFixed(2)}</Typography>
+              {(r?.status === 'pending' || paidTotal > 0) && (
+                <>
+                  <Typography>Paid: {Number(paidTotal||0).toFixed(2)}</Typography>
+                  <Typography>Balance: {Number(dueTotal||0).toFixed(2)}</Typography>
+                </>
+              )}
             </Stack>
+            {Array.isArray(r?.payments) && r.payments.length > 0 && (
+              <>
+                <Divider sx={{ my: 1 }} />
+                <Typography variant="subtitle2">Payments</Typography>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Method</TableCell>
+                      <TableCell>Note</TableCell>
+                      <TableCell align="right">Amount</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {r.payments.map((p, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell>{new Date(p.at || r.date).toLocaleString()}</TableCell>
+                        <TableCell>{p.method || '-'}</TableCell>
+                        <TableCell>{p.note || ''}</TableCell>
+                        <TableCell align="right">{Number(p.amount || 0).toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </>
+            )}
           </>
         )}
       </DialogContent>

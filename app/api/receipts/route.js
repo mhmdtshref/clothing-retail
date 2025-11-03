@@ -14,7 +14,7 @@ import { computeReceiptTotals } from '@/lib/pricing';
 // GET: list receipts
 const QuerySchema = z.object({
   query: z.string().trim().optional().default(''),
-  status: z.enum(['ordered', 'on_delivery', 'completed', 'all']).optional().default('all'),
+  status: z.enum(['ordered', 'on_delivery', 'completed', 'pending', 'all']).optional().default('all'),
   type: z.enum(['purchase', 'sale', 'sale_return', 'all']).optional().default('all'),
   companyId: z.string().trim().optional().default(''),
   dateFrom: z.string().trim().optional().default(''),
@@ -100,6 +100,7 @@ export async function GET(req) {
                 items: 1,
                 billDiscount: 1,
                 taxPercent: 1,
+                payments: 1,
               },
             },
           ],
@@ -129,6 +130,11 @@ export async function GET(req) {
         taxPercent: Number(r.taxPercent || 0),
       });
 
+      const paidTotal = Array.isArray(r.payments)
+        ? r.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
+        : 0;
+      const dueTotal = Math.max(0, Number(totals.grandTotal || 0) - paidTotal);
+
       return {
         _id: r._id,
         date: r.date,
@@ -137,6 +143,8 @@ export async function GET(req) {
         company: { id: r.companyId, name: r.companyName },
         itemCount: Array.isArray(r.items) ? r.items.length : 0,
         grandTotal: totals.grandTotal,
+        paidTotal,
+        dueTotal,
         createdAt: r.createdAt,
       };
     });
@@ -179,10 +187,17 @@ const ItemSchema = z.object({
   discount: DiscountSchema.optional(),
 });
 
+const PaymentSchema = z.object({
+  amount: z.number().positive(),
+  method: z.string().trim().optional().default('cash'),
+  note: z.string().max(1000).optional(),
+  at: z.coerce.date().optional(),
+});
+
 const BodySchema = z.object({
   type: z.enum(['purchase', 'sale', 'sale_return']).default('purchase'),
   date: z.coerce.date().optional(),
-  status: z.enum(['ordered', 'on_delivery', 'completed']).optional(),
+  status: z.enum(['ordered', 'on_delivery', 'completed', 'pending']).optional(),
   companyId: z.string().min(1).optional(),
   vendorId: z.string().min(1).optional(),
   customerId: z.string().min(1).optional(),
@@ -191,6 +206,7 @@ const BodySchema = z.object({
   taxPercent: z.number().min(0).max(100).default(0),
   note: z.string().max(1000).optional(),
   returnReason: z.string().max(500).optional(),
+  payments: z.array(PaymentSchema).optional().default([]),
 });
 
 export async function POST(req) {
@@ -222,6 +238,7 @@ export async function POST(req) {
     taxPercent,
     note,
     returnReason,
+    payments,
   } = parsed;
 
   const supplierId = companyId || vendorId || undefined;
@@ -305,6 +322,44 @@ export async function POST(req) {
       includeItems: true,
     });
 
+    // Pending sale validations
+    if (type === 'sale' && computedStatus === 'pending') {
+      if (!customerId) {
+        return NextResponse.json(
+          { error: 'ValidationError', message: 'customerId is required for pending sales' },
+          { status: 400 },
+        );
+      }
+      const depositTotal = Array.isArray(payments)
+        ? payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
+        : 0;
+      if (!(depositTotal > 0)) {
+        return NextResponse.json(
+          { error: 'ValidationError', message: 'Deposit amount must be greater than 0' },
+          { status: 400 },
+        );
+      }
+      if (depositTotal > totals.grandTotal) {
+        return NextResponse.json(
+          { error: 'ValidationError', message: 'Deposit cannot exceed grand total' },
+          { status: 400 },
+        );
+      }
+    }
+
+    // Normalize and attach payments only for sales
+    if (type === 'sale') {
+      const normalizedPayments = (Array.isArray(payments) ? payments : []).map((p) => ({
+        amount: Number(p.amount || 0),
+        method: p.method || 'cash',
+        note: p.note || undefined,
+        at: p.at ? new Date(p.at) : new Date(),
+      }));
+      if (normalizedPayments.length) {
+        receiptPayload.payments = normalizedPayments;
+      }
+    }
+
     // Build inventory adjustment ops: purchase/sale_return => +qty; sale => -qty
     const sign = type === 'sale' ? -1 : 1;
     const deltaByVariant = new Map();
@@ -342,6 +397,12 @@ export async function POST(req) {
       if (ops.length) await Variant.bulkWrite(ops);
     }
 
+    // Compute paid/due balances from created doc
+    const createdPaid = Array.isArray(doc?.payments)
+      ? doc.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
+      : 0;
+    const createdDue = Math.max(0, Number(totals?.grandTotal || 0) - createdPaid);
+
     return NextResponse.json(
       {
         ok: true,
@@ -363,11 +424,16 @@ export async function POST(req) {
           billDiscount: doc.billDiscount || null,
           taxPercent: doc.taxPercent,
           note: doc.note || '',
+          payments: Array.isArray(doc.payments)
+            ? doc.payments.map((p) => ({ amount: p.amount, method: p.method || 'cash', note: p.note || '', at: p.at }))
+            : [],
           createdAt: doc.createdAt,
           updatedAt: doc.updatedAt,
         },
         totals,
         pricing: { items: pricedItems },
+        paidTotal: createdPaid,
+        dueTotal: createdDue,
       },
       { status: 201 },
     );

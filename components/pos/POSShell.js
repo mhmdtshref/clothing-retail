@@ -73,12 +73,18 @@ export default function POSShell() {
     taxPercent: Number(taxPercent) || 0,
   }).totals;
 
-  async function submitSale({ method, note, reason }) {
+  async function submitSale({ method, note, reason, payMode, depositAmount }) {
     setSubmitting(true);
     try {
+      const isReturn = cart.mode === 'sale_return';
+      const isDeposit = !isReturn && payMode === 'deposit' && Number(depositAmount || 0) > 0;
+      if (isDeposit && !cart.customer?._id) {
+        throw new Error('Customer is required for deposit (pending) sales');
+      }
+
       const payload = {
-        type: cart.mode === 'sale_return' ? 'sale_return' : 'sale',
-        status: 'completed',
+        type: isReturn ? 'sale_return' : 'sale',
+        status: isDeposit ? 'pending' : 'completed',
         items: cart.items.map((l) => ({
           variantId: l.variantId,
           qty: Number(l.qty) || 0,
@@ -92,8 +98,9 @@ export default function POSShell() {
           : undefined,
         taxPercent: Number(taxPercent) || 0,
         note: [method, note].filter(Boolean).join(' • '),
-        ...(cart.mode === 'sale_return' && reason ? { returnReason: reason } : {}),
+        ...(isReturn && reason ? { returnReason: reason } : {}),
         ...(cart.customer?._id ? { customerId: cart.customer._id } : {}),
+        ...(isDeposit ? { payments: [{ amount: Number(depositAmount || 0), method, note }] } : {}),
       };
 
       const res = await fetch('/api/receipts', {
@@ -103,7 +110,7 @@ export default function POSShell() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to create sale receipt');
-      setSuccess({ receipt: json.receipt, totals: json.totals });
+      setSuccess({ receipt: json.receipt, totals: json.totals, paidTotal: json.paidTotal, dueTotal: json.dueTotal });
       setCheckingOut(false);
       cart.clear();
       cart.clearCustomer();
@@ -214,7 +221,7 @@ export default function POSShell() {
                 <POSCatalog onPickVariant={handlePickVariant} isReturnMode={cart.mode === 'sale_return'} />
               ) : (
                 <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>
-                  Sale completed. Use the right panel to print or start a new sale.
+                  {success?.receipt?.status === 'pending' ? 'Sale pending (deposit). Use the right panel to print or start a new sale.' : 'Sale completed. Use the right panel to print or start a new sale.'}
                 </Box>
               )}
             </Stack>
@@ -250,7 +257,7 @@ export default function POSShell() {
                   setTaxPercent={setTaxPercent}
                 />
               ) : (
-                <CheckoutSuccess receipt={success.receipt} totals={success.totals} onNewSale={startNewSale} />
+                <CheckoutSuccess receipt={success.receipt} totals={success.totals} paidTotal={success.paidTotal} dueTotal={success.dueTotal} onNewSale={startNewSale} />
               )}
             </Stack>
           </Paper>

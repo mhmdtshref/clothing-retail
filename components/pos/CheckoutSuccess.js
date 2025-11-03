@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Box, Stack, Typography, Button, Divider, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 
-export default function CheckoutSuccess({ receipt, totals, onNewSale }) {
+export default function CheckoutSuccess({ receipt, totals, paidTotal, dueTotal, onNewSale }) {
   const printRef = React.useRef(null);
   const onPrint = () => {
     if (!receipt?._id) return;
@@ -11,10 +11,23 @@ export default function CheckoutSuccess({ receipt, totals, onNewSale }) {
     if (w) w.focus();
   };
   const isReturn = receipt?.type === 'sale_return';
+  const isPending = receipt?.status === 'pending';
+  const computedPaid = Number(
+    Number.isFinite(Number(paidTotal))
+      ? Number(paidTotal)
+      : Array.isArray(receipt?.payments)
+        ? receipt.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
+        : 0,
+  );
+  const computedDue = Number(
+    Number.isFinite(Number(dueTotal))
+      ? Number(dueTotal)
+      : Math.max(0, Number(totals?.grandTotal || 0) - Number(computedPaid || 0)),
+  );
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-        <Typography variant="h6">{isReturn ? 'Return Completed' : 'Sale Completed'}</Typography>
+        <Typography variant="h6">{isReturn ? 'Return Completed' : (isPending ? 'Sale Pending' : 'Sale Completed')}</Typography>
         <Stack direction="row" spacing={1}>
           <Button variant="outlined" onClick={onPrint}>Print</Button>
           <Button variant="contained" onClick={onNewSale}>New sale</Button>
@@ -65,6 +78,12 @@ export default function CheckoutSuccess({ receipt, totals, onNewSale }) {
           <Typography>Bill Discount: -{Number(totals?.billDiscountTotal || 0).toFixed(2)}</Typography>
           <Typography>Tax ({Number(totals?.taxPercent || 0)}%): {Number(totals?.taxTotal || 0).toFixed(2)}</Typography>
           <Typography variant="h6">Grand Total: {Number(totals?.grandTotal || 0).toFixed(2)}</Typography>
+          {(isPending || computedPaid > 0) && (
+            <>
+              <Typography>Paid: {Number(computedPaid || 0).toFixed(2)}</Typography>
+              <Typography>Balance: {Number(computedDue || 0).toFixed(2)}</Typography>
+            </>
+          )}
         </Stack>
       </Box>
 

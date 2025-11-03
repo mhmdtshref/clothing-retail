@@ -7,7 +7,7 @@ import { connectToDB } from '@/lib/mongoose';
 import Receipt from '@/models/receipt';
 import { ensureReceiptEditable, assertStatusTransition } from '@/lib/receipt-guards';
 
-const BodySchema = z.object({ status: z.enum(['ordered', 'on_delivery', 'completed']) });
+const BodySchema = z.object({ status: z.enum(['ordered', 'on_delivery', 'completed', 'pending']) });
 
 export async function PATCH(req, context) {
   const { userId } = await auth();
