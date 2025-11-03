@@ -49,6 +49,9 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
             <Typography variant="body2">Status: {r.status}</Typography>
             <Typography variant="body2">Date: {new Date(r.date).toLocaleString()}</Typography>
             {r.type === 'purchase' && <Typography variant="body2">Company: {r.companyName || '-'}</Typography>}
+            {r.type !== 'purchase' && r.customer && (
+              <Typography variant="body2">Customer: {(r.customer.name || '(No name)')} • {r.customer.phone}</Typography>
+            )}
             {r.returnReason && <Typography variant="body2">Return Reason: {r.returnReason}</Typography>}
             {r.note && <Typography variant="body2">Note: {r.note}</Typography>}
             <Divider sx={{ my: 1 }} />

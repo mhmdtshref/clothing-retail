@@ -25,6 +25,7 @@ function newLineFromPick(variant, product) {
 export function useCart() {
   const [items, setItems] = React.useState([]);
   const [mode, setMode] = React.useState('sale'); // 'sale' | 'sale_return'
+  const [customer, setCustomer] = React.useState(null); // { _id, name, phone }
 
   const addVariant = React.useCallback((variant, product) => {
     setItems((prev) => {
@@ -67,7 +68,9 @@ export function useCart() {
     setItems((prev) => prev.map((l) => (l.id === id ? { ...l, discount: { ...l.discount, ...patch } } : l)));
   }, []);
 
-  return { items, mode, setMode, addVariant, removeLine, clear, setQty, inc, dec, setUnitPrice, setDiscount };
+  const clearCustomer = React.useCallback(() => setCustomer(null), []);
+
+  return { items, mode, setMode, customer, setCustomer, clearCustomer, addVariant, removeLine, clear, setQty, inc, dec, setUnitPrice, setDiscount };
 }
 
 

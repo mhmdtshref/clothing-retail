@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { connectToDB } from '@/lib/mongoose';
 import Receipt from '@/models/receipt';
 import Company from '@/models/company';
+import Customer from '@/models/customer';
 import { computeReceiptTotals } from '@/lib/pricing';
 import ReceiptPrintTemplate from '@/components/pos/ReceiptPrintTemplate';
 
@@ -21,6 +22,10 @@ export default async function POSPrintPage({ params }) {
   if (r.companyId) {
     const c = await Company.findById(r.companyId, { name: 1 }).lean();
     r.companyName = c?.name || '';
+  }
+  if (r.customerId) {
+    const cu = await Customer.findById(r.customerId, { name: 1, phone: 1 }).lean();
+    r.customer = cu ? { _id: cu._id, name: cu.name || '', phone: cu.phone } : null;
   }
   const { totals } = computeReceiptTotals(r);
 

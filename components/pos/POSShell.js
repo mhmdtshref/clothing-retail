@@ -12,6 +12,7 @@ import CartView from '@/components/pos/CartView';
 import { useCart } from '@/components/pos/useCart';
 import CheckoutDialog from '@/components/pos/CheckoutDialog';
 import CheckoutSuccess from '@/components/pos/CheckoutSuccess';
+import CustomerDialog from '@/components/pos/CustomerDialog';
 import { computeReceiptTotals } from '@/lib/pricing';
 
 function useClock() {
@@ -57,6 +58,7 @@ export default function POSShell() {
   const [checkingOut, setCheckingOut] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
   const [success, setSuccess] = React.useState(null); // { receipt, totals }
+  const [customerOpen, setCustomerOpen] = React.useState(false);
 
   const canCheckout = cart.items.length > 0 && cart.items.every((l) => Number(l.qty) > 0);
 
@@ -91,6 +93,7 @@ export default function POSShell() {
         taxPercent: Number(taxPercent) || 0,
         note: [method, note].filter(Boolean).join(' • '),
         ...(cart.mode === 'sale_return' && reason ? { returnReason: reason } : {}),
+        ...(cart.customer?._id ? { customerId: cart.customer._id } : {}),
       };
 
       const res = await fetch('/api/receipts', {
@@ -103,6 +106,7 @@ export default function POSShell() {
       setSuccess({ receipt: json.receipt, totals: json.totals });
       setCheckingOut(false);
       cart.clear();
+      cart.clearCustomer();
       setBillDiscount({ mode: 'amount', value: 0 });
       setTaxPercent(0);
     } catch (e) {
@@ -114,6 +118,7 @@ export default function POSShell() {
 
   function startNewSale() {
     setSuccess(null);
+    cart.clearCustomer();
   }
 
   React.useEffect(() => {
@@ -220,6 +225,21 @@ export default function POSShell() {
             <Typography variant="h6" gutterBottom>
               {success ? 'Receipt' : (cart.mode === 'sale_return' ? 'Cart (Return)' : 'Cart')}
             </Typography>
+            {!success && (
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                <Button size="small" variant="outlined" onClick={() => setCustomerOpen(true)}>
+                  {cart.customer ? 'Change Customer' : 'Select Customer'}
+                </Button>
+                {cart.customer && (
+                  <>
+                    <Typography variant="body2" sx={{ flex: 1 }}>
+                      {cart.customer.name || '(No name)'} • {cart.customer.phone}
+                    </Typography>
+                    <Button size="small" onClick={() => cart.clearCustomer()}>Clear</Button>
+                  </>
+                )}
+              </Stack>
+            )}
             <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
               {!success ? (
                 <CartView
@@ -242,6 +262,12 @@ export default function POSShell() {
         onConfirm={submitSale}
         grandTotal={clientTotals.grandTotal}
         isReturn={cart.mode === 'sale_return'}
+      />
+      <CustomerDialog
+        open={customerOpen}
+        onClose={() => setCustomerOpen(false)}
+        onSelect={(c) => cart.setCustomer(c)}
+        initialValue={cart.customer || undefined}
       />
     </Box>
   );

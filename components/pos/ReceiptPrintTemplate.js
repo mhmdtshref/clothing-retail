@@ -52,6 +52,12 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
         <div>{new Date(receipt?.date || Date.now()).toLocaleString()}</div>
         <div className="muted">{receipt?.status}</div>
       </div>
+      {isSale && receipt?.customer && (
+        <div className="row">
+          <div className="muted">Customer</div>
+          <div>{(receipt.customer.name || '(No name)')} • {receipt.customer.phone}</div>
+        </div>
+      )}
       {receipt?.returnReason && (
         <div className="muted">Reason: {receipt.returnReason}</div>
       )}

@@ -43,7 +43,8 @@ const ReceiptSchema = new Schema(
 
     // Purchase context
     companyId: { type: Types.ObjectId, ref: 'Company' }, // who we buy from
-    // Future: customerId for sales
+  // Sales context
+  customerId: { type: Types.ObjectId, ref: 'Customer' },
 
     items: { type: [ReceiptItemSchema], validate: (v) => Array.isArray(v) && v.length > 0 },
 
@@ -60,5 +61,7 @@ ReceiptSchema.index({ companyId: 1 });
 ReceiptSchema.index({ status: 1, date: -1 });
 ReceiptSchema.index({ companyId: 1, date: -1 });
 ReceiptSchema.index({ status: 1 });
+ReceiptSchema.index({ customerId: 1 });
+ReceiptSchema.index({ customerId: 1, date: -1 });
 
 export default mongoose.models.Receipt || mongoose.model('Receipt', ReceiptSchema);

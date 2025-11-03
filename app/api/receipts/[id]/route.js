@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import { connectToDB } from '@/lib/mongoose';
 import Receipt from '@/models/receipt';
 import Company from '@/models/company';
+import Customer from '@/models/customer';
 import { computeReceiptTotals } from '@/lib/pricing';
 
 export async function GET(_req, context) {
@@ -28,8 +29,14 @@ export async function GET(_req, context) {
       companyName = c?.name || '';
     }
 
+    let customer = null;
+    if (r.customerId) {
+      const c = await Customer.findById(r.customerId, { name: 1, phone: 1 }).lean();
+      customer = c ? { _id: c._id, name: c.name || '', phone: c.phone } : null;
+    }
+
     const { totals } = computeReceiptTotals(r);
-    return NextResponse.json({ ok: true, receipt: { ...r, companyName }, totals });
+    return NextResponse.json({ ok: true, receipt: { ...r, companyName, customer }, totals });
   } catch (err) {
     return NextResponse.json(
       { error: 'InternalServerError', message: err?.message || String(err) },

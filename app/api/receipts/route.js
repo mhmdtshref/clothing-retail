@@ -185,6 +185,7 @@ const BodySchema = z.object({
   status: z.enum(['ordered', 'on_delivery', 'completed']).optional(),
   companyId: z.string().min(1).optional(),
   vendorId: z.string().min(1).optional(),
+  customerId: z.string().min(1).optional(),
   items: z.array(ItemSchema).min(1, 'At least one item is required'),
   billDiscount: DiscountSchema.optional(),
   taxPercent: z.number().min(0).max(100).default(0),
@@ -215,6 +216,7 @@ export async function POST(req) {
     status,
     companyId,
     vendorId,
+    customerId,
     items,
     billDiscount,
     taxPercent,
@@ -289,6 +291,7 @@ export async function POST(req) {
       date: date || new Date(),
       status: computedStatus,
       companyId: type === 'purchase' ? supplierId : undefined,
+      customerId: type !== 'purchase' && customerId ? new mongoose.Types.ObjectId(customerId) : undefined,
       items: receiptItems,
       billDiscount: billDiscount
         ? { mode: billDiscount.mode, value: Number(billDiscount.value || 0) }
@@ -348,6 +351,7 @@ export async function POST(req) {
           date: doc.date,
           status: doc.status,
           companyId: doc.companyId || null,
+          customerId: doc.customerId || null,
           items: doc.items.map((it) => ({
             variantId: it.variantId,
             qty: it.qty,
