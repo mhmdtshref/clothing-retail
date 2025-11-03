@@ -67,7 +67,16 @@ export async function POST(req, context) {
 
     const updates = { $push: { payments: paymentDoc } };
     if (amount === dueBefore) {
-      updates.$set = { status: 'completed' };
+      const isDelivery = r?.delivery && r?.delivery?.company;
+      if (isDelivery) {
+        if (r.status === 'on_delivery') {
+          updates.$set = { status: 'payment_collected' };
+        } else if (r.status === 'ready_to_receive') {
+          updates.$set = { status: 'completed' };
+        }
+      } else {
+        updates.$set = { status: 'completed' };
+      }
     }
 
     const updated = await Receipt.findByIdAndUpdate(id, updates, { new: true }).lean();

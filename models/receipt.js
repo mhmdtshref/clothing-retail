@@ -30,6 +30,52 @@ const ReceiptItemSchema = new Schema(
   { _id: false },
 );
 
+const DeliveryHistorySchema = new Schema(
+  {
+    at: { type: Date, default: () => new Date() },
+    code: { type: String },
+    note: { type: String },
+    raw: { type: Schema.Types.Mixed },
+  },
+  { _id: false },
+);
+
+const DeliveryAddressSchema = new Schema(
+  {
+    line1: { type: String },
+    line2: { type: String },
+    city: { type: String },
+    state: { type: String },
+    postalCode: { type: String },
+    country: { type: String },
+  },
+  { _id: false },
+);
+
+const DeliveryContactSchema = new Schema(
+  {
+    name: { type: String },
+    phone: { type: String },
+  },
+  { _id: false },
+);
+
+const DeliverySchema = new Schema(
+  {
+    company: { type: String, enum: ['optimus', 'sabeq_laheq'], required: true },
+    externalId: { type: String },
+    trackingNumber: { type: String },
+    trackingUrl: { type: String },
+    status: { type: String }, // raw provider status string
+    address: { type: DeliveryAddressSchema, default: undefined },
+    contact: { type: DeliveryContactSchema, default: undefined },
+    history: { type: [DeliveryHistorySchema], default: [] },
+    lastSyncAt: { type: Date },
+    nextSyncAt: { type: Date },
+  },
+  { _id: false },
+);
+
 const ReceiptSchema = new Schema(
   {
     type: {
@@ -39,7 +85,11 @@ const ReceiptSchema = new Schema(
       default: 'purchase',
     },
     date: { type: Date, default: () => new Date() },
-    status: { type: String, enum: ['ordered', 'on_delivery', 'completed', 'pending'], default: 'ordered' },
+    status: {
+      type: String,
+      enum: ['ordered', 'on_delivery', 'payment_collected', 'ready_to_receive', 'completed', 'pending'],
+      default: 'ordered',
+    },
 
     // Purchase context
     companyId: { type: Types.ObjectId, ref: 'Company' }, // who we buy from
@@ -67,6 +117,9 @@ const ReceiptSchema = new Schema(
       ],
       default: [],
     },
+
+    // Delivery (for sale receipts with COD)
+    delivery: { type: DeliverySchema, default: undefined },
   },
   { timestamps: true },
 );
@@ -79,5 +132,7 @@ ReceiptSchema.index({ companyId: 1, date: -1 });
 ReceiptSchema.index({ status: 1 });
 ReceiptSchema.index({ customerId: 1 });
 ReceiptSchema.index({ customerId: 1, date: -1 });
+ReceiptSchema.index({ 'delivery.company': 1 });
+ReceiptSchema.index({ 'delivery.nextSyncAt': 1 });
 
 export default mongoose.models.Receipt || mongoose.model('Receipt', ReceiptSchema);

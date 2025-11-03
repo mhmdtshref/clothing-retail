@@ -73,18 +73,25 @@ export default function POSShell() {
     taxPercent: Number(taxPercent) || 0,
   }).totals;
 
-  async function submitSale({ method, note, reason, payMode, depositAmount }) {
+  async function submitSale({ method, note, reason, payMode, depositAmount, deliveryMode, deliveryCompany, deliveryAddress, deliveryContact }) {
     setSubmitting(true);
     try {
       const isReturn = cart.mode === 'sale_return';
-      const isDeposit = !isReturn && payMode === 'deposit' && Number(depositAmount || 0) > 0;
+      const hasDelivery = !isReturn && !!deliveryMode;
+      const isDeposit = !isReturn && !hasDelivery && payMode === 'deposit' && Number(depositAmount || 0) > 0;
       if (isDeposit && !cart.customer?._id) {
         throw new Error('Customer is required for deposit (pending) sales');
+      }
+      if (hasDelivery) {
+        if (!cart.customer?._id) throw new Error('Customer is required for delivery sales');
+        if (!deliveryAddress?.line1 || !deliveryAddress?.city || !deliveryContact?.phone) {
+          throw new Error('Delivery address (line1, city) and contact phone are required');
+        }
       }
 
       const payload = {
         type: isReturn ? 'sale_return' : 'sale',
-        status: isDeposit ? 'pending' : 'completed',
+        status: hasDelivery ? 'on_delivery' : (isDeposit ? 'pending' : 'completed'),
         items: cart.items.map((l) => ({
           variantId: l.variantId,
           qty: Number(l.qty) || 0,
@@ -101,6 +108,7 @@ export default function POSShell() {
         ...(isReturn && reason ? { returnReason: reason } : {}),
         ...(cart.customer?._id ? { customerId: cart.customer._id } : {}),
         ...(isDeposit ? { payments: [{ amount: Number(depositAmount || 0), method, note }] } : {}),
+        ...(hasDelivery ? { delivery: { company: deliveryCompany, address: deliveryAddress, contact: deliveryContact } } : {}),
       };
 
       const res = await fetch('/api/receipts', {
@@ -269,6 +277,7 @@ export default function POSShell() {
         onConfirm={submitSale}
         grandTotal={clientTotals.grandTotal}
         isReturn={cart.mode === 'sale_return'}
+        initialContact={cart.customer || undefined}
       />
       <CustomerDialog
         open={customerOpen}
