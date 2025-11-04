@@ -5,6 +5,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, Stack, TextField, MenuItem, Typography, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
+import OptimusForm from '@/components/delivery/OptimusForm';
 
 const METHODS = [
   { value: 'cash', label: 'Cash' },
@@ -22,6 +23,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
   const [deliveryCompany, setDeliveryCompany] = React.useState('optimus');
   const [deliveryAddress, setDeliveryAddress] = React.useState({ line1: '', line2: '', city: '', state: '', postalCode: '', country: '' });
   const [deliveryContact, setDeliveryContact] = React.useState({ name: '', phone: '' });
+  const [optimusData, setOptimusData] = React.useState({ cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '' });
 
   React.useEffect(() => {
     if (open) {
@@ -34,8 +36,15 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
       setDeliveryCompany('optimus');
       setDeliveryAddress({ line1: '', line2: '', city: '', state: '', postalCode: '', country: '' });
       setDeliveryContact({ name: initialContact?.name || '', phone: initialContact?.phone || '' });
+      setOptimusData({ cityId: '', areaId: '', cityName: '', areaName: '', name: initialContact?.name || '', phone: (initialContact?.phone || '').replace(/\D/g, '').slice(0, 10), addressLine: '', codAmount: String(Number(grandTotal || 0).toFixed(2)) });
     }
   }, [open, initialContact]);
+
+  const canSubmitDelivery = !isReturn && deliveryMode && (
+    deliveryCompany !== 'optimus' || (
+      optimusData.cityId && optimusData.areaId && optimusData.addressLine && /^\d{10}$/.test(String(optimusData.phone || ''))
+    )
+  );
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
@@ -85,20 +94,26 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
                 <MenuItem value="optimus">Optimus</MenuItem>
                 <MenuItem value="sabeq_laheq">Sabeq Laheq</MenuItem>
               </TextField>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-                <TextField label="Contact Name" value={deliveryContact.name} onChange={(e) => setDeliveryContact((c) => ({ ...c, name: e.target.value }))} fullWidth />
-                <TextField label="Contact Phone" value={deliveryContact.phone} onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))} fullWidth />
-              </Stack>
-              <TextField label="Address Line 1" value={deliveryAddress.line1} onChange={(e) => setDeliveryAddress((a) => ({ ...a, line1: e.target.value }))} />
-              <TextField label="Address Line 2" value={deliveryAddress.line2} onChange={(e) => setDeliveryAddress((a) => ({ ...a, line2: e.target.value }))} />
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-                <TextField label="City" value={deliveryAddress.city} onChange={(e) => setDeliveryAddress((a) => ({ ...a, city: e.target.value }))} fullWidth />
-                <TextField label="State" value={deliveryAddress.state} onChange={(e) => setDeliveryAddress((a) => ({ ...a, state: e.target.value }))} fullWidth />
-              </Stack>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-                <TextField label="Postal Code" value={deliveryAddress.postalCode} onChange={(e) => setDeliveryAddress((a) => ({ ...a, postalCode: e.target.value }))} fullWidth />
-                <TextField label="Country" value={deliveryAddress.country} onChange={(e) => setDeliveryAddress((a) => ({ ...a, country: e.target.value }))} fullWidth />
-              </Stack>
+              {deliveryCompany === 'optimus' ? (
+                <OptimusForm value={optimusData} onChange={setOptimusData} disabled={false} />
+              ) : (
+                <>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                    <TextField label="Contact Name" value={deliveryContact.name} onChange={(e) => setDeliveryContact((c) => ({ ...c, name: e.target.value }))} fullWidth />
+                    <TextField label="Contact Phone" value={deliveryContact.phone} onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))} fullWidth />
+                  </Stack>
+                  <TextField label="Address Line 1" value={deliveryAddress.line1} onChange={(e) => setDeliveryAddress((a) => ({ ...a, line1: e.target.value }))} />
+                  <TextField label="Address Line 2" value={deliveryAddress.line2} onChange={(e) => setDeliveryAddress((a) => ({ ...a, line2: e.target.value }))} />
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                    <TextField label="City" value={deliveryAddress.city} onChange={(e) => setDeliveryAddress((a) => ({ ...a, city: e.target.value }))} fullWidth />
+                    <TextField label="State" value={deliveryAddress.state} onChange={(e) => setDeliveryAddress((a) => ({ ...a, state: e.target.value }))} fullWidth />
+                  </Stack>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                    <TextField label="Postal Code" value={deliveryAddress.postalCode} onChange={(e) => setDeliveryAddress((a) => ({ ...a, postalCode: e.target.value }))} fullWidth />
+                    <TextField label="Country" value={deliveryAddress.country} onChange={(e) => setDeliveryAddress((a) => ({ ...a, country: e.target.value }))} fullWidth />
+                  </Stack>
+                </>
+              )}
             </Stack>
           )}
           <TextField label="Note" value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
@@ -112,7 +127,25 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
-          onClick={() => onConfirm({ method, note, reason, payMode, depositAmount: Number(depositAmount || 0), deliveryMode, deliveryCompany, deliveryAddress, deliveryContact })}
+          disabled={deliveryMode && deliveryCompany === 'optimus' && !canSubmitDelivery}
+          onClick={() => onConfirm({
+            method,
+            note,
+            reason,
+            payMode,
+            depositAmount: Number(depositAmount || 0),
+            deliveryMode,
+            deliveryCompany,
+            deliveryAddress: deliveryCompany === 'optimus'
+              ? {
+                  ...deliveryAddress,
+                  line1: optimusData.addressLine,
+                  city: optimusData.cityName || String(optimusData.cityId || ''),
+                }
+              : deliveryAddress,
+            deliveryContact,
+            deliveryProviderMeta: deliveryCompany === 'optimus' ? optimusData : undefined,
+          })}
         >
           {isReturn ? 'Confirm Return' : 'Confirm & Pay'}
         </Button>

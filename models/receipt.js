@@ -69,6 +69,7 @@ const DeliverySchema = new Schema(
     status: { type: String }, // raw provider status string
     address: { type: DeliveryAddressSchema, default: undefined },
     contact: { type: DeliveryContactSchema, default: undefined },
+    providerMeta: { type: Schema.Types.Mixed },
     history: { type: [DeliveryHistorySchema], default: [] },
     lastSyncAt: { type: Date },
     nextSyncAt: { type: Date },

@@ -73,7 +73,7 @@ export default function POSShell() {
     taxPercent: Number(taxPercent) || 0,
   }).totals;
 
-  async function submitSale({ method, note, reason, payMode, depositAmount, deliveryMode, deliveryCompany, deliveryAddress, deliveryContact }) {
+  async function submitSale({ method, note, reason, payMode, depositAmount, deliveryMode, deliveryCompany, deliveryAddress, deliveryContact, deliveryProviderMeta }) {
     setSubmitting(true);
     try {
       const isReturn = cart.mode === 'sale_return';
@@ -84,8 +84,14 @@ export default function POSShell() {
       }
       if (hasDelivery) {
         if (!cart.customer?._id) throw new Error('Customer is required for delivery sales');
-        if (!deliveryAddress?.line1 || !deliveryAddress?.city || !deliveryContact?.phone) {
-          throw new Error('Delivery address (line1, city) and contact phone are required');
+        if (deliveryCompany !== 'optimus') {
+          if (!deliveryAddress?.line1 || !deliveryAddress?.city || !deliveryContact?.phone) {
+            throw new Error('Delivery address (line1, city) and contact phone are required');
+          }
+        } else {
+          if (!deliveryProviderMeta?.cityId || !deliveryProviderMeta?.areaId || !/^\d{10}$/.test(String(deliveryProviderMeta?.phone || ''))) {
+            throw new Error('Optimus: city, area, and 10-digit phone are required');
+          }
         }
       }
 
@@ -109,6 +115,7 @@ export default function POSShell() {
         ...(cart.customer?._id ? { customerId: cart.customer._id } : {}),
         ...(isDeposit ? { payments: [{ amount: Number(depositAmount || 0), method, note }] } : {}),
         ...(hasDelivery ? { delivery: { company: deliveryCompany, address: deliveryAddress, contact: deliveryContact } } : {}),
+        ...(hasDelivery && deliveryCompany === 'optimus' ? { deliveryProviderMeta } : {}),
       };
 
       const res = await fetch('/api/receipts', {

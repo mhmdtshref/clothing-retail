@@ -11,6 +11,7 @@ import Company from '@/models/company';
 import Receipt from '@/models/receipt';
 import { computeReceiptTotals } from '@/lib/pricing';
 import { createDeliveryOrder } from '@/lib/deliveries';
+import { normalizeAndValidatePhone, buildNotes } from '@/lib/deliveries/policies/optimus';
 
 // GET: list receipts
 const QuerySchema = z.object({
@@ -218,6 +219,16 @@ const DeliverySchema = z.object({
   contact: DeliveryContactSchema,
 });
 
+const OptimusProviderMetaSchema = z.object({
+  cityId: z.string().min(1),
+  areaId: z.string().min(1),
+  cityName: z.string().optional().default(''),
+  areaName: z.string().optional().default(''),
+  phone: z.string().min(1),
+  name: z.string().optional().default(''),
+  codAmount: z.coerce.number().positive().optional(),
+});
+
 const BodySchema = z.object({
   type: z.enum(['purchase', 'sale', 'sale_return']).default('purchase'),
   date: z.coerce.date().optional(),
@@ -232,6 +243,7 @@ const BodySchema = z.object({
   returnReason: z.string().max(500).optional(),
   payments: z.array(PaymentSchema).optional().default([]),
   delivery: DeliverySchema.optional(),
+  deliveryProviderMeta: OptimusProviderMetaSchema.optional(),
 });
 
 export async function POST(req) {
@@ -396,35 +408,98 @@ export async function POST(req) {
       }
       try {
         const d = parsed.delivery;
-        const provider = await createDeliveryOrder({
-          company: d.company,
-          order: {
-            // minimal common payload; adapters map to provider schemas
-            reference: `sale-${Date.now()}`,
-            codAmount: Number((totals?.grandTotal || 0).toFixed(2)),
-            contact: { name: d.contact?.name || '', phone: d.contact?.phone || '' },
+        if (d.company === 'optimus') {
+          const meta = parsed.deliveryProviderMeta;
+          if (!meta) {
+            return NextResponse.json({ error: 'ValidationError', message: 'deliveryProviderMeta is required for Optimus' }, { status: 400 });
+          }
+          let phone;
+          try {
+            phone = normalizeAndValidatePhone(meta.phone);
+          } catch (e) {
+            return NextResponse.json({ error: 'ValidationError', message: e?.message || 'Invalid phone' }, { status: 400 });
+          }
+
+          // Build company names map for notes
+          const companiesByVariantId = new Map();
+          // variants variable exists; map by variantId to company name if available
+          const companyIds = [...new Set(variants.map((v) => String(v.companyId)))];
+          let companyNameById = new Map();
+          if (companyIds.length) {
+            const companies = await Company.find({ _id: { $in: companyIds } }, { name: 1 }).lean();
+            companyNameById = new Map(companies.map((c) => [String(c._id), c.name || '']));
+          }
+          for (const v of variants) {
+            companiesByVariantId.set(String(v._id), companyNameById.get(String(v.companyId)) || '');
+          }
+          const notes = buildNotes({ items: receiptItems, grandTotal: (totals?.grandTotal || 0), companiesByVariantId });
+          const contentLines = receiptItems
+            .map((it) => {
+              const code = it?.snapshot?.productCode || '';
+              const size = it?.snapshot?.size || '';
+              const color = it?.snapshot?.color || '';
+              const companyName = companiesByVariantId.get(String(it?.variantId)) || '';
+              return [code, [size, color].filter(Boolean).join('/'), companyName]
+                .filter(Boolean)
+                .join(' ');
+            })
+            .filter(Boolean);
+          const itemsDescription = contentLines.join('\n');
+
+          const usedCodAmount = (meta?.codAmount && Number(meta.codAmount) > 0)
+            ? Number(meta.codAmount)
+            : Number((totals?.grandTotal || 0).toFixed(2));
+
+          const provider = await createDeliveryOrder({
+            company: d.company,
+            order: {
+              name: meta.name || '',
+              phone,
+              notes,
+              itemsDescription,
+              cityId: meta.cityId,
+              areaId: meta.areaId,
+              codAmount: usedCodAmount,
+              addressLine: d?.address?.line1 || '',
+            },
+          });
+          receiptPayload.delivery = {
+            company: d.company,
+            externalId: provider.externalId || '',
+            trackingNumber: provider.trackingNumber || undefined,
+            trackingUrl: provider.trackingUrl || undefined,
+            status: provider.providerStatus || 'created',
+            providerMeta: { cityId: meta.cityId, cityName: meta.cityName || '', areaId: meta.areaId, areaName: meta.areaName || '', phone, codAmount: usedCodAmount },
+            history: [
+              { at: new Date(), code: 'created', raw: provider },
+            ],
+            lastSyncAt: new Date(),
+            nextSyncAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
+          };
+        } else {
+          const provider = await createDeliveryOrder({
+            company: d.company,
+            order: {
+              reference: `sale-${Date.now()}`,
+              codAmount: Number((totals?.grandTotal || 0).toFixed(2)),
+              contact: { name: d.contact?.name || '', phone: d.contact?.phone || '' },
+              address: d.address,
+              items: receiptItems.map((it) => ({ code: it.snapshot?.productCode || '', name: it.snapshot?.productName || '', qty: Number(it.qty || 0) })),
+            },
+          });
+          receiptPayload.delivery = {
+            company: d.company,
+            externalId: provider.externalId || '',
+            trackingNumber: provider.trackingNumber || undefined,
+            trackingUrl: provider.trackingUrl || undefined,
+            status: provider.providerStatus || 'created',
             address: d.address,
-            items: receiptItems.map((it) => ({
-              code: it.snapshot?.productCode || '',
-              name: it.snapshot?.productName || '',
-              qty: Number(it.qty || 0),
-            })),
-          },
-        });
-        receiptPayload.delivery = {
-          company: d.company,
-          externalId: provider.externalId || '',
-          trackingNumber: provider.trackingNumber || undefined,
-          trackingUrl: provider.trackingUrl || undefined,
-          status: provider.providerStatus || 'created',
-          address: d.address,
-          contact: d.contact,
-          history: [
-            { at: new Date(), code: 'created', raw: provider },
-          ],
-          lastSyncAt: new Date(),
-          nextSyncAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
-        };
+            contact: d.contact,
+            history: [ { at: new Date(), code: 'created', raw: provider } ],
+            lastSyncAt: new Date(),
+            nextSyncAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
+          };
+        }
       } catch (e) {
         return NextResponse.json(
           { error: 'DeliveryCreateFailed', message: e?.message || 'Failed to create delivery order' },

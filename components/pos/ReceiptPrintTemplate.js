@@ -6,12 +6,23 @@ import POS_RECEIPT from '@/config/pos-receipt';
 export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = false }) {
   const isReturn = receipt?.type === 'sale_return';
   const isSale = receipt?.type === 'sale';
+  const isDelivery = Boolean(receipt?.delivery?.company);
+  const deliveryCompanyKey = String(receipt?.delivery?.company || '').toLowerCase();
+  const deliveryCompanyName = deliveryCompanyKey === 'optimus'
+    ? 'Optimus'
+    : deliveryCompanyKey === 'sabeq_laheq'
+      ? 'Sabeq Laheq'
+      : (receipt?.delivery?.company || '');
   const currency = (n) => Number(n || 0).toFixed(2);
   const shortId = String(receipt?._id || '').slice(-6);
   const paidTotal = Array.isArray(receipt?.payments)
     ? receipt.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
     : 0;
   const dueTotal = Math.max(0, Number(totals?.grandTotal || 0) - Number(paidTotal || 0));
+
+  const providerCOD = Number(receipt?.delivery?.providerMeta?.codAmount || 0);
+  const codTotal = isDelivery && providerCOD > 0 ? providerCOD : Number(totals?.grandTotal || 0);
+  const deliveryFees = Math.max(0, codTotal - Number(totals?.grandTotal || 0));
 
   React.useEffect(() => {
     if (autoPrint && typeof window !== 'undefined') {
@@ -65,7 +76,10 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
       {receipt?.returnReason && (
         <div className="muted">Reason: {receipt.returnReason}</div>
       )}
-      {receipt?.note && (
+      {isDelivery && (
+        <div className="muted">Note: Delivery (COD){receipt?.note ? ` — ${receipt.note}` : ''}</div>
+      )}
+      {!isDelivery && receipt?.note && (
         <div className="muted">Note: {receipt.note}</div>
       )}
 
@@ -108,6 +122,15 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
       <div className="row"><div>Bill Discount</div><div>-{currency(totals?.billDiscountTotal)}</div></div>
       <div className="row"><div>Tax ({Number(totals?.taxPercent || 0)}%)</div><div>{currency(totals?.taxTotal)}</div></div>
       <div className="row title"><div>GRAND TOTAL</div><div>{currency(totals?.grandTotal)}</div></div>
+      {isDelivery && (
+        <>
+          <div className="row"><div>Delivery Company</div><div>{deliveryCompanyName}</div></div>
+          {deliveryFees > 0 && (
+            <div className="row"><div>Delivery Fees</div><div>{currency(deliveryFees)}</div></div>
+          )}
+          <div className="row title"><div>COD TOTAL</div><div>{currency(codTotal)}</div></div>
+        </>
+      )}
       {(receipt?.status === 'pending' || Number(paidTotal) > 0) && (
         <>
           <div className="row"><div>Paid</div><div>{currency(paidTotal)}</div></div>
