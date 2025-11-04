@@ -73,7 +73,7 @@ export default function POSShell() {
     taxPercent: Number(taxPercent) || 0,
   }).totals;
 
-  async function submitSale({ method, note, reason, payMode, depositAmount, deliveryMode, deliveryCompany, deliveryAddress, deliveryContact, deliveryProviderMeta }) {
+  async function submitSale({ method, note, reason, payMode, depositAmount, deliveryMode, deliveryCompany, deliveryAddress, deliveryContact, deliveryProviderMeta, customerOverrideId }) {
     setSubmitting(true);
     try {
       const isReturn = cart.mode === 'sale_return';
@@ -83,7 +83,9 @@ export default function POSShell() {
         throw new Error('Customer is required for deposit (pending) sales');
       }
       if (hasDelivery) {
-        if (!cart.customer?._id) throw new Error('Customer is required for delivery sales');
+        if (!(cart.customer?._id || customerOverrideId || (deliveryCompany === 'optimus' && deliveryProviderMeta?.phone))) {
+          throw new Error('Customer is required for delivery sales');
+        }
         if (deliveryCompany !== 'optimus') {
           if (!deliveryAddress?.line1 || !deliveryAddress?.city || !deliveryContact?.phone) {
             throw new Error('Delivery address (line1, city) and contact phone are required');
@@ -93,6 +95,24 @@ export default function POSShell() {
             throw new Error('Optimus: city, area, and 10-digit phone are required');
           }
         }
+      }
+
+      let customerIdToUse = cart.customer?._id || customerOverrideId || undefined;
+      if (!customerIdToUse && hasDelivery && deliveryCompany === 'optimus') {
+        // Auto-create or fetch customer by phone
+        const name = String(deliveryProviderMeta?.name || '');
+        const phone = String(deliveryProviderMeta?.phone || '');
+        const resC = await fetch('/api/customers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ name, phone }),
+        });
+        const jsonC = await resC.json();
+        if (!resC.ok || !jsonC?.customer?._id) {
+          throw new Error(jsonC?.message || jsonC?.error || 'Failed to save contact');
+        }
+        customerIdToUse = jsonC.customer._id;
       }
 
       const payload = {
@@ -112,7 +132,7 @@ export default function POSShell() {
         taxPercent: Number(taxPercent) || 0,
         note: [method, note].filter(Boolean).join(' • '),
         ...(isReturn && reason ? { returnReason: reason } : {}),
-        ...(cart.customer?._id ? { customerId: cart.customer._id } : {}),
+        ...(customerIdToUse ? { customerId: customerIdToUse } : {}),
         ...(isDeposit ? { payments: [{ amount: Number(depositAmount || 0), method, note }] } : {}),
         ...(hasDelivery ? { delivery: { company: deliveryCompany, address: deliveryAddress, contact: deliveryContact } } : {}),
         ...(hasDelivery && deliveryCompany === 'optimus' ? { deliveryProviderMeta } : {}),

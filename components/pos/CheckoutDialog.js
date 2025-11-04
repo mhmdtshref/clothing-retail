@@ -6,6 +6,7 @@ import {
   Button, Stack, TextField, MenuItem, Typography, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
 import OptimusForm from '@/components/delivery/OptimusForm';
+import CustomerDialog from '@/components/pos/CustomerDialog';
 
 const METHODS = [
   { value: 'cash', label: 'Cash' },
@@ -24,6 +25,8 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
   const [deliveryAddress, setDeliveryAddress] = React.useState({ line1: '', line2: '', city: '', state: '', postalCode: '', country: '' });
   const [deliveryContact, setDeliveryContact] = React.useState({ name: '', phone: '' });
   const [optimusData, setOptimusData] = React.useState({ cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '' });
+  const [contactDialogOpen, setContactDialogOpen] = React.useState(false);
+  const [pickedCustomer, setPickedCustomer] = React.useState(null);
 
   React.useEffect(() => {
     if (open) {
@@ -37,6 +40,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
       setDeliveryAddress({ line1: '', line2: '', city: '', state: '', postalCode: '', country: '' });
       setDeliveryContact({ name: initialContact?.name || '', phone: initialContact?.phone || '' });
       setOptimusData({ cityId: '', areaId: '', cityName: '', areaName: '', name: initialContact?.name || '', phone: (initialContact?.phone || '').replace(/\D/g, '').slice(0, 10), addressLine: '', codAmount: String(Number(grandTotal || 0).toFixed(2)) });
+      setPickedCustomer(null);
     }
   }, [open, initialContact]);
 
@@ -47,6 +51,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
   );
 
   return (
+    <>
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle>Checkout</DialogTitle>
       <DialogContent>
@@ -95,10 +100,13 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
                 <MenuItem value="sabeq_laheq">Sabeq Laheq</MenuItem>
               </TextField>
               {deliveryCompany === 'optimus' ? (
-                <OptimusForm value={optimusData} onChange={setOptimusData} disabled={false} />
+                <OptimusForm value={optimusData} onChange={(next) => {
+                  setOptimusData(next);
+                }} disabled={false} />
               ) : (
                 <>
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                    <Button size="small" variant="outlined" onClick={() => setContactDialogOpen(true)}>Select Contact</Button>
                     <TextField label="Contact Name" value={deliveryContact.name} onChange={(e) => setDeliveryContact((c) => ({ ...c, name: e.target.value }))} fullWidth />
                     <TextField label="Contact Phone" value={deliveryContact.phone} onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))} fullWidth />
                   </Stack>
@@ -143,14 +151,29 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
                   city: optimusData.cityName || String(optimusData.cityId || ''),
                 }
               : deliveryAddress,
-            deliveryContact,
+            deliveryContact: deliveryCompany === 'optimus'
+              ? { name: optimusData.name || '', phone: optimusData.phone || '' }
+              : deliveryContact,
             deliveryProviderMeta: deliveryCompany === 'optimus' ? optimusData : undefined,
+            customerOverrideId: pickedCustomer?._id,
           })}
         >
           {isReturn ? 'Confirm Return' : 'Confirm & Pay'}
         </Button>
       </DialogActions>
     </Dialog>
+    <CustomerDialog
+      open={contactDialogOpen}
+      onClose={() => setContactDialogOpen(false)}
+      onSelect={(c) => {
+        setPickedCustomer(c);
+        setDeliveryContact({ name: c.name || '', phone: c.phone || '' });
+        setOptimusData((d) => ({ ...d, name: c.name || '', phone: String(c.phone || '').replace(/\D/g, '').slice(0, 10) }));
+        setContactDialogOpen(false);
+      }}
+      initialValue={pickedCustomer || undefined}
+    />
+    </>
   );
 }
 

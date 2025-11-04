@@ -469,6 +469,7 @@ export async function POST(req) {
             trackingNumber: provider.trackingNumber || undefined,
             trackingUrl: provider.trackingUrl || undefined,
             status: provider.providerStatus || 'created',
+            contact: { name: meta.name || '', phone },
             providerMeta: { cityId: meta.cityId, cityName: meta.cityName || '', areaId: meta.areaId, areaName: meta.areaName || '', phone, codAmount: usedCodAmount },
             history: [
               { at: new Date(), code: 'created', raw: provider },

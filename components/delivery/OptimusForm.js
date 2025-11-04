@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Stack, TextField, MenuItem, Typography, CircularProgress } from '@mui/material';
+import { Stack, TextField, MenuItem, Typography, CircularProgress, Autocomplete } from '@mui/material';
 
 export default function OptimusForm({ value, onChange, disabled = false }) {
   const [cities, setCities] = React.useState([]);
@@ -9,6 +9,9 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
   const [loadingCities, setLoadingCities] = React.useState(false);
   const [loadingAreas, setLoadingAreas] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [contactQuery, setContactQuery] = React.useState('');
+  const [contactOptions, setContactOptions] = React.useState([]);
+  const [loadingContacts, setLoadingContacts] = React.useState(false);
 
   const v = value || { cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '' };
 
@@ -45,6 +48,29 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
     return () => { active = false; };
   }, [v.cityId]);
 
+  // Contact search (name or phone)
+  React.useEffect(() => {
+    let t;
+    if (!contactQuery) { setContactOptions([]); return () => {}; }
+    setLoadingContacts(true);
+    t = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/customers?q=${encodeURIComponent(contactQuery)}`, {
+          credentials: 'include',
+          cache: 'no-store',
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json?.message || json?.error || 'Search failed');
+        setContactOptions(Array.isArray(json.items) ? json.items : []);
+      } catch (_e) {
+        // ignore errors in suggestions
+      } finally {
+        setLoadingContacts(false);
+      }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [contactQuery]);
+
   const update = (patch) => onChange?.({ ...v, ...patch });
 
   const phoneValid = /^\d{10}$/.test(String(v.phone || '').replace(/\D/g, ''));
@@ -70,6 +96,23 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
         helperText="Include delivery fees if needed"
       />
       {error && <Typography color="error" variant="body2">{error}</Typography>}
+      <Autocomplete
+        freeSolo
+        options={contactOptions}
+        loading={loadingContacts}
+        getOptionLabel={(o) => (o && typeof o === 'object') ? `${o.name || '(No name)'} • ${o.phone || ''}` : String(o || '')}
+        onInputChange={(_e, val) => setContactQuery(val)}
+        onChange={(_e, val) => {
+          if (val && typeof val === 'object') {
+            const name = String(val.name || '');
+            const phone = String(val.phone || '').replace(/\D/g, '').slice(0, 10);
+            update({ name, phone });
+          }
+        }}
+        renderInput={(params) => (
+          <TextField {...params} label="Search Contact (name or phone)" placeholder="Type name or phone" />
+        )}
+      />
       <TextField
         select
         label="City"
