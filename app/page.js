@@ -5,10 +5,10 @@ export default function Home() {
     <Stack spacing={2}>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h4" gutterBottom>
-          Clothing Retail Accounting
+          {process.env.NEXT_PUBLIC_SHOP_NAME || 'Clothing Retail Accountings'}
         </Typography>
         <Typography color="text.secondary">
-          MUI v7 theming and layout are configured. Next: DB wiring and models.
+          {process.env.NEXT_PUBLIC_SHOP_DESCRIPTION || 'Retail accounting for clothing shops'}
         </Typography>
       </Paper>
     </Stack>

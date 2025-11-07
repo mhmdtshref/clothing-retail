@@ -84,6 +84,7 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
         value={v.addressLine}
         onChange={(e) => update({ addressLine: e.target.value })}
         disabled={disabled}
+        fullWidth
       />
 
       <TextField
@@ -94,6 +95,7 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
         onChange={(e) => update({ codAmount: e.target.value })}
         disabled={disabled}
         helperText="Include delivery fees if needed"
+        fullWidth
       />
       {error && <Typography color="error" variant="body2">{error}</Typography>}
       <Autocomplete
@@ -110,8 +112,9 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
           }
         }}
         renderInput={(params) => (
-          <TextField {...params} label="Search Contact (name or phone)" placeholder="Type name or phone" />
+          <TextField {...params} label="Search Contact (name or phone)" placeholder="Type name or phone" fullWidth />
         )}
+        fullWidth
       />
       <TextField
         select
@@ -120,6 +123,7 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
         onChange={(e) => update({ cityId: e.target.value, cityName: (cities.find((c) => c.id === e.target.value)?.name) || '', areaId: '', areaName: '' })}
         disabled={disabled}
         helperText={loadingCities ? 'Loading cities…' : ''}
+        fullWidth
       >
         {loadingCities ? (
           <MenuItem value="" disabled>
@@ -137,6 +141,7 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
         onChange={(e) => update({ areaId: e.target.value, areaName: (areas.find((a) => a.id === e.target.value)?.name) || '' })}
         disabled={disabled || !v.cityId}
         helperText={!v.cityId ? 'Select city first' : (loadingAreas ? 'Loading areas…' : '')}
+        fullWidth
       >
         {loadingAreas ? (
           <MenuItem value="" disabled>
@@ -152,6 +157,7 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
         value={v.name}
         onChange={(e) => update({ name: e.target.value })}
         disabled={disabled}
+        fullWidth
       />
       <TextField
         label="Phone (10 digits)"
@@ -160,6 +166,7 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
         error={!!v.phone && !phoneValid}
         helperText={!v.phone ? 'Required' : (!phoneValid ? 'Enter 10 digits' : '')}
         disabled={disabled}
+        fullWidth
       />
 
       {cityObj && areaObj && (

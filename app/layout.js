@@ -4,8 +4,8 @@ import LayoutShell from '@/components/LayoutShell';
 import './globals.scss';
 
 export const metadata = {
-  title: 'Clothing Retail Accounting',
-  description: 'Retail accounting for clothing shops',
+  title: process.env.NEXT_PUBLIC_SHOP_NAME || 'Clothing Retail Accountings',
+  description: process.env.NEXT_PUBLIC_SHOP_DESCRIPTION || 'Retail accounting for clothing shops',
 };
 
 export default function RootLayout({ children }) {

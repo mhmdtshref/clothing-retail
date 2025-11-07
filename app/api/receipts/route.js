@@ -432,7 +432,6 @@ export async function POST(req) {
           for (const v of variants) {
             companiesByVariantId.set(String(v._id), companyNameById.get(String(v.companyId)) || '');
           }
-          const notes = buildNotes({ items: receiptItems, grandTotal: (totals?.grandTotal || 0), companiesByVariantId });
           const contentLines = receiptItems
             .map((it) => {
               const code = it?.snapshot?.productCode || '';
@@ -455,7 +454,7 @@ export async function POST(req) {
             order: {
               name: meta.name || '',
               phone,
-              notes,
+              notes: note || '',
               itemsDescription,
               cityId: meta.cityId,
               areaId: meta.areaId,
@@ -463,6 +462,9 @@ export async function POST(req) {
               addressLine: d?.address?.line1 || '',
             },
           });
+          const providerFees = Number(provider?.providerFees || 0);
+          const includedFees = Math.max(0, Number(usedCodAmount) - Number(totals?.grandTotal || 0));
+          const extraFees = Math.max(0, providerFees - includedFees);
           receiptPayload.delivery = {
             company: d.company,
             externalId: provider.externalId || '',
@@ -470,9 +472,9 @@ export async function POST(req) {
             trackingUrl: provider.trackingUrl || undefined,
             status: provider.providerStatus || 'created',
             contact: { name: meta.name || '', phone },
-            providerMeta: { cityId: meta.cityId, cityName: meta.cityName || '', areaId: meta.areaId, areaName: meta.areaName || '', phone, codAmount: usedCodAmount },
+            providerMeta: { cityId: meta.cityId, cityName: meta.cityName || '', areaId: meta.areaId, areaName: meta.areaName || '', phone, codAmount: usedCodAmount, fees: providerFees, extraFees },
             history: [
-              { at: new Date(), code: 'created', raw: provider },
+              { at: new Date(), code: 'created', raw: provider?.raw || provider },
             ],
             lastSyncAt: new Date(),
             nextSyncAt: new Date(Date.now() + 6 * 60 * 60 * 1000),

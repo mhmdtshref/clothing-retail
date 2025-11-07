@@ -53,6 +53,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
     <Stack spacing={2} sx={{ height: '100%', minHeight: 0 }}>
       <Stack direction="row" spacing={1} alignItems="center">
         <TextField
+          id="pos-catalog-search"
           size="small"
           fullWidth
           placeholder="Search by product code or company name"
