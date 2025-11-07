@@ -14,6 +14,10 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
   const [loadingContacts, setLoadingContacts] = React.useState(false);
 
   const v = value || { cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '' };
+  const latestVRef = React.useRef(v);
+  React.useEffect(() => {
+    latestVRef.current = v;
+  }, [v]);
 
   React.useEffect(() => {
     let active = true;
@@ -48,6 +52,47 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
     return () => { active = false; };
   }, [v.cityId]);
 
+  function normalizeName(name) {
+    return String(name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+
+  async function ensureIdsFromNames(provider) {
+    const { cityName: cName, areaName: aName } = provider || {};
+    let patch = {};
+    // Resolve city by name if we have a name but no id yet
+    if (cName && !v.cityId) {
+      let list = cities;
+      if (!Array.isArray(list) || list.length === 0) {
+        try {
+          const r = await fetch('/api/delivery/optimus/cities', { cache: 'force-cache', credentials: 'include' });
+          const j = await r.json();
+          if (r.ok && Array.isArray(j.items)) list = j.items;
+        } catch {}
+      }
+      const match = (list || []).find((c) => normalizeName(c.name) === normalizeName(cName));
+      if (match) {
+        patch.cityId = match.id;
+        patch.cityName = match.name;
+      }
+    }
+    // Resolve area by name if we have cityId (possibly set above) and areaName
+    const resolvedCityId = patch.cityId || v.cityId;
+    if (aName && resolvedCityId && !v.areaId) {
+      let listA = [];
+      try {
+        const r = await fetch(`/api/delivery/optimus/areas?cityId=${encodeURIComponent(String(resolvedCityId))}`, { cache: 'force-cache', credentials: 'include' });
+        const j = await r.json();
+        if (r.ok && Array.isArray(j.items)) listA = j.items;
+      } catch {}
+      const matchA = (listA || []).find((a) => normalizeName(a.name) === normalizeName(aName));
+      if (matchA) {
+        patch.areaId = matchA.id;
+        patch.areaName = matchA.name;
+      }
+    }
+    if (Object.keys(patch).length) update(patch);
+  }
+
   // Contact search (name or phone)
   React.useEffect(() => {
     let t;
@@ -71,7 +116,10 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
     return () => clearTimeout(t);
   }, [contactQuery]);
 
-  const update = (patch) => onChange?.({ ...v, ...patch });
+  const update = (patch) => {
+    const base = latestVRef.current || {};
+    onChange?.({ ...base, ...patch });
+  };
 
   const phoneValid = /^\d{10}$/.test(String(v.phone || '').replace(/\D/g, ''));
   const cityObj = cities.find((c) => c.id === v.cityId) || null;
@@ -108,7 +156,20 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
           if (val && typeof val === 'object') {
             const name = String(val.name || '');
             const phone = String(val.phone || '').replace(/\D/g, '').slice(0, 10);
-            update({ name, phone });
+            const provider = val.provider || {};
+            const patch = { name, phone };
+            if (provider.addressLine) patch.addressLine = provider.addressLine;
+            // Fallback to top-level addressLine from suggestion if provider doesn't include it
+            if (!patch.addressLine && val.addressLine) patch.addressLine = val.addressLine;
+            if (!v.cityId && provider.cityId) patch.cityId = provider.cityId;
+            if (!v.areaId && provider.areaId) patch.areaId = provider.areaId;
+            if (!v.cityName && provider.cityName) patch.cityName = provider.cityName;
+            if (!v.areaName && provider.areaName) patch.areaName = provider.areaName;
+            update(patch);
+            // If only names are available, resolve ids by name
+            if ((!provider.cityId && provider.cityName) || (!provider.areaId && provider.areaName)) {
+              ensureIdsFromNames(provider);
+            }
           }
         }}
         renderInput={(params) => (
