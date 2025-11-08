@@ -227,6 +227,8 @@ const OptimusProviderMetaSchema = z.object({
   phone: z.string().min(1),
   name: z.string().optional().default(''),
   codAmount: z.coerce.number().positive().optional(),
+  hasReturn: z.boolean().optional().default(false),
+  returnNotes: z.string().optional().default(''),
 });
 
 const BodySchema = z.object({
@@ -460,6 +462,8 @@ export async function POST(req) {
               areaId: meta.areaId,
               codAmount: usedCodAmount,
               addressLine: d?.address?.line1 || '',
+              hasReturn: Boolean(meta?.hasReturn),
+              returnNotes: String(meta?.returnNotes || ''),
             },
           });
           const providerFees = Number(provider?.providerFees || 0);

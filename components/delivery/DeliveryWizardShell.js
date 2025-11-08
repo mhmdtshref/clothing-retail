@@ -12,6 +12,7 @@ import ReceiptPrintTemplate from '@/components/pos/ReceiptPrintTemplate';
 
 export default function DeliveryWizardShell() {
   const cart = useCart();
+  const returnCart = useCart();
   const [activeStep, setActiveStep] = React.useState(0);
   const [billDiscount, setBillDiscount] = React.useState({ mode: 'amount', value: 0 });
   const [taxPercent, setTaxPercent] = React.useState(0);
@@ -19,6 +20,7 @@ export default function DeliveryWizardShell() {
   const [deliveryAddress, setDeliveryAddress] = React.useState({ line1: '', line2: '', city: '', state: '', postalCode: '', country: '' });
   const [deliveryContact, setDeliveryContact] = React.useState({ name: '', phone: '' });
   const [optimusData, setOptimusData] = React.useState({ cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '' });
+  const [hasReturn, setHasReturn] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
   const [result, setResult] = React.useState(null); // { receipt, totals, ... }
 
@@ -30,6 +32,7 @@ export default function DeliveryWizardShell() {
   }).totals;
 
   const canNextFromStep1 = cart.items.length > 0 && cart.items.every((l) => Number(l.qty) > 0);
+  const canNextFromReturns = !hasReturn || returnCart.items.length >= 0; // allow empty return list
 
   async function handleSubmit() {
     setSubmitting(true);
@@ -41,10 +44,12 @@ export default function DeliveryWizardShell() {
         deliveryCompany,
         deliveryAddress: { ...deliveryAddress, ...(deliveryCompany === 'optimus' ? { line1: optimusData.addressLine, city: optimusData.cityName || String(optimusData.cityId || '') } : {}) },
         deliveryContact: deliveryCompany === 'optimus' ? { name: optimusData.name || '', phone: optimusData.phone || '' } : deliveryContact,
-        deliveryProviderMeta: deliveryCompany === 'optimus' ? optimusData : undefined,
+        deliveryProviderMeta: deliveryCompany === 'optimus' ? { ...optimusData, hasReturn, returnNotes: '' } : undefined,
+        hasReturn,
+        returnItems: hasReturn ? returnCart.items : [],
       });
       setResult(json);
-      setActiveStep(2);
+      setActiveStep(hasReturn ? 3 : 2);
     } catch (e) {
       alert(e?.message || String(e));
     } finally {
@@ -55,12 +60,14 @@ export default function DeliveryWizardShell() {
   function resetWizard() {
     setActiveStep(0);
     cart.clear();
+    returnCart.clear();
     setBillDiscount({ mode: 'amount', value: 0 });
     setTaxPercent(0);
     setDeliveryCompany('optimus');
     setDeliveryAddress({ line1: '', line2: '', city: '', state: '', postalCode: '', country: '' });
     setDeliveryContact({ name: '', phone: '' });
     setOptimusData({ cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '' });
+    setHasReturn(false);
     setResult(null);
   }
 
@@ -70,6 +77,7 @@ export default function DeliveryWizardShell() {
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 2 }}>
         <Step><StepLabel>Products</StepLabel></Step>
         <Step><StepLabel>Delivery</StepLabel></Step>
+        {hasReturn && <Step><StepLabel>Returned</StepLabel></Step>}
         <Step><StepLabel>Result</StepLabel></Step>
       </Stepper>
 
@@ -112,6 +120,10 @@ export default function DeliveryWizardShell() {
               <ToggleButton value="optimus">Optimus</ToggleButton>
               <ToggleButton value="sabeq_laheq">Sabeq Laheq</ToggleButton>
             </ToggleButtonGroup>
+            <ToggleButtonGroup size="small" exclusive value={hasReturn ? 'yes' : 'no'} onChange={(_e, val) => { if (val === 'yes') setHasReturn(true); if (val === 'no') setHasReturn(false); }}>
+              <ToggleButton value="no">Normal shipment</ToggleButton>
+              <ToggleButton value="yes">Exchange shipment (has return)</ToggleButton>
+            </ToggleButtonGroup>
             {deliveryCompany === 'optimus' ? (
               <OptimusForm value={optimusData} onChange={setOptimusData} />
             ) : (
@@ -122,13 +134,54 @@ export default function DeliveryWizardShell() {
             )}
             <Stack direction="row" spacing={2} justifyContent="space-between">
               <Button variant="outlined" onClick={() => setActiveStep(0)}>Back</Button>
-              <Button variant="contained" onClick={handleSubmit} disabled={submitting}>{submitting ? 'Submitting…' : 'Submit'}</Button>
+              {hasReturn ? (
+                <Button variant="contained" onClick={() => setActiveStep(2)}>Next</Button>
+              ) : (
+                <Button variant="contained" onClick={handleSubmit} disabled={submitting}>{submitting ? 'Submitting…' : 'Submit'}</Button>
+              )}
             </Stack>
           </Stack>
         </Paper>
       )}
 
-      {activeStep === 2 && result && (
+      {hasReturn && activeStep === 2 && (
+        <Paper sx={{ p: 2 }}>
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="subtitle1" gutterBottom>Returned products</Typography>
+              <POSCatalog onPickVariant={(v, p) => returnCart.addVariant(v, p)} isReturnMode={true} />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="subtitle1" gutterBottom>Return Cart</Typography>
+              <CartView
+                items={returnCart.items}
+                inc={returnCart.inc}
+                dec={returnCart.dec}
+                setQty={returnCart.setQty}
+                setUnitPrice={returnCart.setUnitPrice}
+                setDiscount={returnCart.setDiscount}
+                removeLine={returnCart.removeLine}
+                clear={returnCart.clear}
+                billDiscount={{ mode: 'amount', value: 0 }}
+                setBillDiscount={() => {}}
+                taxPercent={0}
+                setTaxPercent={() => {}}
+              />
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                COD to collect: {Number(optimusData?.codAmount || totals.grandTotal || 0).toFixed(2)}
+              </Typography>
+            </Box>
+          </Stack>
+          <Stack direction="row" spacing={2} justifyContent="space-between" sx={{ mt: 2 }}>
+            <Button variant="outlined" onClick={() => setActiveStep(1)}>Back</Button>
+            <Button variant="contained" onClick={handleSubmit} disabled={submitting || !canNextFromReturns}>
+              {submitting ? 'Submitting…' : 'Submit'}
+            </Button>
+          </Stack>
+        </Paper>
+      )}
+
+      {((!hasReturn && activeStep === 2) || (hasReturn && activeStep === 3)) && result && (
         <Paper sx={{ p: 2 }}>
           <Typography variant="subtitle1" gutterBottom>Receipt Created</Typography>
           <Box sx={{ border: '1px solid', borderColor: 'divider', p: 1 }}>
