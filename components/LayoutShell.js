@@ -10,6 +10,7 @@ export default function LayoutShell({ children }) {
   const pathname = usePathname();
   const pathSegments = (pathname || '').split('/').filter(Boolean);
   const isPOS = pathSegments.includes('pos');
+  const isDelivery = pathSegments.includes('delivery');
   return (
     <Box
       sx={{
@@ -24,7 +25,7 @@ export default function LayoutShell({ children }) {
       <AppBar position="static" color="default" elevation={0} sx={{ width: '100%' }}>
         <Toolbar sx={{ gap: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Clothing Retail Accounting
+            {process.env.NEXT_PUBLIC_SHOP_NAME || 'Clothing Retail Accountings'}
           </Typography>
           <Button component={Link} href="/" color="inherit">
             Home
@@ -45,6 +46,9 @@ export default function LayoutShell({ children }) {
             <Button component={Link} href="/receipts/new" color="inherit">
               New Purchase
             </Button>
+            <Button component={Link} href="/delivery/new" color="inherit">
+              Delivery
+            </Button>
             <Button component={Link} href="/pos" color="inherit">
               POS
             </Button>
@@ -58,7 +62,7 @@ export default function LayoutShell({ children }) {
         </Toolbar>
       </AppBar>
 
-      {isPOS ? (
+      {isPOS || isDelivery ? (
         <Box component="main" sx={{ width: '100%', maxWidth: '100vw', flexGrow: 1 }}>
           {children}
         </Box>

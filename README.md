@@ -34,3 +34,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Delivery (COD) Integration
+
+Sale receipts can be created with Delivery (Cash on Delivery) using two providers: Optimus and Sabeq Laheq. Delivery tracking data is saved in the same `Receipt` model under `delivery`.
+
+Environment variables:
+
+- `DELIVERY_CRON_SECRET` — secret token used by the HTTP cron sync endpoint
+- `OPTIMUS_API_URL` — base URL for Optimus API
+- `OPTIMUS_API_TOKEN` — bearer token for Optimus API
+- `SABEQLAHEQ_API_URL` — base URL for Sabeq Laheq API
+- `SABEQLAHEQ_API_TOKEN` — bearer token for Sabeq Laheq API
+
+HTTP cron (every 6 hours recommended):
+
+- Endpoint: `/api/delivery/sync?secret=YOUR_SECRET`
+- Method: GET
+- Purpose: polls courier systems for all in-flight delivery receipts and updates status/history. When COD is collected, the system auto-adds the remaining due as a `cod` payment and sets status to `payment_collected`.
+
+Status journey for delivery sales: `on_delivery` → `payment_collected` → `ready_to_receive` → `completed`.

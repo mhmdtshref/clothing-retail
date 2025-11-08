@@ -206,6 +206,8 @@ export default function ReceiptsListPage({ companies }) {
             <MenuItem value="all">all</MenuItem>
             <MenuItem value="ordered">ordered</MenuItem>
             <MenuItem value="on_delivery">on_delivery</MenuItem>
+            <MenuItem value="payment_collected">payment_collected</MenuItem>
+            <MenuItem value="ready_to_receive">ready_to_receive</MenuItem>
             <MenuItem value="completed">completed</MenuItem>
           </Select>
         </FormControl>
@@ -423,6 +425,18 @@ export default function ReceiptsListPage({ companies }) {
             <LocalShippingIcon fontSize="small" />
           </ListItemIcon>
           on_delivery
+        </MenuItem>
+        <MenuItem onClick={() => setStatus('payment_collected')}>
+          <ListItemIcon>
+            <DoneIcon fontSize="small" />
+          </ListItemIcon>
+          payment_collected
+        </MenuItem>
+        <MenuItem onClick={() => setStatus('ready_to_receive')}>
+          <ListItemIcon>
+            <DoneIcon fontSize="small" />
+          </ListItemIcon>
+          ready_to_receive
         </MenuItem>
         <MenuItem onClick={() => setStatus('completed')}>
           <ListItemIcon>

@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
+import { fetchConsigneeByPhone } from '@/lib/deliveries/optimus';
 import Customer from '@/models/customer';
 
 function escapeRx(s = '') {
@@ -36,7 +37,30 @@ export async function GET(req) {
       .lean()
       .exec();
 
-    return NextResponse.json({ ok: true, items: items.map((c) => ({ _id: c._id, name: c.name || '', phone: c.phone })) });
+    const results = items.map((c) => ({ _id: c._id, name: c.name || '', phone: c.phone }));
+
+    // If exact 10-digit phone searched, get Optimus suggestions (multiple) and prepend to results
+    if (digits && digits.length === 10) {
+      try {
+        const remoteList = await fetchConsigneeByPhone(digits);
+        if (Array.isArray(remoteList) && remoteList.length) {
+          for (const remote of remoteList) {
+            const provider = {
+              addressLine: remote.addressLine || undefined,
+              cityId: remote.cityId || undefined,
+              cityName: remote.cityName || undefined,
+              areaId: remote.areaId || undefined,
+              areaName: remote.areaName || undefined,
+            };
+            results.unshift({ _id: undefined, name: remote.name || '', phone: remote.phone, provider });
+          }
+        }
+      } catch (_e) {
+        // ignore Optimus errors for search
+      }
+    }
+
+    return NextResponse.json({ ok: true, items: results });
   } catch (err) {
     return NextResponse.json(
       { error: 'InternalServerError', message: err?.message || String(err) },
