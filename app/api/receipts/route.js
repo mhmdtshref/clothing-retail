@@ -220,8 +220,8 @@ const DeliverySchema = z.object({
 });
 
 const OptimusProviderMetaSchema = z.object({
-  cityId: z.string().min(1),
-  areaId: z.string().min(1),
+  cityId: z.coerce.number().int().positive(),
+  areaId: z.coerce.number().int().positive(),
   cityName: z.string().optional().default(''),
   areaName: z.string().optional().default(''),
   phone: z.string().min(1),
