@@ -39,7 +39,8 @@ export default function DeliveryWizardShell() {
   const fees = Math.max(0, Number(optimusData?.deliveryFees || 0) || 0);
   const saleGrand = Number(totals?.grandTotal || 0);
   const returnGrand = Number(returnTotals?.grandTotal || 0);
-  const codToCollect = hasReturn ? Math.max(0, saleGrand - returnGrand) + fees : saleGrand + fees;
+  const codPreClamp = (hasReturn ? (saleGrand - returnGrand) : saleGrand) + fees;
+  const codToCollect = Math.max(0, codPreClamp);
 
   const canNextFromStep1 = cart.items.length > 0 && cart.items.every((l) => Number(l.qty) > 0);
   const canNextFromReturns = !hasReturn || returnCart.items.length >= 0; // allow empty return list

@@ -233,7 +233,8 @@ const OptimusProviderMetaSchema = z
     areaName: z.string().optional().default(''),
     phone: z.string().min(1),
     name: z.string().optional().default(''),
-    codAmount: z.coerce.number().positive().optional(),
+    // Allow zero COD (nonnegative instead of positive)
+    codAmount: z.coerce.number().nonnegative().optional(),
     hasReturn: z.boolean().optional().default(false),
     returnNotes: z.string().optional().default(''),
     // Additional optional fields sent by frontend
@@ -461,8 +462,10 @@ export async function POST(req) {
             .filter(Boolean);
           const itemsDescription = contentLines.join('\n');
 
-          const usedCodAmount = (meta?.codAmount && Number(meta.codAmount) > 0)
-            ? Number(meta.codAmount)
+          // Respect explicit COD amount even if it's 0; otherwise fall back to sale grand total
+          const hasExplicitCod = typeof meta?.codAmount !== 'undefined' && !Number.isNaN(Number(meta.codAmount));
+          const usedCodAmount = hasExplicitCod
+            ? Math.max(0, Number(meta.codAmount))
             : Number((totals?.grandTotal || 0).toFixed(2));
 
           const provider = await createDeliveryOrder({
