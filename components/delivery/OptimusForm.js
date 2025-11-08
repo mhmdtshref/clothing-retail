@@ -162,9 +162,13 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
             index,
           ];
           const k = keyParts.map((p) => String(p)).join('|');
+          const cityArea = [provider.cityName, provider.areaName].filter(Boolean).join(' / ');
+          const fallback = (option && typeof option === 'object') ? `${option.name || '(No name)'} • ${option.phone || ''}` : String(option || '');
+          const nameLabel = (option && typeof option === 'object') ? (option.name || '(No name)') : '';
+          const display = [nameLabel, cityArea].filter(Boolean).join(' • ') || fallback;
           return (
             <li {...props} key={k}>
-              {(option && typeof option === 'object') ? `${option.name || '(No name)'} • ${option.phone || ''}` : String(option || '')}
+              {display}
             </li>
           );
         }}
