@@ -356,8 +356,13 @@ export async function POST(req) {
       };
     });
 
-    const hasDelivery = type === 'sale' && parsed.delivery;
-    const computedStatus = hasDelivery ? 'on_delivery' : (status || (type === 'purchase' ? 'ordered' : 'completed'));
+  const hasSaleDelivery = type === 'sale' && parsed.delivery;
+  const hasReturnDelivery = type === 'sale_return' && parsed.delivery;
+  const computedStatus = hasSaleDelivery
+    ? 'on_delivery'
+    : hasReturnDelivery
+      ? 'ordered'
+      : (status || (type === 'purchase' ? 'ordered' : 'completed'));
     const receiptPayload = {
       type,
       date: date || new Date(),
@@ -416,7 +421,7 @@ export async function POST(req) {
     }
 
     // Delivery order creation for COD sales
-    if (hasDelivery) {
+    if (hasSaleDelivery) {
       if (!customerId) {
         return NextResponse.json(
           { error: 'ValidationError', message: 'customerId is required for delivery sales' },
@@ -532,6 +537,22 @@ export async function POST(req) {
           { status: 502 },
         );
       }
+    } else if (hasReturnDelivery) {
+      // Link sale_return to the same shipment for tracking (no new provider order)
+      const d = parsed.delivery;
+      const meta = parsed.deliveryProviderMeta || {};
+      receiptPayload.delivery = {
+        company: d.company,
+        externalId: meta.externalId || '',
+        trackingNumber: meta.trackingNumber || undefined,
+        trackingUrl: meta.trackingUrl || undefined,
+        status: 'created',
+        address: d.address,
+        contact: d.contact,
+        history: [ { at: new Date(), code: 'created', note: 'linked to sale shipment' } ],
+        lastSyncAt: new Date(),
+        nextSyncAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
+      };
     }
 
     // Build inventory adjustment ops: purchase/sale_return => +qty; sale => -qty

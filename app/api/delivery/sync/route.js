@@ -21,9 +21,9 @@ export async function GET(req) {
     const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
 
     const candidates = await Receipt.find({
-      type: 'sale',
+      type: { $in: ['sale', 'sale_return'] },
       'delivery.company': { $exists: true },
-      status: { $in: ['on_delivery', 'payment_collected', 'ready_to_receive'] },
+      status: { $in: ['ordered', 'on_delivery', 'payment_collected', 'ready_to_receive'] },
       $or: [
         { 'delivery.nextSyncAt': { $lte: now } },
         { 'delivery.nextSyncAt': { $exists: false } },
@@ -57,7 +57,7 @@ export async function GET(req) {
         const next = stat?.internal;
         if (next && next !== doc.status) {
           // If moving to payment_collected, auto-add remaining due as COD payment
-          if (next === 'payment_collected') {
+          if (doc.type === 'sale' && next === 'payment_collected') {
             const { totals } = computeReceiptTotals(doc.toObject ? doc.toObject() : doc);
             const paidSoFar = Array.isArray(doc.payments)
               ? doc.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)

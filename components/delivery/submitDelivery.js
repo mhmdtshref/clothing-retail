@@ -107,7 +107,13 @@ export default async function submitDelivery({
           : undefined,
       })),
       note: `Exchange return for sale ${json?.receipt?._id || ''}`,
+      // Link return receipt to the same shipment for tracking
       delivery: { company: deliveryCompany, address: deliveryAddress, contact: deliveryContact },
+      deliveryProviderMeta: {
+        externalId: json?.receipt?.delivery?.externalId || '',
+        trackingNumber: json?.receipt?.delivery?.trackingNumber || '',
+        trackingUrl: json?.receipt?.delivery?.trackingUrl || '',
+      },
       ...(customerIdToUse ? { customerId: customerIdToUse } : {}),
     };
     const resR = await fetch('/api/receipts', {
