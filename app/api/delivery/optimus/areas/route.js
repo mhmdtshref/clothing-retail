@@ -9,7 +9,6 @@ export async function GET(req) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
-    console.log('before Area.find');
     const url = new URL(req.url);
     const cityIdParam = url.searchParams.get('cityId') || '';
     if (!cityIdParam) return NextResponse.json({ error: 'ValidationError', message: 'cityId is required' }, { status: 400 });
@@ -18,13 +17,8 @@ export async function GET(req) {
       return NextResponse.json({ error: 'ValidationError', message: 'cityId must be a number' }, { status: 400 });
     }
     await connectToDB();
-    console.log('cityId:', cityId);
-    console.log('before Area.find');
     const docs = await Area.find({ provider: 'optimus', providerCityId: cityId }, { providerAreaId: 1, name: 1 }).sort({ name: 1 }).lean();
-    console.log('after Area.find');
-    console.log('docs:', docs);
     const items = (docs || []).map((a) => ({ id: a.providerAreaId, name: a.name || '' }));
-    console.log('items:', items);
     const res = NextResponse.json({ ok: true, items });
     res.headers.set('Cache-Control', 's-maxage=21600, stale-while-revalidate=3600');
     return res;

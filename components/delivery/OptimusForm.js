@@ -151,6 +151,23 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
         options={contactOptions}
         loading={loadingContacts}
         getOptionLabel={(o) => (o && typeof o === 'object') ? `${o.name || '(No name)'} • ${o.phone || ''}` : String(o || '')}
+        renderOption={(props, option, { index }) => {
+          const provider = (option && typeof option === 'object') ? (option.provider || {}) : {};
+          const keyParts = [
+            option && typeof option === 'object' ? (option._id ?? '') : '',
+            option && typeof option === 'object' ? (option.phone ?? '') : '',
+            provider.cityId ?? '',
+            provider.areaId ?? '',
+            provider.addressLine ?? '',
+            index,
+          ];
+          const k = keyParts.map((p) => String(p)).join('|');
+          return (
+            <li {...props} key={k}>
+              {(option && typeof option === 'object') ? `${option.name || '(No name)'} • ${option.phone || ''}` : String(option || '')}
+            </li>
+          );
+        }}
         onInputChange={(_e, val) => setContactQuery(val)}
         onChange={(_e, val) => {
           if (val && typeof val === 'object') {

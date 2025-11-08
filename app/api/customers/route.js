@@ -38,33 +38,24 @@ export async function GET(req) {
       .exec();
 
     const results = items.map((c) => ({ _id: c._id, name: c.name || '', phone: c.phone }));
-    console.log('results', results);
 
-    // If exact 10-digit phone searched, try Optimus to enrich missing fields
+    // If exact 10-digit phone searched, get Optimus suggestions (multiple) and prepend to results
     if (digits && digits.length === 10) {
       try {
-        console.log('before fetchConsigneeByPhone');
-        const remote = await fetchConsigneeByPhone(digits);
-        console.log('after fetchConsigneeByPhone');
-        console.log('remote', remote);
-        if (remote) {
-          // If there is a matching local item, enrich provider
-          const idx = results.findIndex((r) => String(r.phone || '') === digits);
-          const provider = {
-            addressLine: remote.addressLine || undefined,
-            cityId: remote.cityId || undefined,
-            cityName: remote.cityName || undefined,
-            areaId: remote.areaId || undefined,
-            areaName: remote.areaName || undefined,
-          };
-          if (idx >= 0) {
-            results[idx] = { ...results[idx], name: results[idx].name || remote.name || '', provider };
-          } else {
+        const remoteList = await fetchConsigneeByPhone(digits);
+        if (Array.isArray(remoteList) && remoteList.length) {
+          for (const remote of remoteList) {
+            const provider = {
+              addressLine: remote.addressLine || undefined,
+              cityId: remote.cityId || undefined,
+              cityName: remote.cityName || undefined,
+              areaId: remote.areaId || undefined,
+              areaName: remote.areaName || undefined,
+            };
             results.unshift({ _id: undefined, name: remote.name || '', phone: remote.phone, provider });
           }
         }
       } catch (_e) {
-        console.log('error', _e);
         // ignore Optimus errors for search
       }
     }
