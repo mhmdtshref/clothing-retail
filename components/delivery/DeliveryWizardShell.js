@@ -19,7 +19,7 @@ export default function DeliveryWizardShell() {
   const [deliveryCompany, setDeliveryCompany] = React.useState('optimus');
   const [deliveryAddress, setDeliveryAddress] = React.useState({ line1: '', line2: '', city: '', state: '', postalCode: '', country: '' });
   const [deliveryContact, setDeliveryContact] = React.useState({ name: '', phone: '' });
-  const [optimusData, setOptimusData] = React.useState({ cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '' });
+  const [optimusData, setOptimusData] = React.useState({ cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '', deliveryFees: '' });
   const [hasReturn, setHasReturn] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
   const [result, setResult] = React.useState(null); // { receipt, totals, ... }
@@ -30,6 +30,16 @@ export default function DeliveryWizardShell() {
     billDiscount: billDiscount && Number(billDiscount.value) > 0 ? billDiscount : undefined,
     taxPercent: Number(taxPercent) || 0,
   }).totals;
+
+  const returnTotals = computeReceiptTotals({
+    type: 'sale_return',
+    items: returnCart.items.map((l) => ({ qty: Number(l.qty) || 0, unitPrice: Number(l.unitPrice) || 0, discount: l.discount && Number(l.discount.value) > 0 ? l.discount : undefined })),
+  }).totals;
+
+  const fees = Math.max(0, Number(optimusData?.deliveryFees || 0) || 0);
+  const saleGrand = Number(totals?.grandTotal || 0);
+  const returnGrand = Number(returnTotals?.grandTotal || 0);
+  const codToCollect = hasReturn ? Math.max(0, saleGrand - returnGrand) + fees : saleGrand + fees;
 
   const canNextFromStep1 = cart.items.length > 0 && cart.items.every((l) => Number(l.qty) > 0);
   const canNextFromReturns = !hasReturn || returnCart.items.length >= 0; // allow empty return list
@@ -44,7 +54,7 @@ export default function DeliveryWizardShell() {
         deliveryCompany,
         deliveryAddress: { ...deliveryAddress, ...(deliveryCompany === 'optimus' ? { line1: optimusData.addressLine, city: optimusData.cityName || String(optimusData.cityId || '') } : {}) },
         deliveryContact: deliveryCompany === 'optimus' ? { name: optimusData.name || '', phone: optimusData.phone || '' } : deliveryContact,
-        deliveryProviderMeta: deliveryCompany === 'optimus' ? { ...optimusData, hasReturn, returnNotes: '' } : undefined,
+        deliveryProviderMeta: deliveryCompany === 'optimus' ? { ...optimusData, hasReturn, returnNotes: '', codAmount: Number(codToCollect.toFixed(2)), enteredDeliveryFees: Number(optimusData?.deliveryFees || 0) } : undefined,
         hasReturn,
         returnItems: hasReturn ? returnCart.items : [],
       });
@@ -66,7 +76,7 @@ export default function DeliveryWizardShell() {
     setDeliveryCompany('optimus');
     setDeliveryAddress({ line1: '', line2: '', city: '', state: '', postalCode: '', country: '' });
     setDeliveryContact({ name: '', phone: '' });
-    setOptimusData({ cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '' });
+    setOptimusData({ cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '', deliveryFees: '' });
     setHasReturn(false);
     setResult(null);
   }
@@ -125,14 +135,17 @@ export default function DeliveryWizardShell() {
               <ToggleButton value="yes">Exchange shipment (has return)</ToggleButton>
             </ToggleButtonGroup>
             {deliveryCompany === 'optimus' ? (
-              <OptimusForm value={optimusData} onChange={setOptimusData} />
+              <OptimusForm value={optimusData} onChange={setOptimusData} amountFieldMode="fees" />
             ) : (
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
                 <TextField label="Contact Name" value={deliveryContact.name} onChange={(e) => setDeliveryContact((c) => ({ ...c, name: e.target.value }))} fullWidth />
                 <TextField label="Contact Phone" value={deliveryContact.phone} onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))} fullWidth />
               </Stack>
             )}
-            <Stack direction="row" spacing={2} justifyContent="space-between">
+            <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
+              <Typography variant="body2" color="text.secondary">
+                COD to collect: {Number(codToCollect).toFixed(2)}
+              </Typography>
               <Button variant="outlined" onClick={() => setActiveStep(0)}>Back</Button>
               {hasReturn ? (
                 <Button variant="contained" onClick={() => setActiveStep(2)}>Next</Button>
@@ -167,12 +180,13 @@ export default function DeliveryWizardShell() {
                 taxPercent={0}
                 setTaxPercent={() => {}}
               />
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                COD to collect: {Number(optimusData?.codAmount || totals.grandTotal || 0).toFixed(2)}
-              </Typography>
+              {/* Moved COD display to the bottom actions row */}
             </Box>
           </Stack>
-          <Stack direction="row" spacing={2} justifyContent="space-between" sx={{ mt: 2 }}>
+          <Stack direction="row" spacing={2} justifyContent="space-between" sx={{ mt: 2 }} alignItems="center">
+            <Typography variant="body2" color="text.secondary">
+              COD to collect: {Number(codToCollect).toFixed(2)}
+            </Typography>
             <Button variant="outlined" onClick={() => setActiveStep(1)}>Back</Button>
             <Button variant="contained" onClick={handleSubmit} disabled={submitting || !canNextFromReturns}>
               {submitting ? 'Submitting…' : 'Submit'}

@@ -199,54 +199,68 @@ const PaymentSchema = z.object({
   at: z.coerce.date().optional(),
 });
 
-const DeliveryAddressSchema = z.object({
-  line1: z.string().min(1),
-  line2: z.string().optional().default(''),
-  city: z.string().min(1),
-  state: z.string().optional().default(''),
-  postalCode: z.string().optional().default(''),
-  country: z.string().optional().default(''),
-});
+const DeliveryAddressSchema = z
+  .object({
+    line1: z.string().min(1),
+    line2: z.string().optional().default(''),
+    city: z.string().min(1),
+    state: z.string().optional().default(''),
+    postalCode: z.string().optional().default(''),
+    country: z.string().optional().default(''),
+  })
+  .passthrough();
 
-const DeliveryContactSchema = z.object({
-  name: z.string().optional().default(''),
-  phone: z.string().min(1),
-});
+const DeliveryContactSchema = z
+  .object({
+    name: z.string().optional().default(''),
+    phone: z.string().min(1),
+  })
+  .passthrough();
 
-const DeliverySchema = z.object({
-  company: z.enum(['optimus', 'sabeq_laheq']),
-  address: DeliveryAddressSchema,
-  contact: DeliveryContactSchema,
-});
+const DeliverySchema = z
+  .object({
+    company: z.enum(['optimus', 'sabeq_laheq']),
+    address: DeliveryAddressSchema,
+    contact: DeliveryContactSchema,
+  })
+  .passthrough();
 
-const OptimusProviderMetaSchema = z.object({
-  cityId: z.coerce.number().int().positive(),
-  areaId: z.coerce.number().int().positive(),
-  cityName: z.string().optional().default(''),
-  areaName: z.string().optional().default(''),
-  phone: z.string().min(1),
-  name: z.string().optional().default(''),
-  codAmount: z.coerce.number().positive().optional(),
-  hasReturn: z.boolean().optional().default(false),
-  returnNotes: z.string().optional().default(''),
-});
+const OptimusProviderMetaSchema = z
+  .object({
+    cityId: z.coerce.number().int().positive(),
+    areaId: z.coerce.number().int().positive(),
+    cityName: z.string().optional().default(''),
+    areaName: z.string().optional().default(''),
+    phone: z.string().min(1),
+    name: z.string().optional().default(''),
+    codAmount: z.coerce.number().positive().optional(),
+    hasReturn: z.boolean().optional().default(false),
+    returnNotes: z.string().optional().default(''),
+    // Additional optional fields sent by frontend
+    addressLine: z.string().optional().default(''),
+    deliveryFees: z.coerce.number().nonnegative().optional(),
+    enteredDeliveryFees: z.coerce.number().nonnegative().optional(),
+  })
+  .passthrough();
 
-const BodySchema = z.object({
-  type: z.enum(['purchase', 'sale', 'sale_return']).default('purchase'),
-  date: z.coerce.date().optional(),
-  status: z.enum(['ordered', 'on_delivery', 'payment_collected', 'ready_to_receive', 'completed', 'pending']).optional(),
-  companyId: z.string().min(1).optional(),
-  vendorId: z.string().min(1).optional(),
-  customerId: z.string().min(1).optional(),
-  items: z.array(ItemSchema).min(1, 'At least one item is required'),
-  billDiscount: DiscountSchema.optional(),
-  taxPercent: z.number().min(0).max(100).default(0),
-  note: z.string().max(1000).optional(),
-  returnReason: z.string().max(500).optional(),
-  payments: z.array(PaymentSchema).optional().default([]),
-  delivery: DeliverySchema.optional(),
-  deliveryProviderMeta: OptimusProviderMetaSchema.optional(),
-});
+const BodySchema = z
+  .object({
+    type: z.enum(['purchase', 'sale', 'sale_return']).default('purchase'),
+    date: z.coerce.date().optional(),
+    status: z.enum(['ordered', 'on_delivery', 'payment_collected', 'ready_to_receive', 'completed', 'pending']).optional(),
+    companyId: z.string().min(1).optional(),
+    vendorId: z.string().min(1).optional(),
+    customerId: z.string().min(1).optional(),
+    items: z.array(ItemSchema).min(1, 'At least one item is required'),
+    billDiscount: DiscountSchema.optional(),
+    taxPercent: z.number().min(0).max(100).default(0),
+    note: z.string().max(1000).optional(),
+    returnReason: z.string().max(500).optional(),
+    payments: z.array(PaymentSchema).optional().default([]),
+    delivery: DeliverySchema.optional(),
+    deliveryProviderMeta: OptimusProviderMetaSchema.optional(),
+  })
+  .passthrough();
 
 export async function POST(req) {
   const { userId } = await auth();
@@ -468,7 +482,8 @@ export async function POST(req) {
           });
           const providerFees = Number(provider?.providerFees || 0);
           const includedFees = Math.max(0, Number(usedCodAmount) - Number(totals?.grandTotal || 0));
-          const extraFees = Math.max(0, providerFees - includedFees);
+          const deliveryFeesEntered = Number(meta?.enteredDeliveryFees || 0);
+          const localDeliveryFees = Number(deliveryFeesEntered - providerFees);
           receiptPayload.delivery = {
             company: d.company,
             externalId: provider.externalId || '',
@@ -476,13 +491,14 @@ export async function POST(req) {
             trackingUrl: provider.trackingUrl || undefined,
             status: provider.providerStatus || 'created',
             contact: { name: meta.name || '', phone },
-            providerMeta: { cityId: meta.cityId, cityName: meta.cityName || '', areaId: meta.areaId, areaName: meta.areaName || '', phone, codAmount: usedCodAmount, fees: providerFees, extraFees },
+            providerMeta: { cityId: meta.cityId, cityName: meta.cityName || '', areaId: meta.areaId, areaName: meta.areaName || '', phone, codAmount: usedCodAmount, fees: providerFees },
             history: [
               { at: new Date(), code: 'created', raw: provider?.raw || provider },
             ],
             lastSyncAt: new Date(),
             nextSyncAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
           };
+          receiptPayload.localDeliveryFees = localDeliveryFees;
         } else {
           const provider = await createDeliveryOrder({
             company: d.company,

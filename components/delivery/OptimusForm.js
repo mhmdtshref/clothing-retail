@@ -1,9 +1,10 @@
+
 'use client';
 
 import * as React from 'react';
 import { Stack, TextField, MenuItem, Typography, CircularProgress, Autocomplete } from '@mui/material';
 
-export default function OptimusForm({ value, onChange, disabled = false }) {
+export default function OptimusForm({ value, onChange, disabled = false, amountFieldMode = 'cod' }) {
   const [cities, setCities] = React.useState([]);
   const [areas, setAreas] = React.useState([]);
   const [loadingCities, setLoadingCities] = React.useState(false);
@@ -13,7 +14,7 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
   const [contactOptions, setContactOptions] = React.useState([]);
   const [loadingContacts, setLoadingContacts] = React.useState(false);
 
-  const v = value || { cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '' };
+  const v = value || { cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '', deliveryFees: '' };
   const latestVRef = React.useRef(v);
   React.useEffect(() => {
     latestVRef.current = v;
@@ -135,16 +136,29 @@ export default function OptimusForm({ value, onChange, disabled = false }) {
         fullWidth
       />
 
-      <TextField
-        label="COD Amount"
-        type="number"
-        inputProps={{ min: 0, step: '0.01' }}
-        value={v.codAmount}
-        onChange={(e) => update({ codAmount: e.target.value })}
-        disabled={disabled}
-        helperText="Include delivery fees if needed"
-        fullWidth
-      />
+      {amountFieldMode === 'cod' ? (
+        <TextField
+          label="COD Amount"
+          type="number"
+          inputProps={{ min: 0, step: '0.01' }}
+          value={v.codAmount}
+          onChange={(e) => update({ codAmount: e.target.value })}
+          disabled={disabled}
+          helperText="Include delivery fees if needed"
+          fullWidth
+        />
+      ) : (
+        <TextField
+          label="Delivery fees"
+          type="number"
+          inputProps={{ min: 0, step: '0.01' }}
+          value={v.deliveryFees || ''}
+          onChange={(e) => update({ deliveryFees: e.target.value })}
+          disabled={disabled}
+          helperText="We will calculate COD automatically"
+          fullWidth
+        />
+      )}
       {error && <Typography color="error" variant="body2">{error}</Typography>}
       <Autocomplete
         freeSolo

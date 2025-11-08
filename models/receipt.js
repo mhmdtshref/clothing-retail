@@ -121,6 +121,9 @@ const ReceiptSchema = new Schema(
 
     // Delivery (for sale receipts with COD)
     delivery: { type: DeliverySchema, default: undefined },
+
+    // Store share of delivery fees = max(0, user delivery fees − provider fees)
+    localDeliveryFees: { type: Number, default: 0 },
   },
   { timestamps: true },
 );
