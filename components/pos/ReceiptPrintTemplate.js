@@ -37,6 +37,10 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
         @media print {
           @page { size: 80mm auto; margin: 0; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          /* Print only the receipt content */
+          body * { visibility: hidden !important; }
+          .receipt-80mm, .receipt-80mm * { visibility: visible !important; }
+          .receipt-80mm { position: absolute; inset: 0 auto auto 0; margin: 0; }
         }
         .receipt-80mm { width: 80mm; padding: 8px 8px 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 12px; color: #000; }
         .r-center { text-align: center; }

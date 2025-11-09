@@ -143,7 +143,7 @@ export default function DeliveryWizardShell() {
                 <TextField label="Contact Phone" value={deliveryContact.phone} onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))} fullWidth />
               </Stack>
             )}
-            <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
+            <Stack direction="row" spacing={2} justifyContent="flex-end" alignItems="center">
               <Typography variant="body2" color="text.secondary">
                 COD to collect: {Number(codToCollect).toFixed(2)}
               </Typography>
@@ -184,7 +184,7 @@ export default function DeliveryWizardShell() {
               {/* Moved COD display to the bottom actions row */}
             </Box>
           </Stack>
-          <Stack direction="row" spacing={2} justifyContent="space-between" sx={{ mt: 2 }} alignItems="center">
+          <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }} alignItems="center">
             <Typography variant="body2" color="text.secondary">
               COD to collect: {Number(codToCollect).toFixed(2)}
             </Typography>

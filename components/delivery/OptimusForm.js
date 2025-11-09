@@ -164,7 +164,13 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
         freeSolo
         options={contactOptions}
         loading={loadingContacts}
-        getOptionLabel={(o) => (o && typeof o === 'object') ? `${o.name || '(No name)'} • ${o.phone || ''}` : String(o || '')}
+        getOptionLabel={(o) => {
+          if (!o || typeof o !== 'object') return String(o || '');
+          const provider = o.provider || {};
+          const cityArea = [provider.cityName, provider.areaName].filter(Boolean).join(' / ');
+          const base = `${o.name || '(No name)'} • ${o.phone || ''}`;
+          return cityArea ? `${base} • ${cityArea}` : base;
+        }}
         renderOption={(props, option, { index }) => {
           const provider = (option && typeof option === 'object') ? (option.provider || {}) : {};
           const keyParts = [

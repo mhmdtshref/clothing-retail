@@ -41,7 +41,20 @@ export default async function submitDelivery({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ name, phone }),
+        body: JSON.stringify({
+          name,
+          phone,
+          ...(deliveryCompany === 'optimus'
+            ? {
+                providerCompany: 'optimus',
+                providerCityId: deliveryProviderMeta?.cityId,
+                providerAreaId: deliveryProviderMeta?.areaId,
+                providerCityName: deliveryProviderMeta?.cityName || '',
+                providerAreaName: deliveryProviderMeta?.areaName || '',
+                addressLine: deliveryProviderMeta?.addressLine || '',
+              }
+            : {}),
+        }),
       });
       const jsonC = await resC.json();
       if (resC.ok && jsonC?.customer?._id) {
