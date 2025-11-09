@@ -14,6 +14,7 @@ import CheckoutDialog from '@/components/pos/CheckoutDialog';
 import CheckoutSuccess from '@/components/pos/CheckoutSuccess';
 import CustomerDialog from '@/components/pos/CustomerDialog';
 import { computeReceiptTotals } from '@/lib/pricing';
+import { useI18n } from '@/components/i18n/useI18n';
 
 function useClock() {
   const [now, setNow] = React.useState(() => new Date());
@@ -42,6 +43,7 @@ function useOnline() {
 }
 
 export default function POSShell() {
+  const { t } = useI18n();
   const { user } = useUser();
   const now = useClock();
   const online = useOnline();
@@ -141,11 +143,11 @@ export default function POSShell() {
       <AppBar position="static" color="primary">
         <Toolbar sx={{ gap: 2 }}>
           <Typography variant="h6" sx={{ flexGrow: 0 }}>
-            POS
+            {t('pos.title')}
           </Typography>
           <Chip
             size="small"
-            label={online ? 'Online' : 'Offline'}
+            label={online ? t('status.online') : t('status.offline')}
             icon={online ? <WifiIcon /> : <WifiOffIcon />}
             color={online ? 'success' : 'default'}
           />
@@ -168,17 +170,17 @@ export default function POSShell() {
               value="sale"
               sx={{ '&.Mui-selected': { bgcolor: 'primary.main', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.dark' } } }}
             >
-              Sale
+              {t('pos.sale')}
             </ToggleButton>
             <ToggleButton
               value="sale_return"
               sx={{ '&.Mui-selected': { bgcolor: 'warning.main', color: 'warning.contrastText', '&:hover': { bgcolor: 'warning.dark' } } }}
             >
-              Return
+              {t('pos.return')}
             </ToggleButton>
           </ToggleButtonGroup>
           <Button component={Link} href="/pos/history" color="inherit" variant="outlined">
-            History
+            {t('pos.history')}
           </Button>
           {!success && (
             <Button
@@ -187,7 +189,7 @@ export default function POSShell() {
               disabled={!canCheckout || submitting}
               onClick={() => setCheckingOut(true)}
             >
-              Checkout
+              {t('pos.checkout')}
             </Button>
           )}
           <IconButton color="inherit" title="Refresh">
