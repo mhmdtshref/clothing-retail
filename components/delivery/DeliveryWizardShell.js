@@ -94,7 +94,7 @@ export default function DeliveryWizardShell() {
 
       {activeStep === 0 && (
         <Paper sx={{ p: 2 }}>
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+          <Stack direction="column" spacing={2}>
             <Box sx={{ flex: 1 }}>
               <Typography variant="subtitle1" gutterBottom>Catalog</Typography>
               <POSCatalog onPickVariant={(v, p) => cart.addVariant(v, p)} isReturnMode={false} />
@@ -160,7 +160,7 @@ export default function DeliveryWizardShell() {
 
       {hasReturn && activeStep === 2 && (
         <Paper sx={{ p: 2 }}>
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+          <Stack direction="column" spacing={2}>
             <Box sx={{ flex: 1 }}>
               <Typography variant="subtitle1" gutterBottom>Returned products</Typography>
               <POSCatalog onPickVariant={(v, p) => returnCart.addVariant(v, p)} isReturnMode={true} />

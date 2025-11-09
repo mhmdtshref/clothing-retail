@@ -73,51 +73,20 @@ export default function POSShell() {
     taxPercent: Number(taxPercent) || 0,
   }).totals;
 
-  async function submitSale({ method, note, reason, payMode, depositAmount, deliveryMode, deliveryCompany, deliveryAddress, deliveryContact, deliveryProviderMeta, customerOverrideId }) {
+  async function submitSale({ method, note, reason, payMode, depositAmount }) {
     setSubmitting(true);
     try {
       const isReturn = cart.mode === 'sale_return';
-      const hasDelivery = !isReturn && !!deliveryMode;
-      const isDeposit = !isReturn && !hasDelivery && payMode === 'deposit' && Number(depositAmount || 0) > 0;
+      const isDeposit = !isReturn && payMode === 'deposit' && Number(depositAmount || 0) > 0;
       if (isDeposit && !cart.customer?._id) {
         throw new Error('Customer is required for deposit (pending) sales');
       }
-      if (hasDelivery) {
-        if (!(cart.customer?._id || customerOverrideId || (deliveryCompany === 'optimus' && deliveryProviderMeta?.phone))) {
-          throw new Error('Customer is required for delivery sales');
-        }
-        if (deliveryCompany !== 'optimus') {
-          if (!deliveryAddress?.line1 || !deliveryAddress?.city || !deliveryContact?.phone) {
-            throw new Error('Delivery address (line1, city) and contact phone are required');
-          }
-        } else {
-          if (!deliveryProviderMeta?.cityId || !deliveryProviderMeta?.areaId || !/^\d{10}$/.test(String(deliveryProviderMeta?.phone || ''))) {
-            throw new Error('Optimus: city, area, and 10-digit phone are required');
-          }
-        }
-      }
 
-      let customerIdToUse = cart.customer?._id || customerOverrideId || undefined;
-      if (!customerIdToUse && hasDelivery && deliveryCompany === 'optimus') {
-        // Auto-create or fetch customer by phone
-        const name = String(deliveryProviderMeta?.name || '');
-        const phone = String(deliveryProviderMeta?.phone || '');
-        const resC = await fetch('/api/customers', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ name, phone }),
-        });
-        const jsonC = await resC.json();
-        if (!resC.ok || !jsonC?.customer?._id) {
-          throw new Error('Failed to save contact');
-        }
-        customerIdToUse = jsonC.customer._id;
-      }
+      const customerIdToUse = cart.customer?._id || undefined;
 
       const payload = {
         type: isReturn ? 'sale_return' : 'sale',
-        status: hasDelivery ? 'on_delivery' : (isDeposit ? 'pending' : 'completed'),
+        status: isDeposit ? 'pending' : 'completed',
         items: cart.items.map((l) => ({
           variantId: l.variantId,
           qty: Number(l.qty) || 0,
@@ -134,8 +103,6 @@ export default function POSShell() {
         ...(isReturn && reason ? { returnReason: reason } : {}),
         ...(customerIdToUse ? { customerId: customerIdToUse } : {}),
         ...(isDeposit ? { payments: [{ amount: Number(depositAmount || 0), method, note }] } : {}),
-        ...(hasDelivery ? { delivery: { company: deliveryCompany, address: deliveryAddress, contact: deliveryContact } } : {}),
-        ...(hasDelivery && deliveryCompany === 'optimus' ? { deliveryProviderMeta } : {}),
       };
 
       const res = await fetch('/api/receipts', {
@@ -237,12 +204,7 @@ export default function POSShell() {
           width: '100%',
           maxWidth: '100%',
           display: 'grid',
-          gridTemplateColumns: {
-            xs: '1fr',
-            md: '8fr 4fr',
-            lg: '9fr 3fr',
-            xl: '9fr 3fr',
-          },
+          gridTemplateColumns: '1fr',
           gap: 2,
         }}
       >

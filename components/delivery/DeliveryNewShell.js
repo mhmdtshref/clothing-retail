@@ -64,7 +64,7 @@ export default function DeliveryNewShell({ companies }) {
         <Box sx={{ flex: 1 }} />
         <Typography variant="body2">Total: {Number(totals.grandTotal || 0).toFixed(2)}</Typography>
       </Box>
-      <Box sx={{ p: 2, flex: 1, display: 'grid', gridTemplateColumns: { xs: '1fr', md: '8fr 4fr' }, gap: 2 }}>
+      <Box sx={{ p: 2, flex: 1, display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>
         <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
           <Typography variant="subtitle1" gutterBottom>Catalog</Typography>
           <POSCatalog onPickVariant={(v, p) => addVariant(v, p)} isReturnMode={false} />
