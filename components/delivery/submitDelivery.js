@@ -47,7 +47,7 @@ export default async function submitDelivery({
       if (resC.ok && jsonC?.customer?._id) {
         customerIdToUse = jsonC.customer._id;
       } else {
-        throw new Error(jsonC?.message || jsonC?.error || 'Failed to save contact');
+        throw new Error('Failed to save contact');
       }
     }
   }
@@ -92,7 +92,7 @@ export default async function submitDelivery({
     body: JSON.stringify(payload),
   });
   const json = await res.json();
-  if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to create delivery receipt');
+  if (!res.ok) throw new Error('Failed to create delivery receipt');
 
   // If exchange flow, create sale_return receipt (no provider call)
   if (hasReturn) {
@@ -124,7 +124,7 @@ export default async function submitDelivery({
     const jsonR = await resR.json();
     // We don't fail the main flow if return receipt fails, but surface message
     if (!resR.ok) {
-      json.returnError = jsonR?.message || jsonR?.error || 'Failed to create return receipt';
+      json.returnError = 'Failed to create return receipt';
     } else {
       json.returnReceipt = jsonR.receipt;
     }

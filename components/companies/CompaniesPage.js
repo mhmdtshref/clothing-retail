@@ -33,7 +33,7 @@ export default function CompaniesPage() {
     try {
       const res = await fetch('/api/companies');
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to load companies');
+      if (!res.ok) throw new Error('Failed to load companies');
       setItems(Array.isArray(json.items) ? json.items : []);
     } catch (e) {
       setError(e?.message || 'Failed to load companies');

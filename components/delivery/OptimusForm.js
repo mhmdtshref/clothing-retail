@@ -28,7 +28,7 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
       .then((r) => r.json())
       .then((json) => {
         if (!active) return;
-        if (!json?.ok) throw new Error(json?.message || json?.error || 'Failed to load cities');
+        if (!json?.ok) throw new Error('Failed to load cities');
         setCities(Array.isArray(json.items) ? json.items : []);
       })
       .catch((e) => setError(e?.message || String(e)))
@@ -45,7 +45,7 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
       .then((r) => r.json())
       .then((json) => {
         if (!active) return;
-        if (!json?.ok) throw new Error(json?.message || json?.error || 'Failed to load areas');
+        if (!json?.ok) throw new Error('Failed to load areas');
         setAreas(Array.isArray(json.items) ? json.items : []);
       })
       .catch((e) => setError(e?.message || String(e)))
@@ -106,7 +106,7 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
           cache: 'no-store',
         });
         const json = await res.json();
-        if (!res.ok) throw new Error(json?.message || json?.error || 'Search failed');
+        if (!res.ok) throw new Error('Search failed');
         setContactOptions(Array.isArray(json.items) ? json.items : []);
       } catch (_e) {
         // ignore errors in suggestions

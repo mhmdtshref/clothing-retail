@@ -110,7 +110,7 @@ export default function POSShell() {
         });
         const jsonC = await resC.json();
         if (!resC.ok || !jsonC?.customer?._id) {
-          throw new Error(jsonC?.message || jsonC?.error || 'Failed to save contact');
+          throw new Error('Failed to save contact');
         }
         customerIdToUse = jsonC.customer._id;
       }
@@ -144,7 +144,7 @@ export default function POSShell() {
         body: JSON.stringify(payload),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to create sale receipt');
+      if (!res.ok) throw new Error('Failed to create sale receipt');
       setSuccess({ receipt: json.receipt, totals: json.totals, paidTotal: json.paidTotal, dueTotal: json.dueTotal });
       setCheckingOut(false);
       cart.clear();

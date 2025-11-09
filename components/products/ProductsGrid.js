@@ -34,7 +34,7 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
       const qs = new URLSearchParams({ query: q, page: String(page), limit: String(limit) });
       const res = await fetch(`/api/products?${qs.toString()}`, { cache: 'no-store' });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to load products');
+      if (!res.ok) throw new Error('Failed to load products');
       setItems(json.items || []);
       setMeta(json.meta || { total: 0, pages: 1 });
     } catch (e) {

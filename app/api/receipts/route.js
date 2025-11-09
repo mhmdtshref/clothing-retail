@@ -408,7 +408,7 @@ export async function POST(req) {
     }
 
     // Normalize and attach payments only for non-delivery sales
-    if (type === 'sale' && !hasDelivery) {
+    if (type === 'sale' && !hasSaleDelivery) {
       const normalizedPayments = (Array.isArray(payments) ? payments : []).map((p) => ({
         amount: Number(p.amount || 0),
         method: p.method || 'cash',

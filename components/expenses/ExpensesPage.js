@@ -61,7 +61,7 @@ export default function ExpensesPage() {
     try {
       const res = await fetch('/api/expense-categories');
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to load categories');
+      if (!res.ok) throw new Error('Failed to load categories');
       setCategories(json.items || []);
     } catch (e) {
       // keep UI usable even if categories fail
@@ -81,7 +81,7 @@ export default function ExpensesPage() {
       params.set('limit', String(filters.limit));
       const res = await fetch(`/api/expenses?${params.toString()}`, { cache: 'no-store' });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to load expenses');
+      if (!res.ok) throw new Error('Failed to load expenses');
       const pages = Math.max(1, Math.ceil((json?.meta?.total || 0) / filters.limit));
       setData({ items: json.items || [], meta: { total: json?.meta?.total || 0, totalAmount: json?.meta?.totalAmount || 0, pages } });
     } catch (e) {
@@ -116,7 +116,7 @@ export default function ExpensesPage() {
     try {
       const res = await fetch(`/api/expenses/${id}`, { method: 'DELETE' });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Delete failed');
+      if (!res.ok) throw new Error('Delete failed');
       fetchExpenses();
     } catch (e) {
       // Optionally show error

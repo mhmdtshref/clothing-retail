@@ -44,7 +44,7 @@ export default function ExpenseFormDialog({ open, onClose, onSaved, categories, 
         body: JSON.stringify(payload),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Save failed');
+      if (!res.ok) throw new Error('Save failed');
       onSaved?.(json);
     } catch (e) {
       // optionally surface error

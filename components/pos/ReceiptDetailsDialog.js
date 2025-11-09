@@ -16,7 +16,7 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
       try {
         const res = await fetch(`/api/receipts/${encodeURIComponent(String(id))}`, { cache: 'no-store' });
         const json = await res.json();
-        if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to load receipt');
+        if (!res.ok) throw new Error('Failed to load receipt');
         setData(json);
       } catch (e) {
         setError(e?.message || String(e));

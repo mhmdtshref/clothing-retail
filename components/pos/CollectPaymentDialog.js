@@ -38,7 +38,7 @@ export default function CollectPaymentDialog({ open, onClose, receiptId, dueTota
         body: JSON.stringify({ amount: amt, method, note }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to collect payment');
+      if (!res.ok) throw new Error('Failed to collect payment');
       onDone?.(json);
     } catch (e) {
       alert(e?.message || String(e));

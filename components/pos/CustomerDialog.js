@@ -49,7 +49,7 @@ export default function CustomerDialog({ open, onClose, onSelect, initialValue }
       try {
         const res = await fetch(`/api/customers?q=${encodeURIComponent(query)}`);
         const json = await res.json();
-        if (!res.ok) throw new Error(json?.message || json?.error || 'Search failed');
+        if (!res.ok) throw new Error('Search failed');
         setResults(Array.isArray(json.items) ? json.items : []);
         setError('');
       } catch (e) {
@@ -71,7 +71,7 @@ export default function CustomerDialog({ open, onClose, onSelect, initialValue }
         body: JSON.stringify(body),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to save customer');
+      if (!res.ok) throw new Error('Failed to save customer');
       const c = json?.customer;
       if (c && onSelect) onSelect(c);
       if (onClose) onClose();

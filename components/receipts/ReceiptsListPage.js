@@ -113,7 +113,7 @@ export default function ReceiptsListPage({ companies }) {
       if (state.dateTo) qs.set('dateTo', state.dateTo);
       const res = await fetch(`/api/receipts?${qs.toString()}`, { cache: 'no-store' });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to load receipts');
+      if (!res.ok) throw new Error('Failed to load receipts');
       setData({ items: json.items || [], meta: json.meta || { total: 0, pages: 1 } });
     } catch (e) {
       setError(e?.message || String(e));

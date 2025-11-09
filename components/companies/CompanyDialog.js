@@ -24,7 +24,7 @@ export default function CompanyDialog({ open, onClose, onSaved, initialValue }) 
       const method = isEdit ? 'PATCH' : 'POST';
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Save failed');
+      if (!res.ok) throw new Error('Save failed');
       onSaved?.(json);
     } catch (e) {
       // optionally surface error

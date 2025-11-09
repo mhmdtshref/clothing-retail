@@ -53,7 +53,7 @@ export default function POSHistoryPage() {
       });
       const res = await fetch(`/api/receipts?${qs.toString()}`, { cache: 'no-store' });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to load receipts');
+      if (!res.ok) throw new Error('Failed to load receipts');
       let items = (json.items || []).map((r) => ({ ...r, _id: String(r._id) }));
       if (type === 'sales') {
         items = items.filter((r) => ['sale', 'sale_return'].includes(r?.type));

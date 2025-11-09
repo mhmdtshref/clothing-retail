@@ -54,7 +54,7 @@ export default function ProductDetailsPage({ productId }) {
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to save');
+      if (!res.ok) throw new Error('Failed to save');
       setProduct(json.product);
       setSnack({ open: true, severity: 'success', message: 'Saved' });
       router.push('/products');

@@ -182,7 +182,7 @@ export default function NewPurchaseReceipt({ companies }) {
         body: JSON.stringify(payload),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to create receipt');
+      if (!res.ok) throw new Error('Failed to create receipt');
       setSnack({
         open: true,
         severity: 'success',
