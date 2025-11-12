@@ -2,18 +2,20 @@
 
 import * as React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Stack, TextField, MenuItem, Typography } from '@mui/material';
-
-const METHODS = [
-  { value: 'cash', label: 'Cash' },
-  { value: 'external_card', label: 'External Card Terminal' },
-  { value: 'other', label: 'Other' },
-];
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function CollectPaymentDialog({ open, onClose, receiptId, dueTotal = 0, onDone }) {
+  const { t, formatNumber } = useI18n();
   const [method, setMethod] = React.useState('cash');
   const [amount, setAmount] = React.useState('');
   const [note, setNote] = React.useState('');
   const [submitting, setSubmitting] = React.useState(false);
+
+  const METHODS = React.useMemo(() => ([
+    { value: 'cash', label: t('payment.cash') },
+    { value: 'external_card', label: t('payment.externalCard') },
+    { value: 'other', label: t('payment.other') },
+  ]), [t]);
 
   React.useEffect(() => {
     if (open) {
@@ -27,7 +29,7 @@ export default function CollectPaymentDialog({ open, onClose, receiptId, dueTota
     if (!receiptId) return;
     const amt = Number(amount || 0);
     if (!(amt > 0)) {
-      alert('Amount must be greater than 0');
+      alert(t('errors.amountGreaterThanZero'));
       return;
     }
     setSubmitting(true);
@@ -38,7 +40,7 @@ export default function CollectPaymentDialog({ open, onClose, receiptId, dueTota
         body: JSON.stringify({ amount: amt, method, note }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error('Failed to collect payment');
+      if (!res.ok) throw new Error(t('errors.collectPaymentFailed'));
       onDone?.(json);
     } catch (e) {
       alert(e?.message || String(e));
@@ -49,22 +51,22 @@ export default function CollectPaymentDialog({ open, onClose, receiptId, dueTota
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Collect Payment</DialogTitle>
+      <DialogTitle>{t('pos.collectPayment')}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <Typography color="text.secondary">Due: {Number(dueTotal || 0).toFixed(2)}</Typography>
-          <TextField select label="Payment Method" value={method} onChange={(e) => setMethod(e.target.value)}>
+          <Typography color="text.secondary">{t('collectPayment.due')}: {formatNumber(dueTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+          <TextField select label={t('checkout.paymentMethod')} value={method} onChange={(e) => setMethod(e.target.value)}>
             {METHODS.map((m) => (
               <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
             ))}
           </TextField>
-          <TextField label="Amount" type="number" inputProps={{ min: 0, step: '0.01' }} value={amount} onChange={(e) => setAmount(e.target.value)} />
-          <TextField label="Note" value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
+          <TextField label={t('collectPayment.amount')} type="number" inputProps={{ min: 0, step: '0.01' }} value={amount} onChange={(e) => setAmount(e.target.value)} />
+          <TextField label={t('common.note')} value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button disabled={submitting} variant="contained" onClick={submit}>Collect</Button>
+        <Button onClick={onClose}>{t('common.cancel')}</Button>
+        <Button disabled={submitting} variant="contained" onClick={submit}>{t('collectPayment.collect')}</Button>
       </DialogActions>
     </Dialog>
   );

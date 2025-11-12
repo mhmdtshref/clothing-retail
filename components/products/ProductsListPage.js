@@ -31,6 +31,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import AddIcon from '@mui/icons-material/Add';
 import Link from 'next/link';
+import { useI18n } from '@/components/i18n/useI18n';
 
 const DEFAULTS = {
   query: '',
@@ -70,6 +71,7 @@ function useQueryState() {
 }
 
 export default function ProductsListPage() {
+  const { t, formatDate, formatNumber } = useI18n();
   const [state, setState] = useQueryState();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -129,7 +131,7 @@ export default function ProductsListPage() {
       <Toolbar sx={{ gap: 1, flexWrap: 'wrap' }}>
         <TextField
           size="small"
-          placeholder="Search products (code or name)"
+          placeholder={t('products.searchPlaceholder')}
           value={queryInput}
           onChange={(e) => setQueryInput(e.target.value)}
           InputProps={{
@@ -143,24 +145,24 @@ export default function ProductsListPage() {
         />
 
         <FormControl size="small" sx={{ minWidth: 140 }}>
-          <InputLabel id="status-label">Status</InputLabel>
+          <InputLabel id="status-label">{t('common.status')}</InputLabel>
           <Select
             labelId="status-label"
-            label="Status"
+            label={t('common.status')}
             value={state.status}
             onChange={onStatusChange}
           >
-            <MenuItem value="active">active</MenuItem>
-            <MenuItem value="archived">archived</MenuItem>
-            <MenuItem value="all">all</MenuItem>
+            <MenuItem value="active">{t('status.active')}</MenuItem>
+            <MenuItem value="archived">{t('status.archived')}</MenuItem>
+            <MenuItem value="all">{t('common.all')}</MenuItem>
           </Select>
         </FormControl>
 
         <FormControl size="small" sx={{ minWidth: 160 }}>
-          <InputLabel id="sort-label">Sort by</InputLabel>
+          <InputLabel id="sort-label">{t('common.sortBy')}</InputLabel>
           <Select
             labelId="sort-label"
-            label="Sort by"
+            label={t('common.sortBy')}
             value={state.sort}
             onChange={onSortChange}
             startAdornment={
@@ -169,9 +171,9 @@ export default function ProductsListPage() {
               </InputAdornment>
             }
           >
-            <MenuItem value="createdAt">createdAt</MenuItem>
-            <MenuItem value="code">code</MenuItem>
-            <MenuItem value="name">name</MenuItem>
+            <MenuItem value="createdAt">{t('products.createdAt')}</MenuItem>
+            <MenuItem value="code">{t('products.code')}</MenuItem>
+            <MenuItem value="name">{t('common.name')}</MenuItem>
           </Select>
         </FormControl>
 
@@ -184,10 +186,10 @@ export default function ProductsListPage() {
         </IconButton>
 
         <FormControl size="small" sx={{ minWidth: 120, ml: 'auto' }}>
-          <InputLabel id="limit-label">Per page</InputLabel>
+          <InputLabel id="limit-label">{t('common.perPage')}</InputLabel>
           <Select
             labelId="limit-label"
-            label="Per page"
+            label={t('common.perPage')}
             value={state.limit}
             onChange={onLimitChange}
           >
@@ -199,10 +201,10 @@ export default function ProductsListPage() {
         </FormControl>
 
         <Button component={Link} href="/products/new" startIcon={<AddIcon />} variant="contained">
-          New Product
+          {t('products.new')}
         </Button>
 
-        <IconButton onClick={fetchList} title="Refresh">
+        <IconButton onClick={fetchList} title={t('common.refresh')}>
           <RefreshIcon />
         </IconButton>
       </Toolbar>
@@ -225,12 +227,12 @@ export default function ProductsListPage() {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Code</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell align="right">Base Price</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell align="right">Variants</TableCell>
-                  <TableCell>Created</TableCell>
+                  <TableCell>{t('products.code')}</TableCell>
+                  <TableCell>{t('common.name')}</TableCell>
+                  <TableCell align="right">{t('products.basePrice')}</TableCell>
+                  <TableCell>{t('common.status')}</TableCell>
+                  <TableCell align="right">{t('products.variants')}</TableCell>
+                  <TableCell>{t('products.created')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -238,7 +240,7 @@ export default function ProductsListPage() {
                   <TableRow>
                     <TableCell colSpan={6}>
                       <Typography color="text.secondary" sx={{ py: 3 }}>
-                        No products found. Try adjusting your filters or create a new product.
+                        {t('products.none')}
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -249,10 +251,10 @@ export default function ProductsListPage() {
                       <Typography fontWeight={600}>{p.code}</Typography>
                     </TableCell>
                     <TableCell>{p.name || '-'}</TableCell>
-                    <TableCell align="right">{Number(p.basePrice || 0).toFixed(2)}</TableCell>
+                    <TableCell align="right">{formatNumber(Number(p.basePrice || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                     <TableCell>{p.status}</TableCell>
-                    <TableCell align="right">{p.variantCount ?? 0}</TableCell>
-                    <TableCell>{new Date(p.createdAt).toLocaleString()}</TableCell>
+                    <TableCell align="right">{formatNumber(p.variantCount ?? 0)}</TableCell>
+                    <TableCell>{formatDate(p.createdAt)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -265,7 +267,7 @@ export default function ProductsListPage() {
               sx={{ px: 2, py: 2 }}
             >
               <Typography variant="body2" color="text.secondary">
-                Total: {data.meta.total} • Page {state.page} of {data.meta.pages}
+                {t('common.total')}: {formatNumber(data.meta.total)} • {t('common.page')} {state.page} {t('common.of')} {formatNumber(data.meta.pages)}
               </Typography>
               <Pagination
                 page={state.page}

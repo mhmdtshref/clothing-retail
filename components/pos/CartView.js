@@ -10,8 +10,10 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import { computeLine, computeReceiptTotals } from '@/lib/pricing';
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDiscount, removeLine, clear, billDiscount, setBillDiscount, taxPercent, setTaxPercent }) {
+  const { t, formatNumber } = useI18n();
   const subtotal = items.reduce((sum, l) => sum + (computeLine({ qty: l.qty, unit: l.unitPrice, discount: l.discount }).net || 0), 0);
 
   const pricingPayload = React.useMemo(() => ({
@@ -33,21 +35,21 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
         <Table size="small" stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>Product</TableCell>
-              <TableCell>Variant</TableCell>
-              <TableCell align="right">On hand</TableCell>
-              <TableCell align="right">Qty</TableCell>
-              <TableCell align="right">Unit Price</TableCell>
-              <TableCell>Discount</TableCell>
-              <TableCell align="right">Line Total</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell>{t('common.product')}</TableCell>
+              <TableCell>{t('common.variant')}</TableCell>
+              <TableCell align="right">{t('pos.onHand')}</TableCell>
+              <TableCell align="right">{t('common.qty')}</TableCell>
+              <TableCell align="right">{t('pos.unitPrice')}</TableCell>
+              <TableCell>{t('common.discount')}</TableCell>
+              <TableCell align="right">{t('cart.lineTotal')}</TableCell>
+              <TableCell align="right">{t('common.actions')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {items.length === 0 && (
               <TableRow>
                 <TableCell colSpan={8}>
-                  <Typography color="text.secondary" sx={{ py: 2 }}>Cart is empty. Add items from the catalog.</Typography>
+                  <Typography color="text.secondary" sx={{ py: 2 }}>{t('cart.empty')}</Typography>
                 </TableCell>
               </TableRow>
             )}
@@ -64,7 +66,7 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
                     <Typography variant="body2">{l.size} / {l.color}</Typography>
                     <Typography variant="caption" color="text.secondary">{l.companyName}</Typography>
                   </TableCell>
-                  <TableCell align="right">{l.onHand}</TableCell>
+                  <TableCell align="right">{formatNumber(l.onHand)}</TableCell>
                   <TableCell align="right">
                     <Stack direction="row" spacing={0.5} justifyContent="flex-end" alignItems="center">
                       <IconButton size="small" onClick={() => dec(l.id)} disabled={l.qty <= 0}><RemoveIcon fontSize="small" /></IconButton>
@@ -75,7 +77,7 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
                         onChange={(e) => setQty(l.id, e.target.value)}
                         inputProps={{ min: 0, step: 1, style: { width: 64, textAlign: 'right' } }}
                         error={over}
-                        helperText={over ? 'over on-hand' : ''}
+                        helperText={over ? t('cart.overOnHand') : ''}
                       />
                       <IconButton size="small" onClick={() => inc(l.id)}><AddIcon fontSize="small" /></IconButton>
                     </Stack>
@@ -92,8 +94,8 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
                   <TableCell>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Select size="small" value={l.discount?.mode || 'amount'} onChange={(e) => setDiscount(l.id, { mode: e.target.value })}>
-                        <MenuItem value="amount">amount</MenuItem>
-                        <MenuItem value="percent">percent</MenuItem>
+                        <MenuItem value="amount">{t('discount.amount')}</MenuItem>
+                        <MenuItem value="percent">{t('discount.percent')}</MenuItem>
                       </Select>
                       <TextField
                         size="small"
@@ -105,8 +107,8 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
                     </Stack>
                   </TableCell>
                   <TableCell align="right">
-                    <Tooltip title={`line: ${line.toFixed(2)} • itemDisc: ${lineDiscount.toFixed(2)}`}>
-                      <span>{net.toFixed(2)}</span>
+                    <Tooltip title={`${t('cart.line')}: ${formatNumber(line, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} • ${t('cart.itemDisc')}: ${formatNumber(lineDiscount, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}>
+                      <span>{formatNumber(net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </Tooltip>
                   </TableCell>
                   <TableCell align="right">
@@ -122,12 +124,12 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ xs: 'stretch', sm: 'center' }}>
         <Stack direction="row" spacing={1} alignItems="center" sx={{ flexGrow: 1 }}>
           <Select size="small" value={billDiscount.mode} onChange={(e) => setBillDiscount((d) => ({ ...d, mode: e.target.value }))}>
-            <MenuItem value="amount">amount</MenuItem>
-            <MenuItem value="percent">percent</MenuItem>
+            <MenuItem value="amount">{t('discount.amount')}</MenuItem>
+            <MenuItem value="percent">{t('discount.percent')}</MenuItem>
           </Select>
           <TextField
             size="small"
-            label="Bill Discount"
+            label={t('checkout.billDiscount')}
             type="number"
             value={billDiscount.value}
             onChange={(e) => setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value) || 0) }))}
@@ -135,23 +137,23 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
           />
           <TextField
             size="small"
-            label="Tax %"
+            label={t('checkout.taxPercent')}
             type="number"
             value={taxPercent}
             onChange={(e) => setTaxPercent(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
             inputProps={{ min: 0, max: 100, step: '0.01', style: { width: 120 } }}
           />
         </Stack>
-        <Button startIcon={<ClearAllIcon />} variant="outlined" color="warning" onClick={clear} disabled={items.length === 0}>Clear cart</Button>
+        <Button startIcon={<ClearAllIcon />} variant="outlined" color="warning" onClick={clear} disabled={items.length === 0}>{t('cart.clearCart')}</Button>
       </Stack>
 
       {/* Totals */}
       <Stack spacing={0.5} alignItems="flex-end">
-        <Typography>Item Subtotal: {totals.itemSubtotal.toFixed(2)}</Typography>
-        <Typography>Item Discounts: −{totals.itemDiscountTotal.toFixed(2)}</Typography>
-        <Typography>Bill Discount: −{totals.billDiscountTotal.toFixed(2)}</Typography>
-        <Typography>Tax ({totals.taxPercent}%): {totals.taxTotal.toFixed(2)}</Typography>
-        <Typography variant="h6">Grand Total: {totals.grandTotal.toFixed(2)}</Typography>
+        <Typography>{t('receipt.subtotal')}: {formatNumber(totals.itemSubtotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+        <Typography>{t('receipt.itemDiscounts')}: −{formatNumber(totals.itemDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+        <Typography>{t('receipt.billDiscount')}: −{formatNumber(totals.billDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+        <Typography>{t('receipt.tax')} ({formatNumber(totals.taxPercent)}%): {formatNumber(totals.taxTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+        <Typography variant="h6">{t('receipt.grandTotal')}: {formatNumber(totals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
       </Stack>
     </Stack>
   );

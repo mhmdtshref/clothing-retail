@@ -8,9 +8,11 @@ import OptimusForm from '@/components/delivery/OptimusForm';
 import { computeReceiptTotals } from '@/lib/pricing';
 import submitDelivery from '@/components/delivery/submitDelivery';
 import { useCart } from '@/components/pos/useCart';
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function DeliveryNewShell({ companies }) {
   const cart = useCart();
+  const { t, formatNumber } = useI18n();
   const { items } = cart;
   const [billDiscount, setBillDiscount] = React.useState({ mode: 'amount', value: 0 });
   const [taxPercent, setTaxPercent] = React.useState(0);
@@ -59,18 +61,18 @@ export default function DeliveryNewShell({ companies }) {
   return (
     <Box sx={{ height: '100dvh', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Typography variant="h6">New Delivery Receipt</Typography>
-        <Chip size="small" label={`Items: ${items.length}`} />
+        <Typography variant="h6">{t('delivery.newReceipt')}</Typography>
+        <Chip size="small" label={`${t('pos.items')}: ${formatNumber(items.length)}`} />
         <Box sx={{ flex: 1 }} />
-        <Typography variant="body2">Total: {Number(totals.grandTotal || 0).toFixed(2)}</Typography>
+        <Typography variant="body2">{t('common.total')}: {formatNumber(totals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
       </Box>
       <Box sx={{ p: 2, flex: 1, display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>
         <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-          <Typography variant="subtitle1" gutterBottom>Catalog</Typography>
+          <Typography variant="subtitle1" gutterBottom>{t('pos.catalog')}</Typography>
           <POSCatalog onPickVariant={(v, p) => addVariant(v, p)} isReturnMode={false} />
         </Paper>
         <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography variant="subtitle1" gutterBottom>Cart</Typography>
+          <Typography variant="subtitle1" gutterBottom>{t('cart.title')}</Typography>
           <CartView
             items={cart.items}
             inc={cart.inc}
@@ -89,22 +91,22 @@ export default function DeliveryNewShell({ companies }) {
       </Box>
       <Box sx={{ p: 2 }}>
         <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography variant="subtitle1">Delivery</Typography>
+          <Typography variant="subtitle1">{t('delivery.details')}</Typography>
           <ToggleButtonGroup size="small" exclusive value={deliveryCompany} onChange={(_e, val) => { if (val) setDeliveryCompany(val); }}>
-            <ToggleButton value="optimus">Optimus</ToggleButton>
-            <ToggleButton value="sabeq_laheq">Sabeq Laheq</ToggleButton>
+            <ToggleButton value="optimus">{t('delivery.company.optimus')}</ToggleButton>
+            <ToggleButton value="sabeq_laheq">{t('delivery.company.sabeq_laheq')}</ToggleButton>
           </ToggleButtonGroup>
           {deliveryCompany === 'optimus' ? (
             <OptimusForm value={optimusData} onChange={setOptimusData} />
           ) : (
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-              <TextField label="Contact Name" value={deliveryContact.name} onChange={(e) => setDeliveryContact((c) => ({ ...c, name: e.target.value }))} fullWidth />
-              <TextField label="Contact Phone" value={deliveryContact.phone} onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))} fullWidth />
+              <TextField label={t('delivery.contactName')} value={deliveryContact.name} onChange={(e) => setDeliveryContact((c) => ({ ...c, name: e.target.value }))} fullWidth />
+              <TextField label={t('delivery.contactPhone')} value={deliveryContact.phone} onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))} fullWidth />
             </Stack>
           )}
           <Box sx={{ textAlign: 'right' }}>
             <Button variant="contained" disabled={!canCheckout || submitting} onClick={onSubmit}>
-              {submitting ? 'Creating…' : 'Create Delivery Receipt'}
+              {submitting ? t('delivery.creating') : t('delivery.createReceipt')}
             </Button>
           </Box>
         </Paper>

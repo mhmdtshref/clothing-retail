@@ -16,8 +16,10 @@ import {
   Divider,
   Typography,
 } from '@mui/material';
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function CustomerDialog({ open, onClose, onSelect, initialValue }) {
+  const { t } = useI18n();
   const [query, setQuery] = React.useState('');
   const [results, setResults] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -84,18 +86,18 @@ export default function CustomerDialog({ open, onClose, onSelect, initialValue }
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Select Customer</DialogTitle>
+      <DialogTitle>{t('pos.selectCustomer')}</DialogTitle>
       <DialogContent dividers>
         <Stack spacing={2} sx={{ pt: 1 }}>
           <TextField
-            label="Search by name or phone"
+            label={t('pos.searchByNameOrPhone')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             size="small"
             fullWidth
           />
 
-          {loading && <Typography variant="body2">Searching…</Typography>}
+          {loading && <Typography variant="body2">{t('common.searching')}</Typography>}
           {!loading && error && (
             <Typography color="error" variant="body2">{error}</Typography>
           )}
@@ -105,7 +107,7 @@ export default function CustomerDialog({ open, onClose, onSelect, initialValue }
               {results.map((c) => (
                 <ListItem key={c._id} disablePadding>
                   <ListItemButton onClick={() => { if (onSelect) onSelect(c); if (onClose) onClose(); }}>
-                    <ListItemText primary={c.name || '(No name)'} secondary={c.phone} />
+                    <ListItemText primary={c.name || t('common.noName')} secondary={c.phone} />
                   </ListItemButton>
                 </ListItem>
               ))}
@@ -114,30 +116,30 @@ export default function CustomerDialog({ open, onClose, onSelect, initialValue }
 
           <Divider />
 
-          <Typography variant="subtitle2">Create new</Typography>
+          <Typography variant="subtitle2">{t('common.createNew')}</Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
             <TextField
-              label="Name"
+              label={t('common.name')}
               value={name}
               onChange={(e) => setName(e.target.value)}
               size="small"
               fullWidth
             />
             <TextField
-              label="Phone"
+              label={t('common.phone')}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               size="small"
               fullWidth
             />
             <Button variant="contained" onClick={handleCreate} disabled={creating || !phone}>
-              {creating ? 'Saving…' : 'Save'}
+              {creating ? t('common.saving') : t('common.save')}
             </Button>
           </Stack>
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>{t('common.close')}</Button>
       </DialogActions>
     </Dialog>
   );

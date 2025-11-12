@@ -5,17 +5,17 @@ import POS_RECEIPT from '@/config/pos-receipt';
 import { useI18n } from '@/components/i18n/useI18n';
 
 export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = false }) {
-  const { t } = useI18n();
+  const { t, formatNumber, formatDate } = useI18n();
   const isReturn = receipt?.type === 'sale_return';
   const isSale = receipt?.type === 'sale';
   const isDelivery = Boolean(receipt?.delivery?.company);
   const deliveryCompanyKey = String(receipt?.delivery?.company || '').toLowerCase();
   const deliveryCompanyName = deliveryCompanyKey === 'optimus'
-    ? 'Optimus'
+    ? t('delivery.company.optimus')
     : deliveryCompanyKey === 'sabeq_laheq'
-      ? 'Sabeq Laheq'
+      ? t('delivery.company.sabeq_laheq')
       : (receipt?.delivery?.company || '');
-  const currency = (n) => Number(n || 0).toFixed(2);
+  const currency = (n) => formatNumber(Number(n || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const shortId = String(receipt?._id || '').slice(-6);
   const paidTotal = Array.isArray(receipt?.payments)
     ? receipt.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
@@ -70,20 +70,20 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
         <div>#{shortId}</div>
       </div>
       <div className="row">
-        <div>{new Date(receipt?.date || Date.now()).toLocaleString()}</div>
-        <div className="muted">{receipt?.status}</div>
+        <div>{formatDate(new Date(receipt?.date || Date.now()))}</div>
+        <div className="muted">{t(`status.${receipt?.status}`)}</div>
       </div>
       {isSale && receipt?.customer && (
         <div className="row">
-          <div className="muted">Customer</div>
-          <div>{(receipt.customer.name || '(No name)')} • {receipt.customer.phone}</div>
+          <div className="muted">{t('pos.customer')}</div>
+          <div>{(receipt.customer.name || t('common.noName'))} • {receipt.customer.phone}</div>
         </div>
       )}
       {receipt?.returnReason && (
-        <div className="muted">Reason: {receipt.returnReason}</div>
+        <div className="muted">{t('receipt.reason')}: {receipt.returnReason}</div>
       )}
       {isDelivery && (
-        <div className="muted">{t('receipt.note')}: Delivery (COD){receipt?.note ? ` — ${receipt.note}` : ''}</div>
+        <div className="muted">{t('receipt.note')}: {t('receipt.deliveryNoteCOD')}{receipt?.note ? ` — ${receipt.note}` : ''}</div>
       )}
       {!isDelivery && receipt?.note && (
         <div className="muted">{t('receipt.note')}: {receipt.note}</div>

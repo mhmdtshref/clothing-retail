@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 import { z } from 'zod';
 import { ProductImageUploader } from '@/components/uploads';
+import { useI18n } from '@/components/i18n/useI18n';
 
 const productSchema = z.object({
   code: z
@@ -62,6 +63,7 @@ function cartesianPreview(sizes, colors, companies, limit = 10) {
 
 export default function CreateProductForm({ companies }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [values, setValues] = React.useState({
     code: '',
     name: '',
@@ -115,7 +117,7 @@ export default function CreateProductForm({ companies }) {
         genInput.colors.length === 0 ||
         genInput.companyIds.length === 0
       ) {
-        throw new Error('Please provide at least one Size, Color, and Company.');
+        throw new Error(t('errors.provideSizeColorCompany'));
       }
 
       // 1) Create product
@@ -126,7 +128,7 @@ export default function CreateProductForm({ companies }) {
       });
       const data1 = await res1.json();
       if (!res1.ok) {
-        const msg = data1?.message || data1?.error || 'Failed to create product';
+        const msg = data1?.message || data1?.error || t('errors.createProductFailed');
         throw new Error(msg);
       }
       const productId = data1.product?._id;
@@ -140,14 +142,14 @@ export default function CreateProductForm({ companies }) {
       const data2 = await res2.json();
       if (!res2.ok) {
         const msg =
-          data2?.message || data2?.error || 'Product created but variant generation failed';
+          data2?.message || data2?.error || t('errors.variantGenerationFailed');
         throw new Error(msg);
       }
 
       setSnack({
         open: true,
         severity: 'success',
-        message: `Created: ${data1.product.code}. Variants: ${data2.created} created, ${data2.skippedExisting} skipped.`,
+        message: `${t('products.createdLabel')}: ${data1.product.code}. ${t('products.variantsLabel')}: ${data2.created} ${t('products.createdCount')}, ${data2.skippedExisting} ${t('products.skippedCount')}.`,
       });
       // Optionally redirect to dashboard or a future product detail page
       setTimeout(() => {
@@ -163,31 +165,31 @@ export default function CreateProductForm({ companies }) {
   return (
     <Paper sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>
-        Create Product
+        {t('products.createProduct')}
       </Typography>
       <Box component="form" onSubmit={onSubmit}>
         <Stack spacing={2}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <Box sx={{ width: '100%' }}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>Product Image (optional)</Typography>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>{t('products.imageOptional')}</Typography>
               <ProductImageUploader value={image} onChange={setImage} />
             </Box>
           </Stack>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <TextField
-              label="Code"
+              label={t('products.code')}
               value={values.code}
               onChange={handleChange('code')}
               required
               fullWidth
             />
-            <TextField label="Name" value={values.name} onChange={handleChange('name')} fullWidth />
+            <TextField label={t('common.name')} value={values.name} onChange={handleChange('name')} fullWidth />
           </Stack>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <TextField
-              label="Base Price"
+              label={t('products.basePrice')}
               value={values.basePrice}
               onChange={handleChange('basePrice')}
               type="number"
@@ -196,19 +198,19 @@ export default function CreateProductForm({ companies }) {
             />
             <TextField
               select
-              label="Status"
+              label={t('common.status')}
               value={values.status}
               onChange={handleChange('status')}
               fullWidth
             >
-              <MenuItem value="active">active</MenuItem>
-              <MenuItem value="archived">archived</MenuItem>
+              <MenuItem value="active">{t('status.active')}</MenuItem>
+              <MenuItem value="archived">{t('status.archived')}</MenuItem>
             </TextField>
           </Stack>
 
           <Divider />
 
-          <Typography variant="subtitle1">Variant generation</Typography>
+          <Typography variant="subtitle1">{t('products.variantGeneration')}</Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <Autocomplete
               multiple
@@ -224,7 +226,7 @@ export default function CreateProductForm({ companies }) {
               fullWidth
               sx={{ flex: 1, minWidth: 0 }}
               renderInput={(params) => (
-                <TextField {...params} label="Sizes" placeholder="Type and press Enter" fullWidth />
+                <TextField {...params} label={t('products.sizes')} placeholder={t('products.typeAndEnter')} fullWidth />
               )}
             />
             <Autocomplete
@@ -243,8 +245,8 @@ export default function CreateProductForm({ companies }) {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Colors"
-                  placeholder="Type and press Enter"
+                  label={t('products.colors')}
+                  placeholder={t('products.typeAndEnter')}
                   fullWidth
                 />
               )}
@@ -262,22 +264,22 @@ export default function CreateProductForm({ companies }) {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Companies (suppliers)"
-                placeholder="Select one or more"
+                label={t('products.companiesSuppliers')}
+                placeholder={t('products.selectOneOrMore')}
               />
             )}
           />
 
           <Box>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Variant preview ({preview.total} total)
+              {t('products.variantPreview')} ({preview.total} {t('common.total')})
             </Typography>
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Size</TableCell>
-                  <TableCell>Color</TableCell>
-                  <TableCell>Company</TableCell>
+                  <TableCell>{t('products.size')}</TableCell>
+                  <TableCell>{t('products.color')}</TableCell>
+                  <TableCell>{t('products.company')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -291,7 +293,7 @@ export default function CreateProductForm({ companies }) {
                 {preview.total > preview.rows.length && (
                   <TableRow>
                     <TableCell colSpan={3}>
-                      …and {preview.total - preview.rows.length} more
+                      …{t('common.and')} {preview.total - preview.rows.length} {t('common.more')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -314,10 +316,10 @@ export default function CreateProductForm({ companies }) {
                 })
               }
             >
-              Reset
+              {t('common.reset')}
             </Button>
             <Button type="submit" variant="contained" disabled={submitting}>
-              {submitting ? 'Creating…' : 'Create Product & Variants'}
+              {submitting ? t('products.creating') : t('products.createWithVariants')}
             </Button>
           </Stack>
         </Stack>

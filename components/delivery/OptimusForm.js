@@ -3,8 +3,10 @@
 
 import * as React from 'react';
 import { Stack, TextField, MenuItem, Typography, CircularProgress, Autocomplete } from '@mui/material';
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function OptimusForm({ value, onChange, disabled = false, amountFieldMode = 'cod' }) {
+  const { t } = useI18n();
   const [cities, setCities] = React.useState([]);
   const [areas, setAreas] = React.useState([]);
   const [loadingCities, setLoadingCities] = React.useState(false);
@@ -28,7 +30,7 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
       .then((r) => r.json())
       .then((json) => {
         if (!active) return;
-        if (!json?.ok) throw new Error('Failed to load cities');
+        if (!json?.ok) throw new Error(t('errors.loadCities'));
         setCities(Array.isArray(json.items) ? json.items : []);
       })
       .catch((e) => setError(e?.message || String(e)))
@@ -45,7 +47,7 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
       .then((r) => r.json())
       .then((json) => {
         if (!active) return;
-        if (!json?.ok) throw new Error('Failed to load areas');
+        if (!json?.ok) throw new Error(t('errors.loadAreas'));
         setAreas(Array.isArray(json.items) ? json.items : []);
       })
       .catch((e) => setError(e?.message || String(e)))
@@ -106,7 +108,7 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
           cache: 'no-store',
         });
         const json = await res.json();
-        if (!res.ok) throw new Error('Search failed');
+        if (!res.ok) throw new Error(t('errors.searchFailed'));
         setContactOptions(Array.isArray(json.items) ? json.items : []);
       } catch (_e) {
         // ignore errors in suggestions
@@ -129,7 +131,7 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
   return (
     <Stack spacing={2}>
       <TextField
-        label="Address Line 1"
+        label={t('delivery.addressLine')}
         value={v.addressLine}
         onChange={(e) => update({ addressLine: e.target.value })}
         disabled={disabled}
@@ -138,24 +140,24 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
 
       {amountFieldMode === 'cod' ? (
         <TextField
-          label="COD Amount"
+          label={t('delivery.codAmount')}
           type="number"
           inputProps={{ min: 0, step: '0.01' }}
           value={v.codAmount}
           onChange={(e) => update({ codAmount: e.target.value })}
           disabled={disabled}
-          helperText="Include delivery fees if needed"
+          helperText={t('delivery.includeFeesHint')}
           fullWidth
         />
       ) : (
         <TextField
-          label="Delivery fees"
+          label={t('delivery.deliveryFees')}
           type="number"
           inputProps={{ min: 0, step: '0.01' }}
           value={v.deliveryFees || ''}
           onChange={(e) => update({ deliveryFees: e.target.value })}
           disabled={disabled}
-          helperText="We will calculate COD automatically"
+          helperText={t('delivery.autoCodHint')}
           fullWidth
         />
       )}
@@ -168,7 +170,7 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
           if (!o || typeof o !== 'object') return String(o || '');
           const provider = o.provider || {};
           const cityArea = [provider.cityName, provider.areaName].filter(Boolean).join(' / ');
-          const base = `${o.name || '(No name)'} • ${o.phone || ''}`;
+          const base = `${o.name || t('common.noName')} • ${o.phone || ''}`;
           return cityArea ? `${base} • ${cityArea}` : base;
         }}
         renderOption={(props, option, { index }) => {
@@ -183,8 +185,8 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
           ];
           const k = keyParts.map((p) => String(p)).join('|');
           const cityArea = [provider.cityName, provider.areaName].filter(Boolean).join(' / ');
-          const fallback = (option && typeof option === 'object') ? `${option.name || '(No name)'} • ${option.phone || ''}` : String(option || '');
-          const nameLabel = (option && typeof option === 'object') ? (option.name || '(No name)') : '';
+          const fallback = (option && typeof option === 'object') ? `${option.name || t('common.noName')} • ${option.phone || ''}` : String(option || '');
+          const nameLabel = (option && typeof option === 'object') ? (option.name || t('common.noName')) : '';
           const display = [nameLabel, cityArea].filter(Boolean).join(' • ') || fallback;
           return (
             <li {...props} key={k}>
@@ -214,22 +216,22 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
           }
         }}
         renderInput={(params) => (
-          <TextField {...params} label="Search Contact (name or phone)" placeholder="Type name or phone" fullWidth />
+          <TextField {...params} label={t('delivery.searchContact')} placeholder={t('delivery.searchContactPlaceholder')} fullWidth />
         )}
         fullWidth
       />
       <TextField
         select
-        label="City"
+        label={t('delivery.city')}
         value={v.cityId}
         onChange={(e) => update({ cityId: e.target.value, cityName: (cities.find((c) => c.id === e.target.value)?.name) || '', areaId: '', areaName: '' })}
         disabled={disabled}
-        helperText={loadingCities ? 'Loading cities…' : ''}
+        helperText={loadingCities ? t('delivery.loadingCities') : ''}
         fullWidth
       >
         {loadingCities ? (
           <MenuItem value="" disabled>
-            <CircularProgress size={16} sx={{ mr: 1 }} /> Loading…
+            <CircularProgress size={16} sx={{ mr: 1 }} /> {t('common.loading')}
           </MenuItem>
         ) : cities.map((c) => (
           <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
@@ -238,16 +240,16 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
 
       <TextField
         select
-        label="Area"
+        label={t('delivery.area')}
         value={v.areaId}
         onChange={(e) => update({ areaId: e.target.value, areaName: (areas.find((a) => a.id === e.target.value)?.name) || '' })}
         disabled={disabled || !v.cityId}
-        helperText={!v.cityId ? 'Select city first' : (loadingAreas ? 'Loading areas…' : '')}
+        helperText={!v.cityId ? t('delivery.selectCityFirst') : (loadingAreas ? t('delivery.loadingAreas') : '')}
         fullWidth
       >
         {loadingAreas ? (
           <MenuItem value="" disabled>
-            <CircularProgress size={16} sx={{ mr: 1 }} /> Loading…
+            <CircularProgress size={16} sx={{ mr: 1 }} /> {t('common.loading')}
           </MenuItem>
         ) : areas.map((a) => (
           <MenuItem key={a.id} value={a.id}>{a.name}</MenuItem>
@@ -255,25 +257,25 @@ export default function OptimusForm({ value, onChange, disabled = false, amountF
       </TextField>
 
       <TextField
-        label="Customer Name"
+        label={t('common.name')}
         value={v.name}
         onChange={(e) => update({ name: e.target.value })}
         disabled={disabled}
         fullWidth
       />
       <TextField
-        label="Phone (10 digits)"
+        label={t('common.phone')}
         value={v.phone}
         onChange={(e) => update({ phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
         error={!!v.phone && !phoneValid}
-        helperText={!v.phone ? 'Required' : (!phoneValid ? 'Enter 10 digits' : '')}
+        helperText={!v.phone ? t('common.required') : (!phoneValid ? t('errors.phone10Digits') : '')}
         disabled={disabled}
         fullWidth
       />
 
       {cityObj && areaObj && (
         <Typography variant="caption" color="text.secondary">
-          Selected: {cityObj.name} / {areaObj.name}
+          {t('common.selected')}: {cityObj.name} / {areaObj.name}
         </Typography>
       )}
     </Stack>

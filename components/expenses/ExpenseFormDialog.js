@@ -14,8 +14,10 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function ExpenseFormDialog({ open, onClose, onSaved, categories, initialValue }) {
+  const { t } = useI18n();
   const [date, setDate] = React.useState(initialValue ? new Date(initialValue.date).toISOString().substring(0, 10) : new Date().toISOString().substring(0, 10));
   const [categoryId, setCategoryId] = React.useState(initialValue?.categoryId || '');
   const [amount, setAmount] = React.useState(initialValue ? String(initialValue.amount ?? 0) : '0');
@@ -44,7 +46,7 @@ export default function ExpenseFormDialog({ open, onClose, onSaved, categories, 
         body: JSON.stringify(payload),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error('Save failed');
+      if (!res.ok) throw new Error(t('errors.saveFailed'));
       onSaved?.(json);
     } catch (e) {
       // optionally surface error
@@ -55,14 +57,14 @@ export default function ExpenseFormDialog({ open, onClose, onSaved, categories, 
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{isEdit ? 'Edit Expense' : 'New Expense'}</DialogTitle>
+      <DialogTitle>{isEdit ? t('expenses.edit') : t('expenses.new')}</DialogTitle>
       <DialogContent dividers>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <TextField label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+          <TextField label={t('common.date')} type="date" value={date} onChange={(e) => setDate(e.target.value)} InputLabelProps={{ shrink: true }} />
 
           <FormControl>
-            <InputLabel id="cat-label">Category</InputLabel>
-            <Select labelId="cat-label" label="Category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+            <InputLabel id="cat-label">{t('expenses.category')}</InputLabel>
+            <Select labelId="cat-label" label={t('expenses.category')} value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
               {categories.map((c) => (
                 <MenuItem key={c._id} value={c._id}>
                   {c.name}
@@ -71,17 +73,17 @@ export default function ExpenseFormDialog({ open, onClose, onSaved, categories, 
             </Select>
           </FormControl>
 
-          <TextField label="Amount" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} inputProps={{ min: 0, step: '0.01' }} />
-          <TextField label="Vendor" value={vendor} onChange={(e) => setVendor(e.target.value)} />
-          <TextField label="Note" value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
+          <TextField label={t('expenses.amount')} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} inputProps={{ min: 0, step: '0.01' }} />
+          <TextField label={t('expenses.vendor')} value={vendor} onChange={(e) => setVendor(e.target.value)} />
+          <TextField label={t('common.note')} value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={submitting}>
-          Cancel
+          {t('common.cancel')}
         </Button>
         <Button onClick={onSubmit} disabled={submitting || !categoryId} variant="contained">
-          {isEdit ? 'Save' : 'Create'}
+          {isEdit ? t('common.save') : t('common.create')}
         </Button>
       </DialogActions>
     </Dialog>

@@ -7,9 +7,11 @@ import {
 } from '@mui/material';
 import { ProductImageUploader } from '@/components/uploads';
 import { useRouter } from 'next/navigation';
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function ProductDetailsPage({ productId }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState('');
   const [product, setProduct] = React.useState(null);
@@ -22,7 +24,7 @@ export default function ProductDetailsPage({ productId }) {
     try {
       const pRes = await fetch(`/api/products/${productId}`, { cache: 'no-store' });
       const pJson = await pRes.json();
-      if (!pRes.ok) throw new Error(pJson?.message || pJson?.error || 'Failed to load product');
+      if (!pRes.ok) throw new Error(pJson?.message || pJson?.error || t('errors.loadProduct'));
       setProduct(pJson.product);
       setEditing({
         code: pJson.product.code || '',
@@ -54,9 +56,9 @@ export default function ProductDetailsPage({ productId }) {
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error('Failed to save');
+      if (!res.ok) throw new Error(t('errors.saveFailed'));
       setProduct(json.product);
-      setSnack({ open: true, severity: 'success', message: 'Saved' });
+      setSnack({ open: true, severity: 'success', message: t('common.saved') });
       router.push('/products');
     } catch (e) {
       setSnack({ open: true, severity: 'error', message: e?.message || String(e) });
@@ -79,40 +81,40 @@ export default function ProductDetailsPage({ productId }) {
   return (
     <Box sx={{ p: 2 }}>
       <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        <Typography variant="h5">{product?.code || 'Product'}</Typography>
+        <Typography variant="h5">{product?.code || t('products.product')}</Typography>
         {product && <Chip size="small" label={product.status} color={product.status === 'active' ? 'success' : 'default'} />}
       </Stack>
 
-      {loading && <Typography color="text.secondary">Loading…</Typography>}
+      {loading && <Typography color="text.secondary">{t('common.loading')}</Typography>}
       {error && !loading && <Alert severity="error">{error}</Alert>}
 
       {!loading && product && (
         <Stack spacing={2} sx={{ maxWidth: 1200, mx: 'auto' }}>
           <Paper sx={{ p: 2 }}>
             <Stack spacing={2}>
-              <TextField label="Code" value={editing.code} onChange={(e) => setEditing((s) => ({ ...s, code: e.target.value }))} fullWidth />
-              <TextField label="Name" value={editing.name} onChange={(e) => setEditing((s) => ({ ...s, name: e.target.value }))} fullWidth />
-              <TextField label="Base Price" type="number" value={editing.basePrice} onChange={(e) => setEditing((s) => ({ ...s, basePrice: e.target.value }))} fullWidth />
+              <TextField label={t('products.code')} value={editing.code} onChange={(e) => setEditing((s) => ({ ...s, code: e.target.value }))} fullWidth />
+              <TextField label={t('common.name')} value={editing.name} onChange={(e) => setEditing((s) => ({ ...s, name: e.target.value }))} fullWidth />
+              <TextField label={t('products.basePrice')} type="number" value={editing.basePrice} onChange={(e) => setEditing((s) => ({ ...s, basePrice: e.target.value }))} fullWidth />
               <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
-                <Select label="Status" value={editing.status} onChange={(e) => setEditing((s) => ({ ...s, status: e.target.value }))}>
-                  <MenuItem value="active">active</MenuItem>
-                  <MenuItem value="archived">archived</MenuItem>
+                <InputLabel>{t('common.status')}</InputLabel>
+                <Select label={t('common.status')} value={editing.status} onChange={(e) => setEditing((s) => ({ ...s, status: e.target.value }))}>
+                  <MenuItem value="active">{t('status.active')}</MenuItem>
+                  <MenuItem value="archived">{t('status.archived')}</MenuItem>
                 </Select>
               </FormControl>
               <Box>
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>Product Image</Typography>
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>{t('products.image')}</Typography>
                 <ProductImageUploader value={editing.image} onChange={(img) => setEditing((s) => ({ ...s, image: img }))} />
                 {editing.image && (
-                  <Button sx={{ mt: 1 }} size="small" color="warning" onClick={() => setEditing((s) => ({ ...s, image: null }))}>Remove Image</Button>
+                  <Button sx={{ mt: 1 }} size="small" color="warning" onClick={() => setEditing((s) => ({ ...s, image: null }))}>{t('products.removeImage')}</Button>
                 )}
               </Box>
             </Stack>
           </Paper>
 
           <Stack direction="row" justifyContent="flex-end" spacing={1}>
-            <Button variant="outlined" onClick={onReset} disabled={!product}>Reset</Button>
-            <Button variant="contained" onClick={onSave} disabled={!product}>Save</Button>
+            <Button variant="outlined" onClick={onReset} disabled={!product}>{t('common.reset')}</Button>
+            <Button variant="contained" onClick={onSave} disabled={!product}>{t('common.save')}</Button>
           </Stack>
         </Stack>
       )}

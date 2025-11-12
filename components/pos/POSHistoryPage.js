@@ -13,6 +13,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import CollectPaymentDialog from '@/components/pos/CollectPaymentDialog';
 import ReceiptDetailsDialog from '@/components/pos/ReceiptDetailsDialog';
+import { useI18n } from '@/components/i18n/useI18n';
 
 function formatYYYYMMDD(d = new Date()) {
   const y = d.getFullYear();
@@ -22,6 +23,7 @@ function formatYYYYMMDD(d = new Date()) {
 }
 
 export default function POSHistoryPage() {
+  const { t, formatDate, formatNumber } = useI18n();
   const today = formatYYYYMMDD(new Date());
   const [query, setQuery] = React.useState('');
   const [status, setStatus] = React.useState('all');
@@ -78,7 +80,7 @@ export default function POSHistoryPage() {
       <Toolbar sx={{ gap: 1, flexWrap: 'wrap' }}>
         <TextField
           size="small"
-          placeholder="Search (note, product code/name)"
+          placeholder={t('pos.historySearchPlaceholder')}
           value={query}
           onChange={(e) => { setQuery(e.target.value); setPage(1); }}
           InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>) }}
@@ -86,8 +88,8 @@ export default function POSHistoryPage() {
         />
 
         <FormControl size="small" sx={{ minWidth: 140 }}>
-          <InputLabel id="status-label">Status</InputLabel>
-          <Select labelId="status-label" label="Status" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
+          <InputLabel id="status-label">{t('common.status')}</InputLabel>
+          <Select labelId="status-label" label={t('common.status')} value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
             <MenuItem value="all">all</MenuItem>
             <MenuItem value="completed">completed</MenuItem>
             <MenuItem value="ordered">ordered</MenuItem>
@@ -97,55 +99,55 @@ export default function POSHistoryPage() {
         </FormControl>
 
         <FormControl size="small" sx={{ minWidth: 140 }}>
-          <InputLabel id="type-label">Type</InputLabel>
-          <Select labelId="type-label" label="Type" value={type} onChange={(e) => { setType(e.target.value); setPage(1); }}>
-            <MenuItem value="sales">sales only</MenuItem>
-            <MenuItem value="all">all</MenuItem>
+          <InputLabel id="type-label">{t('common.type')}</InputLabel>
+          <Select labelId="type-label" label={t('common.type')} value={type} onChange={(e) => { setType(e.target.value); setPage(1); }}>
+            <MenuItem value="sales">{t('pos.salesOnly')}</MenuItem>
+            <MenuItem value="all">{t('common.all')}</MenuItem>
           </Select>
         </FormControl>
 
-        <TextField size="small" label="From" type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} InputLabelProps={{ shrink: true }} />
-        <TextField size="small" label="To" type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} InputLabelProps={{ shrink: true }} />
+        <TextField size="small" label={t('common.from')} type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} InputLabelProps={{ shrink: true }} />
+        <TextField size="small" label={t('common.to')} type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} InputLabelProps={{ shrink: true }} />
 
         <IconButton onClick={fetchList}><RefreshIcon /></IconButton>
       </Toolbar>
 
-      {loading && <Typography sx={{ p: 2 }}>Loading…</Typography>}
+      {loading && <Typography sx={{ p: 2 }}>{t('common.loading')}</Typography>}
       {!loading && error && <Typography color="error" sx={{ p: 2 }}>{error}</Typography>}
       {!loading && !error && (
         <>
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Items</TableCell>
-                <TableCell align="right">Total</TableCell>
-                <TableCell align="right">Actions</TableCell>
+                <TableCell>{t('common.date')}</TableCell>
+                <TableCell>{t('common.status')}</TableCell>
+                <TableCell align="right">{t('pos.items')}</TableCell>
+                <TableCell align="right">{t('common.total')}</TableCell>
+                <TableCell align="right">{t('common.actions')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.length === 0 && (
-                <TableRow><TableCell colSpan={5}><Typography color="text.secondary" sx={{ py: 2 }}>No receipts.</Typography></TableCell></TableRow>
+                <TableRow><TableCell colSpan={5}><Typography color="text.secondary" sx={{ py: 2 }}>{t('receipts.none')}</Typography></TableCell></TableRow>
               )}
               {rows.map((r) => (
                 <TableRow key={String(r._id)} hover>
-                  <TableCell>{new Date(r.date).toLocaleString()}</TableCell>
+                  <TableCell>{formatDate(r.date)}</TableCell>
                   <TableCell>
                     <Chip size="small" label={r.status} color={r.status === 'completed' ? 'success' : 'default'} />
                   </TableCell>
                   <TableCell align="right">{r.itemCount}</TableCell>
-                  <TableCell align="right">{Number(r.grandTotal || 0).toFixed(2)}</TableCell>
+                  <TableCell align="right">{formatNumber(Number(r.grandTotal || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                   <TableCell align="right">
-                    <Button size="small" startIcon={<VisibilityIcon />} onClick={() => setDetailsId(String(r._id))}>View</Button>
-                    <Button size="small" startIcon={<PrintIcon />} onClick={() => onPrint(String(r._id))}>Print</Button>
+                    <Button size="small" startIcon={<VisibilityIcon />} onClick={() => setDetailsId(String(r._id))}>{t('common.view')}</Button>
+                    <Button size="small" startIcon={<PrintIcon />} onClick={() => onPrint(String(r._id))}>{t('common.print')}</Button>
                     {r.type === 'sale' && r.status === 'pending' && (
                       <Button
                         size="small"
                         startIcon={<PaymentsIcon />}
                         onClick={() => { setCollectInfo({ id: String(r._id), due: Number(r.dueTotal || 0) }); setCollectOpen(true); }}
                       >
-                        Collect payment
+                        {t('pos.collectPayment')}
                       </Button>
                     )}
                   </TableCell>
