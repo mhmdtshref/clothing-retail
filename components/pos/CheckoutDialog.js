@@ -5,19 +5,21 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, Stack, TextField, MenuItem, Typography, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
-
-const METHODS = [
-  { value: 'cash', label: 'Cash' },
-  { value: 'external_card', label: 'External Card Terminal' },
-  { value: 'other', label: 'Other' },
-];
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, isReturn = false, initialContact }) {
+  const { t, formatNumber } = useI18n();
   const [method, setMethod] = React.useState('cash');
   const [note, setNote] = React.useState('');
   const [reason, setReason] = React.useState('');
   const [payMode, setPayMode] = React.useState('full'); // 'full' | 'deposit'
   const [depositAmount, setDepositAmount] = React.useState('');
+
+  const METHODS = React.useMemo(() => ([
+    { value: 'cash', label: t('payment.cash') },
+    { value: 'external_card', label: t('payment.externalCard') },
+    { value: 'other', label: t('payment.other') },
+  ]), [t]);
 
   React.useEffect(() => {
     if (open) {
@@ -32,7 +34,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
   return (
     <>
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Checkout</DialogTitle>
+      <DialogTitle>{t('pos.checkout')}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
           {!isReturn && (
@@ -43,33 +45,33 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
               value={payMode}
               onChange={(_e, v) => { if (v) setPayMode(v); }}
             >
-              <ToggleButton value="full">Full payment</ToggleButton>
-              <ToggleButton value="deposit">Deposit</ToggleButton>
+              <ToggleButton value="full">{t('checkout.fullPayment')}</ToggleButton>
+              <ToggleButton value="deposit">{t('checkout.deposit')}</ToggleButton>
             </ToggleButtonGroup>
           )}
-          <TextField select label="Payment Method" value={method} onChange={(e) => setMethod(e.target.value)}>
+          <TextField select label={t('checkout.paymentMethod')} value={method} onChange={(e) => setMethod(e.target.value)}>
           {METHODS.map((m) => (
             <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
           ))}
           </TextField>
           {!isReturn && payMode === 'deposit' && (
             <TextField
-              label="Amount paid now"
+              label={t('checkout.amountPaidNow')}
               type="number"
               inputProps={{ min: 0, step: '0.01' }}
               value={depositAmount}
               onChange={(e) => setDepositAmount(e.target.value)}
             />
           )}
-          <TextField label="Note" value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
+          <TextField label={t('common.note')} value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
           {isReturn && (
-            <TextField label="Return Reason (optional)" value={reason} onChange={(e) => setReason(e.target.value)} multiline minRows={2} />
+            <TextField label={t('checkout.returnReasonOptional')} value={reason} onChange={(e) => setReason(e.target.value)} multiline minRows={2} />
           )}
-          <Typography variant="h6" sx={{ textAlign: 'right' }}>Total: {Number(grandTotal || 0).toFixed(2)}</Typography>
+          <Typography variant="h6" sx={{ textAlign: 'right' }}>{t('common.total')}: {formatNumber(grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t('common.cancel')}</Button>
         <Button
           variant="contained"
           onClick={() => onConfirm({
@@ -80,7 +82,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
             depositAmount: Number(depositAmount || 0),
           })}
         >
-          {isReturn ? 'Confirm Return' : 'Confirm & Pay'}
+          {isReturn ? t('checkout.confirmReturn') : t('checkout.confirmAndPay')}
         </Button>
       </DialogActions>
     </Dialog>

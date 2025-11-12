@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { useI18n } from '@/components/i18n/useI18n';
 
 function useDebounced(value, delay = 400) {
   const [v, setV] = React.useState(value);
@@ -19,6 +20,7 @@ function useDebounced(value, delay = 400) {
 }
 
 export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
+  const { t, formatNumber } = useI18n();
   const [query, setQuery] = React.useState('');
   const q = useDebounced(query);
   const [page, setPage] = React.useState(1);
@@ -56,12 +58,12 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
           id="pos-catalog-search"
           size="small"
           fullWidth
-          placeholder="Search by product code or company name"
+          placeholder={t('posCatalog.searchPlaceholder')}
           value={query}
           onChange={(e) => { setQuery(e.target.value); setPage(1); }}
           InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>) }}
         />
-        <IconButton onClick={fetchList} title="Refresh"><RefreshIcon /></IconButton>
+        <IconButton onClick={fetchList} title={t('common.refresh')}><RefreshIcon /></IconButton>
       </Stack>
 
       <Box sx={{ position: 'relative', flex: 1, overflow: 'auto', borderRadius: 2 }}>
@@ -76,7 +78,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
         )}
 
         {!loading && !error && items.length === 0 && (
-          <Typography color="text.secondary" sx={{ p: 2 }}>No products found.</Typography>
+          <Typography color="text.secondary" sx={{ p: 2 }}>{t('products.none')}</Typography>
         )}
 
         {!loading && !error && items.length > 0 && (
@@ -98,14 +100,14 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
                     {p.image?.url ? (
                       <Box sx={{ position: 'absolute', inset: 0, backgroundImage: `url(${p.image.url})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
                     ) : (
-                      <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>No Image</Box>
+                      <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>{t('products.noImage')}</Box>
                     )}
                   </Box>
                   <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Stack spacing={0.5}>
                       <Typography variant="subtitle1" fontWeight={700}>{p.code}</Typography>
                       <Typography variant="body2" color="text.secondary">{p.name || '-'}</Typography>
-                      <Chip size="small" label={`${p.variants?.length || 0} variants`} sx={{ alignSelf: 'flex-start' }} />
+                      <Chip size="small" label={`${formatNumber(p.variants?.length || 0)} ${t('products.variants')}`} sx={{ alignSelf: 'flex-start' }} />
                     </Stack>
                   </CardContent>
                 </CardActionArea>
@@ -128,7 +130,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
       </Stack>
       {/* Variant picker dialog */}
       <Dialog open={Boolean(selected)} onClose={() => setSelected(null)} maxWidth="md" fullWidth>
-        <DialogTitle>Pick a variant</DialogTitle>
+        <DialogTitle>{t('posCatalog.pickVariant')}</DialogTitle>
         <DialogContent dividers>
           {selected && (
             <>
@@ -137,24 +139,24 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
                   {selected.image?.url ? (
                     <Box sx={{ position: 'absolute', inset: 0, backgroundImage: `url(${selected.image.url})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
                   ) : (
-                    <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>No Image</Box>
+                    <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>{t('products.noImage')}</Box>
                   )}
                 </Box>
                 <Stack>
                   <Typography variant="subtitle1" fontWeight={700}>{selected.code}</Typography>
                   <Typography variant="body2" color="text.secondary">{selected.name || '-'}</Typography>
-                  <Chip size="small" label={`${selected.variants?.length || 0} variants`} sx={{ alignSelf: 'flex-start' }} />
+                  <Chip size="small" label={`${formatNumber(selected.variants?.length || 0)} ${t('products.variants')}`} sx={{ alignSelf: 'flex-start' }} />
                 </Stack>
               </Stack>
 
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Company</TableCell>
-                    <TableCell>Size</TableCell>
-                    <TableCell>Color</TableCell>
-                    <TableCell align="right">On hand</TableCell>
-                    <TableCell align="right">Action</TableCell>
+                    <TableCell>{t('products.company')}</TableCell>
+                    <TableCell>{t('products.size')}</TableCell>
+                    <TableCell>{t('products.color')}</TableCell>
+                    <TableCell align="right">{t('pos.onHand')}</TableCell>
+                    <TableCell align="right">{t('common.action')}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -165,9 +167,9 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
                         <TableCell>{v.company?.name || '-'}</TableCell>
                         <TableCell>{v.size}</TableCell>
                         <TableCell>{v.color}</TableCell>
-                        <TableCell align="right"><Chip size="small" color={out ? 'error' : 'success'} label={v.qty} /></TableCell>
+                        <TableCell align="right"><Chip size="small" color={out ? 'error' : 'success'} label={formatNumber(v.qty)} /></TableCell>
                         <TableCell align="right">
-                          <Tooltip title={out ? 'Out of stock (allowed to add)' : 'Add to cart'}>
+                          <Tooltip title={out ? t('posCatalog.outOfStockAllowed') : t('posCatalog.addToCart')}>
                             <span>
                               <Button
                                 size="small"
@@ -175,7 +177,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
                                 color={out ? 'warning' : 'primary'}
                                 onClick={() => { if (onPickVariant) onPickVariant(v, selected); setSelected(null); }}
                               >
-                                Add
+                                {t('common.add')}
                               </Button>
                             </span>
                           </Tooltip>
@@ -189,7 +191,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setSelected(null)}>Close</Button>
+          <Button onClick={() => setSelected(null)}>{t('common.close')}</Button>
         </DialogActions>
       </Dialog>
     </Stack>

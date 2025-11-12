@@ -3,14 +3,24 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Container, Box, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function LayoutShell({ children }) {
+  const { locale, setLocale, t } = useI18n();
   const pathname = usePathname();
   const pathSegments = (pathname || '').split('/').filter(Boolean);
   const isPOS = pathSegments.includes('pos');
   const isDelivery = pathSegments.includes('delivery');
+
+  const handleLang = (_e, next) => {
+    if (!next || next === locale) return;
+    try {
+      document.cookie = `lang=${next}; path=/; max-age=31536000`;
+    } catch {}
+    setLocale?.(next);
+  };
   return (
     <Box
       sx={{
@@ -25,38 +35,42 @@ export default function LayoutShell({ children }) {
       <AppBar position="static" color="default" elevation={0} sx={{ width: '100%' }}>
         <Toolbar sx={{ gap: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {process.env.NEXT_PUBLIC_SHOP_NAME || 'Clothing Retail Accountings'}
+            {process.env.NEXT_PUBLIC_SHOP_NAME || t('nav.appTitle')}
           </Typography>
           <Button component={Link} href="/" color="inherit">
-            Home
+            {t('nav.home')}
           </Button>
+          <ToggleButtonGroup size="small" exclusive value={(locale || 'en').split('-')[0]} onChange={handleLang}>
+            <ToggleButton value="en">EN</ToggleButton>
+            <ToggleButton value="ar">AR</ToggleButton>
+          </ToggleButtonGroup>
           <SignedIn>
             <Button component={Link} href="/dashboard" color="inherit">
-              Dashboard
+              {t('nav.dashboard')}
             </Button>
             <Button component={Link} href="/products" color="inherit">
-              Products
+              {t('nav.products')}
             </Button>
             <Button component={Link} href="/companies" color="inherit">
-              Companies
+              {t('nav.companies')}
             </Button>
             <Button component={Link} href="/expenses" color="inherit">
-              Expenses
+              {t('nav.expenses')}
             </Button>
             <Button component={Link} href="/receipts/new" color="inherit">
-              New Purchase
+              {t('nav.newPurchase')}
             </Button>
             <Button component={Link} href="/delivery/new" color="inherit">
-              Delivery
+              {t('nav.delivery')}
             </Button>
             <Button component={Link} href="/pos" color="inherit">
-              POS
+              {t('nav.pos')}
             </Button>
             <UserButton />
           </SignedIn>
           <SignedOut>
             <Button component={Link} href="/sign-in" variant="outlined">
-              Sign in
+              {t('nav.signIn')}
             </Button>
           </SignedOut>
         </Toolbar>

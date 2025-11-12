@@ -3,8 +3,7 @@ export const runtime = 'nodejs';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import ProductsGrid from '@/components/products/ProductsGrid';
-import Link from 'next/link';
-import { Stack, Button } from '@mui/material';
+import ProductsHeaderActions from '@/components/products/ProductsHeaderActions';
 
 export default async function ProductsPage() {
   const { userId } = await auth();
@@ -12,11 +11,7 @@ export default async function ProductsPage() {
 
   return (
     <div style={{ padding: 16 }}>
-      <Stack direction="row" justifyContent="flex-end" sx={{ mb: 2 }}>
-        <Link href="/products/new" style={{ textDecoration: 'none' }}>
-          <Button variant="contained">New Product</Button>
-        </Link>
-      </Stack>
+      <ProductsHeaderActions />
       <ProductsGrid />
     </div>
   );

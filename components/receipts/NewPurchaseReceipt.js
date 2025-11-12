@@ -29,6 +29,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { computeReceiptTotals, computeLine } from '@/lib/pricing';
+import { useI18n } from '@/components/i18n/useI18n';
 
 async function searchProducts(params) {
   const qs = new URLSearchParams({
@@ -46,6 +47,7 @@ async function searchProducts(params) {
 }
 
 export default function NewPurchaseReceipt({ companies }) {
+  const { t, formatNumber } = useI18n();
   const [companyId, setCompanyId] = React.useState(companies[0]?._id || '');
   const [status, setStatus] = React.useState('ordered');
   const [note, setNote] = React.useState('');
@@ -142,15 +144,15 @@ export default function NewPurchaseReceipt({ companies }) {
   async function onSubmit(e) {
     e.preventDefault();
     if (!companyId) {
-      setSnack({ open: true, severity: 'error', message: 'Please select a company.' });
+      setSnack({ open: true, severity: 'error', message: t('errors.selectCompany') });
       return;
     }
     if (items.length === 0) {
-      setSnack({ open: true, severity: 'error', message: 'Add at least one line item.' });
+      setSnack({ open: true, severity: 'error', message: t('errors.addAtLeastOneLine') });
       return;
     }
     if (items.some((it) => !it.variantId)) {
-      setSnack({ open: true, severity: 'error', message: 'Choose a variant for each item.' });
+      setSnack({ open: true, severity: 'error', message: t('errors.chooseVariantEach') });
       return;
     }
     setSubmitting(true);
@@ -182,11 +184,11 @@ export default function NewPurchaseReceipt({ companies }) {
         body: JSON.stringify(payload),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error('Failed to create receipt');
+      if (!res.ok) throw new Error(t('errors.createReceiptFailed'));
       setSnack({
         open: true,
         severity: 'success',
-        message: `Receipt created. Total: ${json.totals.grandTotal}`,
+        message: `${t('success.receiptCreatedTotal')} ${formatNumber(json.totals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       });
       setItems([]);
       setSelectedProduct(null);
@@ -205,17 +207,17 @@ export default function NewPurchaseReceipt({ companies }) {
   return (
     <Paper sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>
-        New Receipt (Purchase)
+        {t('purchase.title')}
       </Typography>
 
       <Box component="form" onSubmit={onSubmit}>
         <Stack spacing={2}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <FormControl fullWidth>
-              <InputLabel id="company-label">Company</InputLabel>
+              <InputLabel id="company-label">{t('purchase.company')}</InputLabel>
               <Select
                 labelId="company-label"
-                label="Company"
+                label={t('purchase.company')}
                 value={companyId}
                 onChange={(e) => setCompanyId(e.target.value)}
                 required
@@ -228,20 +230,20 @@ export default function NewPurchaseReceipt({ companies }) {
               </Select>
             </FormControl>
             <FormControl sx={{ minWidth: 200 }}>
-              <InputLabel id="status-label">Status</InputLabel>
+              <InputLabel id="status-label">{t('common.status')}</InputLabel>
               <Select
                 labelId="status-label"
-                label="Status"
+                label={t('common.status')}
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
-                <MenuItem value="ordered">Ordered</MenuItem>
-                <MenuItem value="on_delivery">On delivery</MenuItem>
-                <MenuItem value="completed">Completed</MenuItem>
+                <MenuItem value="ordered">{t('status.ordered')}</MenuItem>
+                <MenuItem value="on_delivery">{t('status.on_delivery')}</MenuItem>
+                <MenuItem value="completed">{t('status.completed')}</MenuItem>
               </Select>
             </FormControl>
             <TextField
-              label="Note"
+              label={t('common.note')}
               value={note}
               onChange={(e) => setNote(e.target.value)}
               fullWidth
@@ -252,8 +254,8 @@ export default function NewPurchaseReceipt({ companies }) {
 
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
             <TextField
-              label="Search product"
-              placeholder="Type code or name"
+              label={t('purchase.searchProduct')}
+              placeholder={t('purchase.searchProductPlaceholder')}
               value={productQuery}
               onChange={(e) => setProductQuery(e.target.value)}
               InputProps={{
@@ -271,7 +273,7 @@ export default function NewPurchaseReceipt({ companies }) {
               getOptionLabel={(o) => `${o.code}${o.name ? ' — ' + o.name : ''}`}
               onChange={(_, val) => setSelectedProduct(val)}
               value={selectedProduct}
-              renderInput={(params) => <TextField {...params} label="Choose product" />}
+              renderInput={(params) => <TextField {...params} label={t('purchase.chooseProduct')} />}
               sx={{ minWidth: 320 }}
             />
             <Button
@@ -280,26 +282,26 @@ export default function NewPurchaseReceipt({ companies }) {
               disabled={!selectedProduct}
               onClick={addBlankItem}
             >
-              Add Line
+              {t('purchase.addLine')}
             </Button>
           </Stack>
 
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell sx={{ width: 260 }}>Variant</TableCell>
+                <TableCell sx={{ width: 260 }}>{t('common.variant')}</TableCell>
                 <TableCell align="right" sx={{ width: 90 }}>
-                  Qty
+                  {t('common.qty')}
                 </TableCell>
                 <TableCell align="right" sx={{ width: 140 }}>
-                  Unit Cost
+                  {t('purchase.unitCost')}
                 </TableCell>
-                <TableCell sx={{ width: 200 }}>Item Discount</TableCell>
+                <TableCell sx={{ width: 200 }}>{t('purchase.itemDiscount')}</TableCell>
                 <TableCell align="right" sx={{ width: 120 }}>
-                  Line
+                  {t('cart.line')}
                 </TableCell>
                 <TableCell align="right" sx={{ width: 120 }}>
-                  Net
+                  {t('receipt.net')}
                 </TableCell>
                 <TableCell sx={{ width: 56 }} />
               </TableRow>
@@ -309,8 +311,7 @@ export default function NewPurchaseReceipt({ companies }) {
                 <TableRow>
                   <TableCell colSpan={7}>
                     <Typography color="text.secondary" sx={{ py: 2 }}>
-                      Add a line, pick a variant (filtered to the selected company), set
-                      qty/cost/discount.
+                      {t('purchase.emptyLines')}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -342,7 +343,7 @@ export default function NewPurchaseReceipt({ companies }) {
                             variantLabel: val ? `${val.size}/${val.color}` : '',
                           })
                         }
-                        renderInput={(params) => <TextField {...params} label="Variant" />}
+                        renderInput={(params) => <TextField {...params} label={t('common.variant')} />}
                         sx={{ minWidth: 240 }}
                       />
                     </TableCell>
@@ -383,8 +384,8 @@ export default function NewPurchaseReceipt({ companies }) {
                           }
                           sx={{ width: 120 }}
                         >
-                          <MenuItem value="amount">amount</MenuItem>
-                          <MenuItem value="percent">percent</MenuItem>
+                          <MenuItem value="amount">{t('discount.amount')}</MenuItem>
+                          <MenuItem value="percent">{t('discount.percent')}</MenuItem>
                         </Select>
                         <TextField
                           size="small"
@@ -403,9 +404,9 @@ export default function NewPurchaseReceipt({ companies }) {
                       </Stack>
                     </TableCell>
                     <TableCell align="right">
-                      {(Number(row.qty || 0) * Number(row.unitCost || 0)).toFixed(2)}
+                      {formatNumber((Number(row.qty || 0) * Number(row.unitCost || 0)), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </TableCell>
-                    <TableCell align="right">{lineCalc.net.toFixed(2)}</TableCell>
+                    <TableCell align="right">{formatNumber(lineCalc.net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                     <TableCell align="center">
                       <IconButton color="error" onClick={() => removeItem(row.id)}>
                         <DeleteIcon />
@@ -421,19 +422,19 @@ export default function NewPurchaseReceipt({ companies }) {
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <FormControl sx={{ minWidth: 160 }}>
-              <InputLabel id="bill-discount-mode-label">Bill Discount</InputLabel>
+              <InputLabel id="bill-discount-mode-label">{t('checkout.billDiscount')}</InputLabel>
               <Select
                 labelId="bill-discount-mode-label"
-                label="Bill Discount"
+                label={t('checkout.billDiscount')}
                 value={billDiscount.mode}
                 onChange={(e) => setBillDiscount((d) => ({ ...d, mode: e.target.value }))}
               >
-                <MenuItem value="amount">amount</MenuItem>
-                <MenuItem value="percent">percent</MenuItem>
+                <MenuItem value="amount">{t('discount.amount')}</MenuItem>
+                <MenuItem value="percent">{t('discount.percent')}</MenuItem>
               </Select>
             </FormControl>
             <TextField
-              label="Bill Discount Value"
+              label={t('purchase.billDiscountValue')}
               type="number"
               value={billDiscount.value}
               onChange={(e) =>
@@ -442,7 +443,7 @@ export default function NewPurchaseReceipt({ companies }) {
               inputProps={{ min: 0, step: '0.01' }}
             />
             <TextField
-              label="Tax %"
+              label={t('checkout.taxPercent')}
               type="number"
               value={taxPercent}
               onChange={(e) => setTaxPercent(Math.max(0, Math.min(100, Number(e.target.value))))}
@@ -451,13 +452,13 @@ export default function NewPurchaseReceipt({ companies }) {
           </Stack>
 
           <Box sx={{ textAlign: 'right' }}>
-            <Typography>Item Subtotal: {totals.itemSubtotal.toFixed(2)}</Typography>
-            <Typography>Item Discounts: −{totals.itemDiscountTotal.toFixed(2)}</Typography>
-            <Typography>Bill Discount: −{totals.billDiscountTotal.toFixed(2)}</Typography>
+            <Typography>{t('receipt.subtotal')}: {formatNumber(totals.itemSubtotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+            <Typography>{t('receipt.itemDiscounts')}: −{formatNumber(totals.itemDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+            <Typography>{t('receipt.billDiscount')}: −{formatNumber(totals.billDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
             <Typography>
-              Tax ({totals.taxPercent}%): {totals.taxTotal.toFixed(2)}
+              {t('receipt.tax')} ({formatNumber(totals.taxPercent)}%): {formatNumber(totals.taxTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </Typography>
-            <Typography variant="h6">Grand Total: {totals.grandTotal.toFixed(2)}</Typography>
+            <Typography variant="h6">{t('receipt.grandTotal')}: {formatNumber(totals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
           </Box>
 
           <Stack direction="row" spacing={2} justifyContent="flex-end">
@@ -473,10 +474,10 @@ export default function NewPurchaseReceipt({ companies }) {
                 setBillDiscount({ mode: 'amount', value: 0 });
               }}
             >
-              Reset
+              {t('common.reset')}
             </Button>
             <Button type="submit" variant="contained" disabled={submitting || !companyId}>
-              {submitting ? 'Saving…' : 'Save Purchase Receipt'}
+              {submitting ? t('common.saving') : t('purchase.saveReceipt')}
             </Button>
           </Stack>
         </Stack>

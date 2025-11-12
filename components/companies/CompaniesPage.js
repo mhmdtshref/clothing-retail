@@ -19,8 +19,10 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CompanyDialog from '@/components/companies/CompanyDialog';
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function CompaniesPage() {
+  const { t } = useI18n();
   const [items, setItems] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -33,10 +35,10 @@ export default function CompaniesPage() {
     try {
       const res = await fetch('/api/companies');
       const json = await res.json();
-      if (!res.ok) throw new Error('Failed to load companies');
+      if (!res.ok) throw new Error(t('errors.loadCompanies'));
       setItems(Array.isArray(json.items) ? json.items : []);
     } catch (e) {
-      setError(e?.message || 'Failed to load companies');
+      setError(e?.message || t('errors.loadCompanies'));
     } finally {
       setLoading(false);
     }
@@ -70,10 +72,10 @@ export default function CompaniesPage() {
     <Paper sx={{ p: 2 }}>
       <Toolbar sx={{ px: 0 }}>
         <Typography variant="h6" sx={{ flex: 1 }}>
-          Companies
+          {t('companies.title')}
         </Typography>
         <Stack direction="row" spacing={1}>
-          <Button onClick={onAdd} variant="contained" startIcon={<AddIcon />}>Add Company</Button>
+          <Button onClick={onAdd} variant="contained" startIcon={<AddIcon />}>{t('companies.add')}</Button>
         </Stack>
       </Toolbar>
 
@@ -84,21 +86,21 @@ export default function CompaniesPage() {
       ) : error ? (
         <Box sx={{ py: 3 }}>
           <Typography color="error" sx={{ mb: 1 }}>{error}</Typography>
-          <Button onClick={fetchCompanies} startIcon={<AddIcon />} variant="outlined">Retry</Button>
+          <Button onClick={fetchCompanies} startIcon={<AddIcon />} variant="outlined">{t('common.retry')}</Button>
         </Box>
       ) : (
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell width={120} align="right">Actions</TableCell>
+              <TableCell>{t('common.name')}</TableCell>
+              <TableCell width={120} align="right">{t('common.actions')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={2}>
-                  <Typography variant="body2" color="text.secondary">No companies found.</Typography>
+                  <Typography variant="body2" color="text.secondary">{t('companies.none')}</Typography>
                 </TableCell>
               </TableRow>
             ) : (

@@ -14,6 +14,7 @@ import CheckoutDialog from '@/components/pos/CheckoutDialog';
 import CheckoutSuccess from '@/components/pos/CheckoutSuccess';
 import CustomerDialog from '@/components/pos/CustomerDialog';
 import { computeReceiptTotals } from '@/lib/pricing';
+import { useI18n } from '@/components/i18n/useI18n';
 
 function useClock() {
   const [now, setNow] = React.useState(() => new Date());
@@ -42,6 +43,7 @@ function useOnline() {
 }
 
 export default function POSShell() {
+  const { t, formatDate } = useI18n();
   const { user } = useUser();
   const now = useClock();
   const online = useOnline();
@@ -141,18 +143,18 @@ export default function POSShell() {
       <AppBar position="static" color="primary">
         <Toolbar sx={{ gap: 2 }}>
           <Typography variant="h6" sx={{ flexGrow: 0 }}>
-            POS
+            {t('pos.title')}
           </Typography>
           <Chip
             size="small"
-            label={online ? 'Online' : 'Offline'}
+            label={online ? t('status.online') : t('status.offline')}
             icon={online ? <WifiIcon /> : <WifiOffIcon />}
             color={online ? 'success' : 'default'}
           />
           <Box sx={{ flexGrow: 1 }} />
-          <Chip size="small" label={`Items: ${cart.items.length}`} color="secondary" />
+          <Chip size="small" label={`${t('pos.items')}: ${cart.items.length}`} color="secondary" />
           <Typography variant="body2" sx={{ mr: 2 }} suppressHydrationWarning>
-            {now.toLocaleString()}
+            {formatDate(now)}
           </Typography>
           <Typography variant="body2">
             {user?.fullName || user?.primaryEmailAddress?.emailAddress || 'User'}
@@ -168,17 +170,17 @@ export default function POSShell() {
               value="sale"
               sx={{ '&.Mui-selected': { bgcolor: 'primary.main', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.dark' } } }}
             >
-              Sale
+              {t('pos.sale')}
             </ToggleButton>
             <ToggleButton
               value="sale_return"
               sx={{ '&.Mui-selected': { bgcolor: 'warning.main', color: 'warning.contrastText', '&:hover': { bgcolor: 'warning.dark' } } }}
             >
-              Return
+              {t('pos.return')}
             </ToggleButton>
           </ToggleButtonGroup>
           <Button component={Link} href="/pos/history" color="inherit" variant="outlined">
-            History
+            {t('pos.history')}
           </Button>
           {!success && (
             <Button
@@ -187,7 +189,7 @@ export default function POSShell() {
               disabled={!canCheckout || submitting}
               onClick={() => setCheckingOut(true)}
             >
-              Checkout
+              {t('pos.checkout')}
             </Button>
           )}
           <IconButton color="inherit" title="Refresh">
@@ -211,14 +213,14 @@ export default function POSShell() {
         <Box sx={{ height: '100%' }}>
           <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', ...(cart.mode === 'sale_return' ? { border: '1px solid', borderColor: 'warning.main', bgcolor: 'warning.light' } : {}) }}>
             <Typography variant="h6" gutterBottom>
-              Catalog
+              {t('pos.sale')}
             </Typography>
             <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
               {!success ? (
                 <POSCatalog onPickVariant={handlePickVariant} isReturnMode={cart.mode === 'sale_return'} />
               ) : (
                 <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>
-                  {success?.receipt?.status === 'pending' ? 'Sale pending (deposit). Use the right panel to print or start a new sale.' : 'Sale completed. Use the right panel to print or start a new sale.'}
+                  {success?.receipt?.status === 'pending' ? t('pos.salePendingMsg') : t('pos.saleCompletedMsg')}
                 </Box>
               )}
             </Stack>
@@ -227,19 +229,19 @@ export default function POSShell() {
         <Box sx={{ height: '100%' }}>
           <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6" gutterBottom>
-              {success ? 'Receipt' : (cart.mode === 'sale_return' ? 'Cart (Return)' : 'Cart')}
+              {success ? t('pos.receipt') : (cart.mode === 'sale_return' ? t('cart.returnCart') : t('cart.title'))}
             </Typography>
             {!success && (
               <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
                 <Button size="small" variant="outlined" onClick={() => setCustomerOpen(true)}>
-                  {cart.customer ? 'Change Customer' : 'Select Customer'}
+                  {cart.customer ? t('pos.changeCustomer') : t('pos.selectCustomer')}
                 </Button>
                 {cart.customer && (
                   <>
                     <Typography variant="body2" sx={{ flex: 1 }}>
-                      {cart.customer.name || '(No name)'} • {cart.customer.phone}
+                      {cart.customer.name || t('common.noName')} • {cart.customer.phone}
                     </Typography>
-                    <Button size="small" onClick={() => cart.clearCustomer()}>Clear</Button>
+                    <Button size="small" onClick={() => cart.clearCustomer()}>{t('common.clear')}</Button>
                   </>
                 )}
               </Stack>

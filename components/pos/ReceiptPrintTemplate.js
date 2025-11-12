@@ -2,18 +2,20 @@
 
 import * as React from 'react';
 import POS_RECEIPT from '@/config/pos-receipt';
+import { useI18n } from '@/components/i18n/useI18n';
 
 export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = false }) {
+  const { t, formatNumber, formatDate } = useI18n();
   const isReturn = receipt?.type === 'sale_return';
   const isSale = receipt?.type === 'sale';
   const isDelivery = Boolean(receipt?.delivery?.company);
   const deliveryCompanyKey = String(receipt?.delivery?.company || '').toLowerCase();
   const deliveryCompanyName = deliveryCompanyKey === 'optimus'
-    ? 'Optimus'
+    ? t('delivery.company.optimus')
     : deliveryCompanyKey === 'sabeq_laheq'
-      ? 'Sabeq Laheq'
+      ? t('delivery.company.sabeq_laheq')
       : (receipt?.delivery?.company || '');
-  const currency = (n) => Number(n || 0).toFixed(2);
+  const currency = (n) => formatNumber(Number(n || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const shortId = String(receipt?._id || '').slice(-6);
   const paidTotal = Array.isArray(receipt?.payments)
     ? receipt.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
@@ -64,27 +66,27 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
       <div className="sep" />
 
       <div className="row">
-        <div>{isReturn ? 'RETURN' : isSale ? 'SALE' : (receipt?.type || '').toUpperCase()}</div>
+        <div>{isReturn ? t('receipt.return') : isSale ? t('receipt.sale') : (receipt?.type || '').toUpperCase()}</div>
         <div>#{shortId}</div>
       </div>
       <div className="row">
-        <div>{new Date(receipt?.date || Date.now()).toLocaleString()}</div>
-        <div className="muted">{receipt?.status}</div>
+        <div>{formatDate(new Date(receipt?.date || Date.now()))}</div>
+        <div className="muted">{t(`status.${receipt?.status}`)}</div>
       </div>
       {isSale && receipt?.customer && (
         <div className="row">
-          <div className="muted">Customer</div>
-          <div>{(receipt.customer.name || '(No name)')} • {receipt.customer.phone}</div>
+          <div className="muted">{t('pos.customer')}</div>
+          <div>{(receipt.customer.name || t('common.noName'))} • {receipt.customer.phone}</div>
         </div>
       )}
       {receipt?.returnReason && (
-        <div className="muted">Reason: {receipt.returnReason}</div>
+        <div className="muted">{t('receipt.reason')}: {receipt.returnReason}</div>
       )}
       {isDelivery && (
-        <div className="muted">Note: Delivery (COD){receipt?.note ? ` — ${receipt.note}` : ''}</div>
+        <div className="muted">{t('receipt.note')}: {t('receipt.deliveryNoteCOD')}{receipt?.note ? ` — ${receipt.note}` : ''}</div>
       )}
       {!isDelivery && receipt?.note && (
-        <div className="muted">Note: {receipt.note}</div>
+        <div className="muted">{t('receipt.note')}: {receipt.note}</div>
       )}
 
       <div className="sep" />
@@ -92,10 +94,10 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
       <table>
         <thead>
           <tr>
-            <th>Item</th>
-            <th className="r">Qty</th>
-            <th className="r">Unit</th>
-            <th className="r">Net</th>
+            <th>{t('receipt.item')}</th>
+            <th className="r">{t('receipt.qty')}</th>
+            <th className="r">{t('receipt.unit')}</th>
+            <th className="r">{t('receipt.net')}</th>
           </tr>
         </thead>
         <tbody>
@@ -121,24 +123,24 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
       </table>
 
       <div className="sep" />
-      <div className="row"><div>Item Subtotal</div><div>{currency(totals?.itemSubtotal)}</div></div>
-      <div className="row"><div>Item Discounts</div><div>-{currency(totals?.itemDiscountTotal)}</div></div>
-      <div className="row"><div>Bill Discount</div><div>-{currency(totals?.billDiscountTotal)}</div></div>
-      <div className="row"><div>Tax ({Number(totals?.taxPercent || 0)}%)</div><div>{currency(totals?.taxTotal)}</div></div>
-      <div className="row title"><div>GRAND TOTAL</div><div>{currency(totals?.grandTotal)}</div></div>
+      <div className="row"><div>{t('receipt.subtotal')}</div><div>{currency(totals?.itemSubtotal)}</div></div>
+      <div className="row"><div>{t('receipt.itemDiscounts')}</div><div>-{currency(totals?.itemDiscountTotal)}</div></div>
+      <div className="row"><div>{t('receipt.billDiscount')}</div><div>-{currency(totals?.billDiscountTotal)}</div></div>
+      <div className="row"><div>{t('receipt.tax')} ({Number(totals?.taxPercent || 0)}%)</div><div>{currency(totals?.taxTotal)}</div></div>
+      <div className="row title"><div>{t('receipt.grandTotal')}</div><div>{currency(totals?.grandTotal)}</div></div>
       {isDelivery && (
         <>
-          <div className="row"><div>Delivery Company</div><div>{deliveryCompanyName}</div></div>
+          <div className="row"><div>{t('receipt.deliveryCompany')}</div><div>{deliveryCompanyName}</div></div>
           {deliveryFees > 0 && (
-            <div className="row"><div>Delivery Fees</div><div>{currency(deliveryFees)}</div></div>
+            <div className="row"><div>{t('receipt.deliveryFees')}</div><div>{currency(deliveryFees)}</div></div>
           )}
-          <div className="row title"><div>COD TOTAL</div><div>{currency(codTotal)}</div></div>
+          <div className="row title"><div>{t('receipt.codTotal')}</div><div>{currency(codTotal)}</div></div>
         </>
       )}
       {(receipt?.status === 'pending' || Number(paidTotal) > 0) && (
         <>
-          <div className="row"><div>Paid</div><div>{currency(paidTotal)}</div></div>
-          <div className="row"><div>Balance</div><div>{currency(dueTotal)}</div></div>
+          <div className="row"><div>{t('receipt.paid')}</div><div>{currency(paidTotal)}</div></div>
+          <div className="row"><div>{t('receipt.balance')}</div><div>{currency(dueTotal)}</div></div>
         </>
       )}
       <div className="sep" />

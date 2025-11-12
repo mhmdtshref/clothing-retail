@@ -9,6 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import TableRowsIcon from '@mui/icons-material/TableRows';
+import { useI18n } from '@/components/i18n/useI18n';
 
 function useDebounced(value, delay = 400) {
   const [v, setV] = React.useState(value);
@@ -17,6 +18,7 @@ function useDebounced(value, delay = 400) {
 }
 
 export default function ProductsGrid({ initialQuery = '', initialPage = 1, initialLimit = 20, initialView = 'grid' }) {
+  const { t } = useI18n();
   const THUMB_HEIGHT = 180; // uniform thumbnail height for all cards
   const [query, setQuery] = React.useState(initialQuery);
   const [page, setPage] = React.useState(initialPage);
@@ -54,7 +56,7 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
       <Stack direction="row" spacing={1} alignItems="center">
         <TextField
           size="small"
-          placeholder="Search products (code or name)"
+          placeholder={t('products.searchPlaceholder')}
           value={query}
           onChange={(e) => { setQuery(e.target.value); setPage(1); }}
           InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>) }}
@@ -64,7 +66,7 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
           <ToggleButton value="grid"><ViewModuleIcon fontSize="small" /></ToggleButton>
           <ToggleButton value="list"><TableRowsIcon fontSize="small" /></ToggleButton>
         </ToggleButtonGroup>
-        <IconButton onClick={fetchList}><RefreshIcon /></IconButton>
+        <IconButton onClick={fetchList} title={t('common.refresh')}><RefreshIcon /></IconButton>
       </Stack>
 
       {error && <Typography color="error">{error}</Typography>}
@@ -90,7 +92,7 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
             </Card>
           ))}
           {!loading && items.length === 0 && (
-            <Typography color="text.secondary">No products found.</Typography>
+            <Typography color="text.secondary">{t('products.none')}</Typography>
           )}
           {!loading && items.map((p) => (
             <Link key={p._id} href={`/products/${p._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -99,7 +101,7 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
                   {p.image?.url ? (
                     <Box sx={{ position: 'absolute', inset: 0, backgroundImage: `url(${p.image.url})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
                   ) : (
-                    <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>No Image</Box>
+                    <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>{t('products.noImage')}</Box>
                   )}
                 </Box>
                 <CardContent sx={{ flex: 1 }}>
@@ -117,8 +119,8 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
 
       {view === 'list' && (
         <Stack spacing={1}>
-          {loading && <Typography color="text.secondary">Loading…</Typography>}
-          {!loading && items.length === 0 && <Typography color="text.secondary">No products found.</Typography>}
+          {loading && <Typography color="text.secondary">{t('common.loading')}</Typography>}
+          {!loading && items.length === 0 && <Typography color="text.secondary">{t('products.none')}</Typography>}
           {!loading && items.map((p) => (
             <Link key={p._id} href={`/products/${p._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>

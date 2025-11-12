@@ -35,6 +35,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import CategoryIcon from '@mui/icons-material/Category';
 import ExpenseFormDialog from '@/components/expenses/ExpenseFormDialog';
 import ExpenseCategoryDialog from '@/components/expenses/ExpenseCategoryDialog';
+import { useI18n } from '@/components/i18n/useI18n';
 
 const DEFAULTS = {
   q: '',
@@ -46,6 +47,7 @@ const DEFAULTS = {
 };
 
 export default function ExpensesPage() {
+  const { t, formatDate, formatNumber } = useI18n();
   const [filters, setFilters] = React.useState(DEFAULTS);
   const [categories, setCategories] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -61,7 +63,7 @@ export default function ExpensesPage() {
     try {
       const res = await fetch('/api/expense-categories');
       const json = await res.json();
-      if (!res.ok) throw new Error('Failed to load categories');
+      if (!res.ok) throw new Error(t('errors.loadCategories'));
       setCategories(json.items || []);
     } catch (e) {
       // keep UI usable even if categories fail
@@ -81,7 +83,7 @@ export default function ExpensesPage() {
       params.set('limit', String(filters.limit));
       const res = await fetch(`/api/expenses?${params.toString()}`, { cache: 'no-store' });
       const json = await res.json();
-      if (!res.ok) throw new Error('Failed to load expenses');
+      if (!res.ok) throw new Error(t('errors.loadExpenses'));
       const pages = Math.max(1, Math.ceil((json?.meta?.total || 0) / filters.limit));
       setData({ items: json.items || [], meta: { total: json?.meta?.total || 0, totalAmount: json?.meta?.totalAmount || 0, pages } });
     } catch (e) {
@@ -141,7 +143,7 @@ export default function ExpensesPage() {
       <Toolbar sx={{ gap: 1, flexWrap: 'wrap' }}>
         <TextField
           size="small"
-          placeholder="Search vendor or note"
+          placeholder={t('expenses.searchPlaceholder')}
           value={filters.q}
           onChange={(e) => setFilters((s) => ({ ...s, q: e.target.value, page: 1 }))}
           InputProps={{
@@ -155,14 +157,14 @@ export default function ExpensesPage() {
         />
 
         <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel id="category-label">Category</InputLabel>
+          <InputLabel id="category-label">{t('expenses.category')}</InputLabel>
           <Select
             labelId="category-label"
-            label="Category"
+            label={t('expenses.category')}
             value={filters.categoryId}
             onChange={(e) => setFilters((s) => ({ ...s, categoryId: e.target.value, page: 1 }))}
           >
-            <MenuItem value="">All</MenuItem>
+            <MenuItem value="">{t('common.all')}</MenuItem>
             {categories.map((c) => (
               <MenuItem key={c._id} value={c._id}>
                 {c.name}
@@ -173,7 +175,7 @@ export default function ExpensesPage() {
 
         <TextField
           size="small"
-          label="Start date"
+          label={t('expenses.startDate')}
           type="date"
           value={filters.start}
           onChange={(e) => setFilters((s) => ({ ...s, start: e.target.value, page: 1 }))}
@@ -181,7 +183,7 @@ export default function ExpensesPage() {
         />
         <TextField
           size="small"
-          label="End date"
+          label={t('expenses.endDate')}
           type="date"
           value={filters.end}
           onChange={(e) => setFilters((s) => ({ ...s, end: e.target.value, page: 1 }))}
@@ -189,14 +191,14 @@ export default function ExpensesPage() {
         />
 
         <Button startIcon={<CategoryIcon />} onClick={() => setShowCategoryDialog(true)}>
-          New Category
+          {t('expenses.newCategory')}
         </Button>
 
         <Button startIcon={<AddIcon />} variant="contained" onClick={onNewExpense}>
-          New Expense
+          {t('expenses.newExpense')}
         </Button>
 
-        <IconButton onClick={fetchExpenses} title="Refresh">
+        <IconButton onClick={fetchExpenses} title={t('common.refresh')}>
           <RefreshIcon />
         </IconButton>
       </Toolbar>
@@ -219,12 +221,12 @@ export default function ExpensesPage() {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Category</TableCell>
-                  <TableCell>Vendor</TableCell>
-                  <TableCell>Note</TableCell>
-                  <TableCell align="right">Amount</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+                  <TableCell>{t('common.date')}</TableCell>
+                  <TableCell>{t('expenses.category')}</TableCell>
+                  <TableCell>{t('expenses.vendor')}</TableCell>
+                  <TableCell>{t('common.note')}</TableCell>
+                  <TableCell align="right">{t('expenses.amount')}</TableCell>
+                  <TableCell align="right">{t('common.actions')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -232,23 +234,23 @@ export default function ExpensesPage() {
                   <TableRow>
                     <TableCell colSpan={6}>
                       <Typography color="text.secondary" sx={{ py: 3 }}>
-                        No expenses found. Try adjusting filters or create a new expense.
+                        {t('expenses.none')}
                       </Typography>
                     </TableCell>
                   </TableRow>
                 )}
                 {data.items.map((e) => (
                   <TableRow key={e._id} hover>
-                    <TableCell>{new Date(e.date).toLocaleDateString()}</TableCell>
+                    <TableCell>{formatDate(e.date, { dateStyle: 'medium' })}</TableCell>
                     <TableCell>{e.categoryName || '-'}</TableCell>
                     <TableCell>{e.vendor || '-'}</TableCell>
                     <TableCell>{e.note || '-'}</TableCell>
-                    <TableCell align="right">{Number(e.amount || 0).toFixed(2)}</TableCell>
+                    <TableCell align="right">{formatNumber(Number(e.amount || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                     <TableCell align="right">
-                      <IconButton size="small" onClick={() => onEditExpense(e)} title="Edit">
+                      <IconButton size="small" onClick={() => onEditExpense(e)} title={t('common.edit')}>
                         <EditIcon fontSize="small" />
                       </IconButton>
-                      <IconButton size="small" color="error" onClick={() => onDeleteExpense(e._id)} title="Delete">
+                      <IconButton size="small" color="error" onClick={() => onDeleteExpense(e._id)} title={t('common.delete')}>
                         <DeleteForeverIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
@@ -259,7 +261,7 @@ export default function ExpensesPage() {
 
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: 2, py: 2 }}>
               <Typography variant="body2" color="text.secondary">
-                Total: {data.meta.total} • Pages: {data.meta.pages} • Sum: {Number(data.meta.totalAmount || 0).toFixed(2)}
+                {t('common.total')}: {formatNumber(data.meta.total)} • {t('expenses.pages')}: {formatNumber(data.meta.pages)} • {t('expenses.sum')}: {formatNumber(Number(data.meta.totalAmount || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </Typography>
               <Pagination page={filters.page} count={data.meta.pages || 1} onChange={onPageChange} color="primary" shape="rounded" showFirstButton showLastButton />
             </Stack>
@@ -282,13 +284,13 @@ export default function ExpensesPage() {
       )}
 
       <Dialog open={confirmDelete.open} onClose={() => setConfirmDelete({ open: false, expenseId: null })}>
-        <DialogTitle>Delete expense?</DialogTitle>
+        <DialogTitle>{t('expenses.deleteTitle')}</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete this expense?</Typography>
+          <Typography>{t('expenses.deleteConfirm')}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmDelete({ open: false, expenseId: null })}>Cancel</Button>
-          <Button color="error" variant="contained" onClick={confirmDeleteNow}>Delete</Button>
+          <Button onClick={() => setConfirmDelete({ open: false, expenseId: null })}>{t('common.cancel')}</Button>
+          <Button color="error" variant="contained" onClick={confirmDeleteNow}>{t('common.delete')}</Button>
         </DialogActions>
       </Dialog>
     </Paper>

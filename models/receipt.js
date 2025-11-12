@@ -94,8 +94,8 @@ const ReceiptSchema = new Schema(
 
     // Purchase context
     companyId: { type: Types.ObjectId, ref: 'Company' }, // who we buy from
-  // Sales context
-  customerId: { type: Types.ObjectId, ref: 'Customer' },
+    // Sales context
+    customerId: { type: Types.ObjectId, ref: 'Customer' },
 
     items: { type: [ReceiptItemSchema], validate: (v) => Array.isArray(v) && v.length > 0 },
 
