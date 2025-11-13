@@ -15,6 +15,11 @@ import CheckoutSuccess from '@/components/pos/CheckoutSuccess';
 import CustomerDialog from '@/components/pos/CustomerDialog';
 import { computeReceiptTotals } from '@/lib/pricing';
 import { useI18n } from '@/components/i18n/useI18n';
+import OpenCashboxDialog from '@/components/pos/cashbox/OpenCashboxDialog';
+import AdjustCashDialog from '@/components/pos/cashbox/AdjustCashDialog';
+import CloseCashboxDialog from '@/components/pos/cashbox/CloseCashboxDialog';
+import CashboxZReport from '@/components/pos/cashbox/CashboxZReport';
+import ViewCashboxDialog from '@/components/pos/cashbox/ViewCashboxDialog';
 
 function useClock() {
   const [now, setNow] = React.useState(() => new Date());
@@ -43,7 +48,7 @@ function useOnline() {
 }
 
 export default function POSShell() {
-  const { t, formatDate } = useI18n();
+  const { t, formatDate, formatNumber } = useI18n();
   const { user } = useUser();
   const now = useClock();
   const online = useOnline();
@@ -62,7 +67,40 @@ export default function POSShell() {
   const [success, setSuccess] = React.useState(null); // { receipt, totals }
   const [customerOpen, setCustomerOpen] = React.useState(false);
 
-  const canCheckout = cart.items.length > 0 && cart.items.every((l) => Number(l.qty) > 0);
+  // Cashbox state
+  const [cashbox, setCashbox] = React.useState({ open: false, expectedCash: 0, summary: null });
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [adjustDialog, setAdjustDialog] = React.useState(false);
+  const [closeDialog, setCloseDialog] = React.useState(false);
+  const [lastReport, setLastReport] = React.useState(null);
+  const [viewDialog, setViewDialog] = React.useState(false);
+
+  const refreshCashbox = React.useCallback(async () => {
+    try {
+      const res = await fetch('/api/cashbox/session', { cache: 'no-store' });
+      const json = await res.json();
+      if (json?.ok && json?.open) {
+        setCashbox({ open: true, expectedCash: Number(json?.summary?.expectedCash || 0), summary: json.summary });
+      } else {
+        setCashbox({ open: false, expectedCash: 0, summary: null });
+      }
+    } catch {
+      setCashbox((c) => c);
+    }
+  }, []);
+
+  React.useEffect(() => { refreshCashbox(); }, [refreshCashbox]);
+
+  const canCheckout = cashbox.open && cart.items.length > 0 && cart.items.every((l) => Number(l.qty) > 0);
+
+  // Improve disabled contrast on dark app bar
+  const disabledOnDark = {
+    '&.Mui-disabled': {
+      color: 'rgba(255,255,255,0.7) !important',
+      borderColor: 'rgba(255,255,255,0.3) !important',
+      backgroundColor: 'rgba(255,255,255,0.08) !important',
+    },
+  };
 
   const clientTotals = computeReceiptTotals({
     type: cart.mode === 'sale_return' ? 'sale_return' : 'sale',
@@ -139,7 +177,7 @@ export default function POSShell() {
   }, []);
 
   return (
-    <Box sx={{ height: '100dvh', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
       <AppBar position="static" color="primary">
         <Toolbar sx={{ gap: 2 }}>
           <Typography variant="h6" sx={{ flexGrow: 0 }}>
@@ -151,6 +189,13 @@ export default function POSShell() {
             icon={online ? <WifiIcon /> : <WifiOffIcon />}
             color={online ? 'success' : 'default'}
           />
+          <Chip
+            size="small"
+            color={cashbox.open ? 'success' : 'default'}
+            label={cashbox.open ? t('cashbox.open') : t('cashbox.closed')}
+            onClick={() => setViewDialog(true)}
+            sx={{ cursor: 'pointer' }}
+          />
           <Box sx={{ flexGrow: 1 }} />
           <Chip size="small" label={`${t('pos.items')}: ${cart.items.length}`} color="secondary" />
           <Typography variant="body2" sx={{ mr: 2 }} suppressHydrationWarning>
@@ -159,57 +204,29 @@ export default function POSShell() {
           <Typography variant="body2">
             {user?.fullName || user?.primaryEmailAddress?.emailAddress || 'User'}
           </Typography>
-          <ToggleButtonGroup
-            size="small"
-            exclusive
-            value={cart.mode}
-            onChange={(_e, val) => { if (val) cart.setMode(val); }}
-            sx={{ '& .MuiToggleButton-root': { color: 'common.white', borderColor: 'rgba(255,255,255,0.3)' } }}
-          >
-            <ToggleButton
-              value="sale"
-              sx={{ '&.Mui-selected': { bgcolor: 'primary.main', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.dark' } } }}
-            >
-              {t('pos.sale')}
-            </ToggleButton>
-            <ToggleButton
-              value="sale_return"
-              sx={{ '&.Mui-selected': { bgcolor: 'warning.main', color: 'warning.contrastText', '&:hover': { bgcolor: 'warning.dark' } } }}
-            >
-              {t('pos.return')}
-            </ToggleButton>
-          </ToggleButtonGroup>
+          {!cashbox.open ? (
+            <Button color="inherit" variant="outlined" onClick={() => setOpenDialog(true)}>
+              {t('cashbox.openCashbox')}
+            </Button>
+          ) : (
+            <>
+              <Button color="inherit" onClick={() => setAdjustDialog(true)}>{t('cashbox.adjust')}</Button>
+              <Button color="inherit" variant="outlined" onClick={() => setCloseDialog(true)}>{t('cashbox.close')}</Button>
+              {lastReport && (
+                <Button color="inherit" onClick={() => window.print()}>{t('cashbox.printZReport')}</Button>
+              )}
+            </>
+          )}
           <Button component={Link} href="/pos/history" color="inherit" variant="outlined">
             {t('pos.history')}
           </Button>
-          {!success && (
-            <Button
-              variant={(!canCheckout || submitting) ? 'outlined' : 'contained'}
-              color={cart.mode === 'sale_return' ? 'warning' : 'secondary'}
-              disabled={!canCheckout || submitting}
-              onClick={() => setCheckingOut(true)}
-            >
-              {t('pos.checkout')}
-            </Button>
-          )}
           <IconButton color="inherit" title="Refresh">
             <RefreshIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
 
-      <Box
-        sx={{
-          p: 2,
-          flex: 1,
-          overflow: 'hidden',
-          width: '100%',
-          maxWidth: '100%',
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gap: 2,
-        }}
-      >
+      <Box sx={{ p: 2, flex: 1, width: '100%', maxWidth: '100%', display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>
         <Box sx={{ height: '100%' }}>
           <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', ...(cart.mode === 'sale_return' ? { border: '1px solid', borderColor: 'warning.main', bgcolor: 'warning.light' } : {}) }}>
             <Typography variant="h6" gutterBottom>
@@ -259,6 +276,38 @@ export default function POSShell() {
                 <CheckoutSuccess receipt={success.receipt} totals={success.totals} paidTotal={success.paidTotal} dueTotal={success.dueTotal} onNewSale={startNewSale} />
               )}
             </Stack>
+            {!success && (
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={2}
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ mt: 1 }}
+              >
+                <ToggleButtonGroup
+                  size="small"
+                  exclusive
+                  value={cart.mode}
+                  onChange={(_e, val) => { if (val) cart.setMode(val); }}
+                >
+                  <ToggleButton value="sale">
+                    {t('pos.sale')}
+                  </ToggleButton>
+                  <ToggleButton value="sale_return">
+                    {t('pos.return')}
+                  </ToggleButton>
+                </ToggleButtonGroup>
+                <Button
+                  variant={(!canCheckout || submitting) ? 'outlined' : 'contained'}
+                  color={cart.mode === 'sale_return' ? 'warning' : 'secondary'}
+                  disabled={!canCheckout || submitting}
+                  onClick={() => setCheckingOut(true)}
+                  title={!cashbox.open ? t('cashbox.openCashbox') : undefined}
+                >
+                  {t('pos.checkout')}
+                </Button>
+              </Stack>
+            )}
           </Paper>
         </Box>
       </Box>
@@ -275,6 +324,28 @@ export default function POSShell() {
         onClose={() => setCustomerOpen(false)}
         onSelect={(c) => cart.setCustomer(c)}
         initialValue={cart.customer || undefined}
+      />
+      <OpenCashboxDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onOpened={() => { refreshCashbox(); }}
+      />
+      <AdjustCashDialog
+        open={adjustDialog}
+        onClose={() => setAdjustDialog(false)}
+        onAdjusted={() => { refreshCashbox(); }}
+      />
+      <CloseCashboxDialog
+        open={closeDialog}
+        onClose={() => setCloseDialog(false)}
+        summary={cashbox.summary}
+        onClosed={(report) => { setLastReport(report); refreshCashbox(); setTimeout(() => window.print(), 50); }}
+      />
+      <CashboxZReport report={lastReport} />
+      <ViewCashboxDialog
+        open={viewDialog}
+        onClose={() => setViewDialog(false)}
+        expected={cashbox.expectedCash}
       />
     </Box>
   );

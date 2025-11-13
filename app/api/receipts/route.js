@@ -9,6 +9,8 @@ import Product from '@/models/product';
 import Variant from '@/models/variant';
 import Company from '@/models/company';
 import Receipt from '@/models/receipt';
+import CashboxSession from '@/models/cashboxSession';
+import CashMovement from '@/models/cashMovement';
 import { computeReceiptTotals } from '@/lib/pricing';
 import { createDeliveryOrder } from '@/lib/deliveries';
 import { normalizeAndValidatePhone, buildNotes } from '@/lib/deliveries/policies/optimus';
@@ -306,6 +308,17 @@ export async function POST(req) {
   try {
     await connectToDB();
 
+    // Enforce open cashbox for sales and returns
+    if (type === 'sale' || type === 'sale_return') {
+      const openSession = await CashboxSession.findOne({ status: 'open' }).lean();
+      if (!openSession) {
+        return NextResponse.json(
+          { error: 'CashboxClosed', message: 'Open cashbox before making sales or returns' },
+          { status: 409 },
+        );
+      }
+    }
+
     if (type === 'purchase') {
       const companyExists = await Company.exists({ _id: supplierId });
       if (!companyExists) {
@@ -597,6 +610,61 @@ export async function POST(req) {
       ? doc.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
       : 0;
     const createdDue = Math.max(0, Number(totals?.grandTotal || 0) - createdPaid);
+
+    // Cashbox movements (best-effort; do not fail receipt)
+    try {
+      const openSession = await CashboxSession.findOne({ status: 'open' }).lean();
+      if (openSession) {
+        // Helper: parse method from beginning of note ("cash • ...")
+        const methodFromNote = (note || '').split(' • ')[0]?.trim();
+        const isCashFromNote = methodFromNote === 'cash';
+        if (type === 'sale') {
+          if (!hasSaleDelivery) {
+            if (Array.isArray(doc?.payments) && doc.payments.length) {
+              for (const p of doc.payments) {
+                if ((p?.method || 'cash') === 'cash' && Number(p?.amount || 0) > 0) {
+                  await CashMovement.create({
+                    sessionId: openSession._id,
+                    amount: Number(p.amount || 0),
+                    direction: 'in',
+                    source: 'payment',
+                    method: 'cash',
+                    receiptId: doc._id,
+                    note: p.note || undefined,
+                    userId,
+                  });
+                }
+              }
+            } else if (doc.status === 'completed' && isCashFromNote) {
+              // Full cash sale paid now
+              await CashMovement.create({
+                sessionId: openSession._id,
+                amount: Number(totals?.grandTotal || 0),
+                direction: 'in',
+                source: 'sale',
+                method: 'cash',
+                receiptId: doc._id,
+                note: 'cash sale',
+                userId,
+              });
+            }
+          }
+        } else if (type === 'sale_return') {
+          if (!hasReturnDelivery && isCashFromNote) {
+            await CashMovement.create({
+              sessionId: openSession._id,
+              amount: Number(totals?.grandTotal || 0),
+              direction: 'out',
+              source: 'return',
+              method: 'cash',
+              receiptId: doc._id,
+              note: 'cash return',
+              userId,
+            });
+          }
+        }
+      }
+    } catch {}
 
     return NextResponse.json(
       {

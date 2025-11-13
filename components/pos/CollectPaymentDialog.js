@@ -26,6 +26,15 @@ export default function CollectPaymentDialog({ open, onClose, receiptId, dueTota
   }, [open, dueTotal]);
 
   const submit = async () => {
+    // Prevent cash collection when cashbox is closed
+    try {
+      const sess = await fetch('/api/cashbox/session', { cache: 'no-store' }).then((r) => r.json()).catch(() => null);
+      if (!sess?.ok || !sess?.open) {
+        alert(t('cashbox.openCashbox'));
+        return;
+      }
+    } catch {}
+
     if (!receiptId) return;
     const amt = Number(amount || 0);
     if (!(amt > 0)) {

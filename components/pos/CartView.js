@@ -30,8 +30,8 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
   const { totals } = computeReceiptTotals(pricingPayload);
 
   return (
-    <Stack spacing={2} sx={{ height: '100%' }}>
-      <Box sx={{ overflow: 'auto', flex: 1, minHeight: 0 }}>
+    <Stack spacing={2}>
+      <Box>
         <Table size="small" stickyHeader>
           <TableHead>
             <TableRow>

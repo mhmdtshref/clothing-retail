@@ -2,10 +2,6 @@
 
 import * as React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { CacheProvider } from '@emotion/react';
-import createCache from '@emotion/cache';
-import { prefixer } from 'stylis';
 import { DEFAULT_LOCALE, isRtl, normalizeLocale, type Messages } from '@/lib/i18n/config';
 import enCommon from '@/locales/en/common.json';
 import arCommon from '@/locales/ar/common.json';
@@ -37,15 +33,9 @@ function buildMessages(locale: string): Messages {
   }
 }
 
-function createEmotionCache(dir: 'ltr' | 'rtl') {
-  const stylisPlugins = [prefixer];
-  return createCache({ key: dir === 'rtl' ? 'mui-rtl' : 'mui', stylisPlugins });
-}
-
 export function I18nProvider({ locale: initialLocale, children }: { locale?: string; children: React.ReactNode }) {
   const [locale, setLocale] = React.useState<string>(normalizeLocale(initialLocale));
   const dir: 'ltr' | 'rtl' = isRtl(locale) ? 'rtl' : 'ltr';
-  const cache = React.useMemo(() => createEmotionCache(dir), [dir]);
   const theme = React.useMemo(() => createTheme({ direction: dir }), [dir]);
   const messages = React.useMemo(() => buildMessages(locale), [locale]);
 
@@ -122,12 +112,9 @@ export function I18nProvider({ locale: initialLocale, children }: { locale?: str
 
   return (
     <I18nContext.Provider value={ctx}>
-      <CacheProvider value={cache}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
-      </CacheProvider>
+      <ThemeProvider theme={theme}>
+        {children}
+      </ThemeProvider>
     </I18nContext.Provider>
   );
 }

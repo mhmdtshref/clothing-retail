@@ -7,6 +7,8 @@ import mongoose from 'mongoose';
 import { connectToDB } from '@/lib/mongoose';
 import Receipt from '@/models/receipt';
 import { computeReceiptTotals } from '@/lib/pricing';
+import CashboxSession from '@/models/cashboxSession';
+import CashMovement from '@/models/cashMovement';
 
 const BodySchema = z.object({
   amount: z.number().positive(),
@@ -36,6 +38,15 @@ export async function POST(req, context) {
 
   try {
     await connectToDB();
+
+    // Require open cashbox for cash payments
+    if ((body.method || 'cash') === 'cash') {
+      const openSession = await CashboxSession.findOne({ status: 'open' }).lean();
+      if (!openSession) {
+        return NextResponse.json({ error: 'CashboxClosed', message: 'Open cashbox before collecting cash payments' }, { status: 409 });
+      }
+    }
+
     const r = await Receipt.findById(id).lean();
     if (!r) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
     if (r.type !== 'sale') {
@@ -85,6 +96,25 @@ export async function POST(req, context) {
       ? updated.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
       : 0;
     const dueTotal = Math.max(0, Number(tot2?.grandTotal || 0) - paidTotal);
+
+    // Cashbox movement for cash payment (best-effort)
+    try {
+      if ((body.method || 'cash') === 'cash') {
+        const openSession = await CashboxSession.findOne({ status: 'open' }).lean();
+        if (openSession) {
+          await CashMovement.create({
+            sessionId: openSession._id,
+            amount: Number(amount || 0),
+            direction: 'in',
+            source: 'payment',
+            method: 'cash',
+            receiptId: updated._id,
+            note: body.note || undefined,
+            userId,
+          });
+        }
+      }
+    } catch {}
 
     return NextResponse.json({
       ok: true,
