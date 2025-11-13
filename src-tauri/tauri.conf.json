@@ -1,0 +1,27 @@
+{
+  "package": {
+    "productName": "Clothing POS",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "bundle": {
+      "identifier": "com.clothing.pos",
+      "targets": ["msi", "dmg", "app", "updater"],
+      "active": true
+    },
+    "windows": [
+      {
+        "title": "Clothing POS",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "visible": true,
+        "url": "__APP_URL__"
+      }
+    ],
+    "security": { "csp": null }
+  }
+}
+
+

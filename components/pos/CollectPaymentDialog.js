@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Stack, TextField, MenuItem, Typography } from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
+import { enqueuePayment } from '@/lib/offline/sync';
 
 export default function CollectPaymentDialog({ open, onClose, receiptId, dueTotal = 0, onDone }) {
   const { t, formatNumber } = useI18n();
@@ -52,7 +53,13 @@ export default function CollectPaymentDialog({ open, onClose, receiptId, dueTota
       if (!res.ok) throw new Error(t('errors.collectPaymentFailed'));
       onDone?.(json);
     } catch (e) {
-      alert(e?.message || String(e));
+      try {
+        await enqueuePayment(String(receiptId), { amount: amt, method, note });
+        alert(t('common.saved')); // queued
+        onDone?.({ ok: true });
+      } catch {
+        alert(e?.message || String(e));
+      }
     } finally {
       setSubmitting(false);
     }

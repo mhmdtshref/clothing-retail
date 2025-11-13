@@ -20,6 +20,7 @@ import AdjustCashDialog from '@/components/pos/cashbox/AdjustCashDialog';
 import CloseCashboxDialog from '@/components/pos/cashbox/CloseCashboxDialog';
 import CashboxZReport from '@/components/pos/cashbox/CashboxZReport';
 import ViewCashboxDialog from '@/components/pos/cashbox/ViewCashboxDialog';
+import { enqueueReceipt } from '@/lib/offline/sync';
 
 function useClock() {
   const [now, setNow] = React.useState(() => new Date());
@@ -159,7 +160,33 @@ export default function POSShell() {
       setBillDiscount({ mode: 'amount', value: 0 });
       setTaxPercent(0);
     } catch (e) {
-      alert(e?.message || String(e));
+      // Fallback to offline outbox for receipts (queue when offline)
+      try {
+        await enqueueReceipt({
+          type: cart.mode === 'sale_return' ? 'sale_return' : 'sale',
+          status: (!cart.mode === 'sale_return' && payMode === 'deposit' && Number(depositAmount || 0) > 0) ? 'pending' : 'completed',
+          items: cart.items.map((l) => ({
+            variantId: l.variantId,
+            qty: Number(l.qty) || 0,
+            unitPrice: Number(l.unitPrice) || 0,
+            discount: l.discount && Number(l.discount.value) > 0
+              ? { mode: l.discount.mode, value: Number(l.discount.value) }
+              : undefined,
+          })),
+          billDiscount: billDiscount && Number(billDiscount.value) > 0 ? { mode: billDiscount.mode, value: Number(billDiscount.value) } : undefined,
+          taxPercent: Number(taxPercent) || 0,
+          note: [method, note].filter(Boolean).join(' • '),
+          ...(cart.mode === 'sale_return' && reason ? { returnReason: reason } : {}),
+          ...(cart.customer?._id ? { customerId: cart.customer._id } : {}),
+          payments: (!cart.mode === 'sale_return' && payMode === 'deposit' && Number(depositAmount || 0) > 0)
+            ? [{ amount: Number(depositAmount || 0), method, note }]
+            : [],
+        });
+        alert(t('common.saved')); // queued
+        setCheckingOut(false);
+      } catch {
+        alert(e?.message || String(e));
+      }
     } finally {
       setSubmitting(false);
     }
@@ -170,11 +197,7 @@ export default function POSShell() {
     cart.clearCustomer();
   }
 
-  React.useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
-  }, []);
+  // SW registration moved to a global registrar
 
   return (
     <Box sx={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>

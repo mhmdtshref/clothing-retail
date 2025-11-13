@@ -35,6 +35,41 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## PWA (Installable App)
+- Manifest in `public/manifest.json` and Service Worker in `public/sw.js`.
+- Install banner via `components/pwa/InstallPrompt.tsx`.
+- SW registered globally in `app/layout.js` through `components/pwa/RegisterSW`.
+- Offline fallback page: `public/offline.html`.
+
+### Offline Outbox
+- IndexedDB wrapper `lib/db/dexie.ts`.
+- Outbox and sync logic `lib/offline/sync.ts` (auto-flush on online/visibility).
+- POS queues sales/payments when offline.
+
+### Lighthouse
+- Audit in Chrome DevTools → Lighthouse (PWA). Ensure HTTPS and icons.
+
+## Mobile (Capacitor)
+1. Install packages:
+   - npm i -D @capacitor/cli
+   - npm i @capacitor/core @capacitor/android @capacitor/ios
+2. Set production URL:
+   - export NEXT_PUBLIC_APP_URL="https://your-domain.example.com"
+3. Add platforms:
+   - npx cap add android
+   - npx cap add ios
+4. Open projects:
+   - npx cap open android
+   - npx cap open ios
+See `mobile/README.md`.
+
+## Desktop (Tauri)
+1. Install Tauri prerequisites and CLI https://tauri.app
+2. Set app URL and replace in config:
+   - export TAURI_APP_URL="https://your-domain.example.com"
+   - replace `__APP_URL__` in `src-tauri/tauri.conf.json` with that URL
+3. Dev: `tauri dev`, Build: `tauri build`. See `src-tauri/README.md`.
+
 ## Delivery (COD) Integration
 
 Sale receipts can be created with Delivery (Cash on Delivery) using two providers: Optimus and Sabeq Laheq. Delivery tracking data is saved in the same `Receipt` model under `delivery`.
