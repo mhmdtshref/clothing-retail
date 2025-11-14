@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Stack, Typography, Divider, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import { DialogTitle, DialogContent, DialogActions, Button, Stack, Typography, Divider, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
+import FullScreenDialog from '@/components/common/FullScreenDialog';
 
 export default function ReceiptDetailsDialog({ id, open, onClose }) {
   const [loading, setLoading] = React.useState(false);
@@ -45,7 +46,7 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
   const dueTotal = Math.max(0, Number(t?.grandTotal || 0) - Number(paidTotal || 0));
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <FullScreenDialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Receipt Details</DialogTitle>
       <DialogContent>
         {loading && <Typography sx={{ py: 2 }}>Loading…</Typography>}
@@ -140,7 +141,7 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
         <Button onClick={onClose}>Close</Button>
         <Button variant="contained" startIcon={<PrintIcon />} onClick={onPrint}>Print</Button>
       </DialogActions>
-    </Dialog>
+    </FullScreenDialog>
   );
 }
 

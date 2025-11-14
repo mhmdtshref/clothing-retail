@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Stack, TextField, Button, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { DialogTitle, DialogContent, DialogActions, Stack, TextField, Button, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
+import FullScreenDialog from '@/components/common/FullScreenDialog';
 
 export default function AdjustCashDialog({ open, onClose, onAdjusted }: { open: boolean; onClose: () => void; onAdjusted: () => void }) {
   const { t } = useI18n();
@@ -41,7 +42,7 @@ export default function AdjustCashDialog({ open, onClose, onAdjusted }: { open: 
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <FullScreenDialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle>{t('cashbox.adjustTitle')}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
@@ -69,7 +70,7 @@ export default function AdjustCashDialog({ open, onClose, onAdjusted }: { open: 
         <Button onClick={onClose}>{t('common.cancel')}</Button>
         <Button disabled={submitting} variant="contained" onClick={submit}>{t('cashbox.add')}</Button>
       </DialogActions>
-    </Dialog>
+    </FullScreenDialog>
   );
 }
 

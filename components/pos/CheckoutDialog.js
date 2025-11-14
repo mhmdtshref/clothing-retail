@@ -2,10 +2,11 @@
 
 import * as React from 'react';
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
+  DialogTitle, DialogContent, DialogActions,
   Button, Stack, TextField, MenuItem, Typography, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
+import FullScreenDialog from '@/components/common/FullScreenDialog';
 
 export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, isReturn = false, initialContact }) {
   const { t, formatNumber } = useI18n();
@@ -33,7 +34,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
 
   return (
     <>
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <FullScreenDialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle>{t('pos.checkout')}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
@@ -85,7 +86,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
           {isReturn ? t('checkout.confirmReturn') : t('checkout.confirmAndPay')}
         </Button>
       </DialogActions>
-    </Dialog>
+    </FullScreenDialog>
     </>
   );
 }

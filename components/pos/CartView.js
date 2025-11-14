@@ -3,7 +3,7 @@
 import * as React from 'react';
 import {
   Box, Stack, Table, TableHead, TableRow, TableCell, TableBody,
-  IconButton, TextField, Select, MenuItem, Button, Typography, Tooltip,
+  IconButton, TextField, Select, MenuItem, Button, Typography, Tooltip, useMediaQuery, useTheme,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -15,6 +15,8 @@ import { useI18n } from '@/components/i18n/useI18n';
 export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDiscount, removeLine, clear, billDiscount, setBillDiscount, taxPercent, setTaxPercent }) {
   const { t, formatNumber } = useI18n();
   const subtotal = items.reduce((sum, l) => sum + (computeLine({ qty: l.qty, unit: l.unitPrice, discount: l.discount }).net || 0), 0);
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down('sm'));
 
   const pricingPayload = React.useMemo(() => ({
     type: 'sale',
@@ -30,19 +32,26 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
   const { totals } = computeReceiptTotals(pricingPayload);
 
   return (
-    <Stack spacing={2}>
-      <Box>
-        <Table size="small" stickyHeader>
+    <Stack spacing={2} sx={{ pb: { xs: '96px', sm: 0 } }}>
+      <Box sx={{ width: '100%', overflowX: 'hidden' }}>
+        <Table
+          size="small"
+          stickyHeader
+          sx={{
+            width: '100%',
+            tableLayout: 'fixed',
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>{t('common.product')}</TableCell>
-              <TableCell>{t('common.variant')}</TableCell>
-              <TableCell align="right">{t('pos.onHand')}</TableCell>
-              <TableCell align="right">{t('common.qty')}</TableCell>
-              <TableCell align="right">{t('pos.unitPrice')}</TableCell>
-              <TableCell>{t('common.discount')}</TableCell>
-              <TableCell align="right">{t('cart.lineTotal')}</TableCell>
-              <TableCell align="right">{t('common.actions')}</TableCell>
+              <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('common.variant')}</TableCell>
+              <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('pos.onHand')}</TableCell>
+              <TableCell align="right" sx={{ width: 72 }}>{t('common.qty')}</TableCell>
+              <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('pos.unitPrice')}</TableCell>
+              <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('common.discount')}</TableCell>
+              <TableCell align="right" sx={{ width: 96 }}>{t('cart.lineTotal')}</TableCell>
+              <TableCell align="right" sx={{ width: 64 }}>{t('common.actions')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -58,31 +67,55 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
               const over = l.qty > l.onHand;
               return (
                 <TableRow key={l.id} hover>
-                  <TableCell>
-                    <Typography fontWeight={600}>{l.code}</Typography>
-                    <Typography variant="body2" color="text.secondary">{l.name || '\u00A0'}</Typography>
+                  <TableCell sx={{ overflow: 'hidden' }}>
+                    <Typography fontWeight={600} noWrap title={l.code}>{l.code}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{l.name || '\u00A0'}</Typography>
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                     <Typography variant="body2">{l.size} / {l.color}</Typography>
                     <Typography variant="caption" color="text.secondary">{l.companyName}</Typography>
                   </TableCell>
-                  <TableCell align="right">{formatNumber(l.onHand)}</TableCell>
-                  <TableCell align="right">
-                    <Stack direction="row" spacing={0.5} justifyContent="flex-end" alignItems="center">
-                      <IconButton size="small" onClick={() => dec(l.id)} disabled={l.qty <= 0}><RemoveIcon fontSize="small" /></IconButton>
-                      <TextField
-                        size="small"
-                        type="number"
-                        value={l.qty}
-                        onChange={(e) => setQty(l.id, e.target.value)}
-                        inputProps={{ min: 0, step: 1, style: { width: 64, textAlign: 'right' } }}
-                        error={over}
-                        helperText={over ? t('cart.overOnHand') : ''}
-                      />
-                      <IconButton size="small" onClick={() => inc(l.id)}><AddIcon fontSize="small" /></IconButton>
-                    </Stack>
+                  <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{formatNumber(l.onHand)}</TableCell>
+                  <TableCell align="right" sx={{ width: 72 }}>
+                    {isXs ? (
+                      <Stack direction="column" spacing={0} alignItems="center" justifyContent="center">
+                        <IconButton size="small" onClick={() => inc(l.id)} aria-label="Increase">
+                          <AddIcon fontSize="small" />
+                        </IconButton>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            width: 28,
+                            textAlign: 'center',
+                            color: over ? 'error.main' : 'inherit',
+                            fontWeight: 600,
+                            lineHeight: 1.2,
+                          }}
+                          title={over ? t('cart.overOnHand') : undefined}
+                        >
+                          {formatNumber(l.qty)}
+                        </Typography>
+                        <IconButton size="small" onClick={() => dec(l.id)} disabled={l.qty <= 0} aria-label="Decrease">
+                          <RemoveIcon fontSize="small" />
+                        </IconButton>
+                      </Stack>
+                    ) : (
+                      <Stack direction="row" spacing={0.5} justifyContent="flex-end" alignItems="center">
+                        <IconButton size="small" onClick={() => dec(l.id)} disabled={l.qty <= 0}><RemoveIcon fontSize="small" /></IconButton>
+                        <TextField
+                          size="small"
+                          type="number"
+                          value={l.qty}
+                          onChange={(e) => setQty(l.id, e.target.value)}
+                          inputProps={{ min: 0, step: 1, style: { width: 56, textAlign: 'right' } }}
+                          error={over}
+                          helperText={over ? t('cart.overOnHand') : ''}
+                        />
+                        <IconButton size="small" onClick={() => inc(l.id)}><AddIcon fontSize="small" /></IconButton>
+                      </Stack>
+                    )}
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                     <TextField
                       size="small"
                       type="number"
@@ -91,7 +124,7 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
                       inputProps={{ min: 0, step: '0.01', style: { width: 96, textAlign: 'right' } }}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Select size="small" value={l.discount?.mode || 'amount'} onChange={(e) => setDiscount(l.id, { mode: e.target.value })}>
                         <MenuItem value="amount">{t('discount.amount')}</MenuItem>
@@ -122,8 +155,14 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
       </Box>
       {/* Bill-level modifiers */}
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ xs: 'stretch', sm: 'center' }}>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{ flexGrow: 1 }}>
-          <Select size="small" value={billDiscount.mode} onChange={(e) => setBillDiscount((d) => ({ ...d, mode: e.target.value }))}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center" sx={{ flexGrow: 1 }}>
+          <Select
+            size="small"
+            value={billDiscount.mode}
+            onChange={(e) => setBillDiscount((d) => ({ ...d, mode: e.target.value }))}
+            sx={{ width: { xs: '100%', sm: 140 } }}
+            fullWidth
+          >
             <MenuItem value="amount">{t('discount.amount')}</MenuItem>
             <MenuItem value="percent">{t('discount.percent')}</MenuItem>
           </Select>
@@ -133,7 +172,9 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
             type="number"
             value={billDiscount.value}
             onChange={(e) => setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value) || 0) }))}
-            inputProps={{ min: 0, step: '0.01', style: { width: 120 } }}
+            inputProps={{ min: 0, step: '0.01' }}
+            sx={{ width: { xs: '100%', sm: 160 } }}
+            fullWidth
           />
           <TextField
             size="small"
@@ -141,7 +182,9 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
             type="number"
             value={taxPercent}
             onChange={(e) => setTaxPercent(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
-            inputProps={{ min: 0, max: 100, step: '0.01', style: { width: 120 } }}
+            inputProps={{ min: 0, max: 100, step: '0.01' }}
+            sx={{ width: { xs: '100%', sm: 160 } }}
+            fullWidth
           />
         </Stack>
         <Button startIcon={<ClearAllIcon />} variant="outlined" color="warning" onClick={clear} disabled={items.length === 0}>{t('cart.clearCart')}</Button>

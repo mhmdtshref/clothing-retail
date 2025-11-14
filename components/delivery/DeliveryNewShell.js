@@ -9,6 +9,7 @@ import { computeReceiptTotals } from '@/lib/pricing';
 import submitDelivery from '@/components/delivery/submitDelivery';
 import { useCart } from '@/components/pos/useCart';
 import { useI18n } from '@/components/i18n/useI18n';
+import ResponsiveActionsBar from '@/components/common/ResponsiveActionsBar';
 
 export default function DeliveryNewShell({ companies }) {
   const cart = useCart();
@@ -104,11 +105,13 @@ export default function DeliveryNewShell({ companies }) {
               <TextField label={t('delivery.contactPhone')} value={deliveryContact.phone} onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))} fullWidth />
             </Stack>
           )}
-          <Box sx={{ textAlign: 'right' }}>
-            <Button variant="contained" disabled={!canCheckout || submitting} onClick={onSubmit}>
-              {submitting ? t('delivery.creating') : t('delivery.createReceipt')}
-            </Button>
-          </Box>
+          <ResponsiveActionsBar>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end">
+              <Button variant="contained" disabled={!canCheckout || submitting} onClick={onSubmit}>
+                {submitting ? t('delivery.creating') : t('delivery.createReceipt')}
+              </Button>
+            </Stack>
+          </ResponsiveActionsBar>
         </Paper>
       </Box>
     </Box>

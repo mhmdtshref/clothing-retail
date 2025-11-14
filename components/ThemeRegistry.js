@@ -5,7 +5,8 @@ import { useServerInsertedHTML } from 'next/navigation';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import theme from '@/theme';
+import createAppTheme from '@/theme';
+import { useI18nInternal } from '@/components/i18n/I18nProvider';
 
 export default function ThemeRegistry({ children }) {
   const [{ cache, flush }] = React.useState(() => {
@@ -27,6 +28,9 @@ export default function ThemeRegistry({ children }) {
     return { cache, flush };
   });
 
+  const { dir } = useI18nInternal?.() || { dir: 'ltr' };
+  const muiTheme = React.useMemo(() => createAppTheme(dir), [dir]);
+
   useServerInsertedHTML(() => {
     const names = flush();
     if (names.length === 0) return null;
@@ -41,7 +45,7 @@ export default function ThemeRegistry({ children }) {
 
   return (
     <CacheProvider value={cache}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={muiTheme}>
         <CssBaseline />
         {children}
       </ThemeProvider>

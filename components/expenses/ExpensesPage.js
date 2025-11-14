@@ -36,6 +36,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import ExpenseFormDialog from '@/components/expenses/ExpenseFormDialog';
 import ExpenseCategoryDialog from '@/components/expenses/ExpenseCategoryDialog';
 import { useI18n } from '@/components/i18n/useI18n';
+import ResponsiveListItem from '@/components/common/ResponsiveListItem';
 
 const DEFAULTS = {
   q: '',
@@ -218,7 +219,7 @@ export default function ExpensesPage() {
 
         {!loading && !error && (
           <>
-            <Table size="small">
+            <Table size="small" sx={{ display: { xs: 'none', sm: 'table' } }}>
               <TableHead>
                 <TableRow>
                   <TableCell>{t('common.date')}</TableCell>
@@ -258,6 +259,28 @@ export default function ExpensesPage() {
                 ))}
               </TableBody>
             </Table>
+
+            <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
+              {data.items.length === 0 && (
+                <Typography color="text.secondary" sx={{ py: 2 }}>{t('expenses.none')}</Typography>
+              )}
+              {data.items.map((e) => (
+                <ResponsiveListItem
+                  key={e._id}
+                  title={e.vendor || '-'}
+                  subtitle={`${formatDate(e.date, { dateStyle: 'medium' })} • ${e.categoryName || '-'}`}
+                  metaEnd={formatNumber(Number(e.amount || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  actions={(
+                    <Stack direction="row" spacing={1}>
+                      <Button size="small" onClick={() => onEditExpense(e)}>{t('common.edit')}</Button>
+                      <Button size="small" color="error" onClick={() => onDeleteExpense(e._id)}>{t('common.delete')}</Button>
+                    </Stack>
+                  )}
+                >
+                  {e.note && <Typography variant="body2" color="text.secondary">{e.note}</Typography>}
+                </ResponsiveListItem>
+              ))}
+            </Stack>
 
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: 2, py: 2 }}>
               <Typography variant="body2" color="text.secondary">

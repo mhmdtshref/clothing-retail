@@ -26,6 +26,8 @@ import {
   Tooltip,
   Menu,
   ListItemIcon,
+  Drawer,
+  Divider,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -38,6 +40,8 @@ import DoneIcon from '@mui/icons-material/Done';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import Link from 'next/link';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import ResponsiveListItem from '@/components/common/ResponsiveListItem';
 
 const DEFAULTS = {
   query: '',
@@ -177,6 +181,8 @@ export default function ReceiptsListPage({ companies }) {
     }
   };
 
+  const [filtersOpen, setFiltersOpen] = React.useState(false);
+
   return (
     <Paper sx={{ p: 2 }}>
       <Toolbar sx={{ gap: 1, flexWrap: 'wrap' }}>
@@ -195,7 +201,11 @@ export default function ReceiptsListPage({ companies }) {
           sx={{ minWidth: 260 }}
         />
 
-        <FormControl size="small" sx={{ minWidth: 140 }}>
+        <IconButton sx={{ display: { xs: 'inline-flex', sm: 'none' } }} onClick={() => setFiltersOpen(true)} title="Filters">
+          <FilterListIcon />
+        </IconButton>
+
+        <FormControl size="small" sx={{ minWidth: 140, display: { xs: 'none', sm: 'flex' } }}>
           <InputLabel id="status-label">Status</InputLabel>
           <Select
             labelId="status-label"
@@ -212,7 +222,7 @@ export default function ReceiptsListPage({ companies }) {
           </Select>
         </FormControl>
 
-        <FormControl size="small" sx={{ minWidth: 180 }}>
+        <FormControl size="small" sx={{ minWidth: 180, display: { xs: 'none', sm: 'flex' } }}>
           <InputLabel id="company-label">Company</InputLabel>
           <Select
             labelId="company-label"
@@ -236,6 +246,7 @@ export default function ReceiptsListPage({ companies }) {
           value={state.dateFrom}
           onChange={onDateFrom}
           InputLabelProps={{ shrink: true }}
+          sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
         />
         <TextField
           size="small"
@@ -244,9 +255,10 @@ export default function ReceiptsListPage({ companies }) {
           value={state.dateTo}
           onChange={onDateTo}
           InputLabelProps={{ shrink: true }}
+          sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
         />
 
-        <FormControl size="small" sx={{ minWidth: 160 }}>
+        <FormControl size="small" sx={{ minWidth: 160, display: { xs: 'none', sm: 'flex' } }}>
           <InputLabel id="sort-label">Sort by</InputLabel>
           <Select
             labelId="sort-label"
@@ -265,7 +277,7 @@ export default function ReceiptsListPage({ companies }) {
           </Select>
         </FormControl>
 
-        <IconButton size="small" onClick={() => switchOrder()} aria-label="toggle order">
+        <IconButton size="small" onClick={() => switchOrder()} aria-label="toggle order" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
           {state.order === 'asc' ? (
             <ArrowUpwardIcon fontSize="small" />
           ) : (
@@ -273,7 +285,7 @@ export default function ReceiptsListPage({ companies }) {
           )}
         </IconButton>
 
-        <FormControl size="small" sx={{ minWidth: 120, ml: 'auto' }}>
+        <FormControl size="small" sx={{ minWidth: 120, ml: 'auto', display: { xs: 'none', sm: 'flex' } }}>
           <InputLabel id="limit-label">Per page</InputLabel>
           <Select
             labelId="limit-label"
@@ -288,13 +300,99 @@ export default function ReceiptsListPage({ companies }) {
           </Select>
         </FormControl>
 
-        <Button component={Link} href="/receipts/new" startIcon={<AddIcon />} variant="contained">
+        <Button component={Link} href="/receipts/new" startIcon={<AddIcon />} variant="contained" sx={{ ml: { xs: 'auto', sm: 0 } }}>
           New Purchase
         </Button>
         <IconButton onClick={fetchList} title="Refresh">
           <RefreshIcon />
         </IconButton>
       </Toolbar>
+
+      {/* Filters Drawer (mobile) */}
+      <Drawer anchor="left" open={filtersOpen} onClose={() => setFiltersOpen(false)}>
+        <Box sx={{ width: 320, maxWidth: '90vw', p: 2 }} role="presentation">
+          <Typography variant="h6" sx={{ mb: 1 }}>Filters</Typography>
+          <Stack spacing={2}>
+            <FormControl size="small" fullWidth>
+              <InputLabel id="status-label-m">Status</InputLabel>
+              <Select
+                labelId="status-label-m"
+                label="Status"
+                value={state.status}
+                onChange={onStatusChange}
+              >
+                <MenuItem value="all">all</MenuItem>
+                <MenuItem value="ordered">ordered</MenuItem>
+                <MenuItem value="on_delivery">on_delivery</MenuItem>
+                <MenuItem value="payment_collected">payment_collected</MenuItem>
+                <MenuItem value="ready_to_receive">ready_to_receive</MenuItem>
+                <MenuItem value="completed">completed</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl size="small" fullWidth>
+              <InputLabel id="company-label-m">Company</InputLabel>
+              <Select
+                labelId="company-label-m"
+                label="Company"
+                value={state.companyId}
+                onChange={onCompanyChange}
+              >
+                <MenuItem value="">All companies</MenuItem>
+                {companies.map((c) => (
+                  <MenuItem key={c._id} value={c._id}>
+                    {c.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField size="small" label="From" type="date" value={state.dateFrom} onChange={onDateFrom} InputLabelProps={{ shrink: true }} />
+            <TextField size="small" label="To" type="date" value={state.dateTo} onChange={onDateTo} InputLabelProps={{ shrink: true }} />
+
+            <FormControl size="small" fullWidth>
+              <InputLabel id="sort-label-m">Sort by</InputLabel>
+              <Select
+                labelId="sort-label-m"
+                label="Sort by"
+                value={state.sort}
+                onChange={onSortChange}
+                startAdornment={<InputAdornment position="start"><SortIcon fontSize="small" /></InputAdornment>}
+              >
+                <MenuItem value="date">date</MenuItem>
+                <MenuItem value="createdAt">createdAt</MenuItem>
+                <MenuItem value="status">status</MenuItem>
+              </Select>
+            </FormControl>
+
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography variant="body2">Order</Typography>
+              <IconButton size="small" onClick={() => switchOrder()} aria-label="toggle order">
+                {state.order === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />}
+              </IconButton>
+            </Stack>
+
+            <FormControl size="small" fullWidth>
+              <InputLabel id="limit-label-m">Per page</InputLabel>
+              <Select
+                labelId="limit-label-m"
+                label="Per page"
+                value={state.limit}
+                onChange={onLimitChange}
+              >
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={20}>20</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+          <Divider sx={{ my: 2 }} />
+          <Stack direction="row" justifyContent="flex-end">
+            <Button onClick={() => setFiltersOpen(false)}>Done</Button>
+          </Stack>
+        </Box>
+      </Drawer>
 
       <Box sx={{ position: 'relative', minHeight: 120 }}>
         {loading && (
@@ -311,7 +409,8 @@ export default function ReceiptsListPage({ companies }) {
 
         {!loading && !error && (
           <>
-            <Table size="small">
+            {/* Table on sm+ */}
+            <Table size="small" sx={{ display: { xs: 'none', sm: 'table' } }}>
               <TableHead>
                 <TableRow>
                   <TableCell>Date</TableCell>
@@ -382,6 +481,42 @@ export default function ReceiptsListPage({ companies }) {
                 })}
               </TableBody>
             </Table>
+
+            {/* Cards on xs */}
+            <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
+              {data.items.length === 0 && (
+                <Typography color="text.secondary" sx={{ py: 2 }}>No receipts found.</Typography>
+              )}
+              {data.items.map((r) => {
+                const disabledStatus = r.status === 'completed';
+                const date = new Date(r.date).toLocaleString();
+                const total = Number(r.grandTotal || 0).toFixed(2);
+                return (
+                  <ResponsiveListItem
+                    key={r._id}
+                    title={r.company?.name || '-'}
+                    subtitle={`${r.status} • ${date}`}
+                    metaEnd={`${total}`}
+                    actions={(
+                      <Stack direction="row" spacing={1} sx={{ ml: 'auto' }}>
+                        <Button size="small" startIcon={<EditIcon />} disabled>
+                          {'View / Edit'}
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={(e) => (!disabledStatus ? openStatusMenu(e, r) : null)}
+                          disabled={disabledStatus}
+                        >
+                          Change Status
+                        </Button>
+                      </Stack>
+                    )}
+                  >
+                    <Typography variant="body2" color="text.secondary">Items: {r.itemCount}</Typography>
+                  </ResponsiveListItem>
+                );
+              })}
+            </Stack>
 
             <Stack
               direction="row"

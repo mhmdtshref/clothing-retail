@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -17,6 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
+import FullScreenDialog from '@/components/common/FullScreenDialog';
 
 export default function CustomerDialog({ open, onClose, onSelect, initialValue }) {
   const { t } = useI18n();
@@ -85,7 +85,7 @@ export default function CustomerDialog({ open, onClose, onSelect, initialValue }
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <FullScreenDialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>{t('pos.selectCustomer')}</DialogTitle>
       <DialogContent dividers>
         <Stack spacing={2} sx={{ pt: 1 }}>
@@ -141,7 +141,7 @@ export default function CustomerDialog({ open, onClose, onSelect, initialValue }
       <DialogActions>
         <Button onClick={onClose}>{t('common.close')}</Button>
       </DialogActions>
-    </Dialog>
+    </FullScreenDialog>
   );
 }
 

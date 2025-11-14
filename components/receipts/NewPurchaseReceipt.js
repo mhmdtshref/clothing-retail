@@ -30,6 +30,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { computeReceiptTotals, computeLine } from '@/lib/pricing';
 import { useI18n } from '@/components/i18n/useI18n';
+import ResponsiveActionsBar from '@/components/common/ResponsiveActionsBar';
 
 async function searchProducts(params) {
   const qs = new URLSearchParams({
@@ -286,7 +287,8 @@ export default function NewPurchaseReceipt({ companies }) {
             </Button>
           </Stack>
 
-          <Table size="small">
+          <Box sx={{ overflowX: 'auto' }}>
+          <Table size="small" sx={{ minWidth: 720 }}>
             <TableHead>
               <TableRow>
                 <TableCell sx={{ width: 260 }}>{t('common.variant')}</TableCell>
@@ -417,6 +419,7 @@ export default function NewPurchaseReceipt({ companies }) {
               })}
             </TableBody>
           </Table>
+          </Box>
 
           <Divider />
 
@@ -461,25 +464,27 @@ export default function NewPurchaseReceipt({ companies }) {
             <Typography variant="h6">{t('receipt.grandTotal')}: {formatNumber(totals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
           </Box>
 
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button
-              variant="outlined"
-              onClick={() => {
-                setItems([]);
-                setSelectedProduct(null);
-                setVariantOptions([]);
-                setNote('');
-                setStatus('ordered');
-                setTaxPercent(0);
-                setBillDiscount({ mode: 'amount', value: 0 });
-              }}
-            >
-              {t('common.reset')}
-            </Button>
-            <Button type="submit" variant="contained" disabled={submitting || !companyId}>
-              {submitting ? t('common.saving') : t('purchase.saveReceipt')}
-            </Button>
-          </Stack>
+          <ResponsiveActionsBar>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end">
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setItems([]);
+                  setSelectedProduct(null);
+                  setVariantOptions([]);
+                  setNote('');
+                  setStatus('ordered');
+                  setTaxPercent(0);
+                  setBillDiscount({ mode: 'amount', value: 0 });
+                }}
+              >
+                {t('common.reset')}
+              </Button>
+              <Button type="submit" variant="contained" disabled={submitting || !companyId}>
+                {submitting ? t('common.saving') : t('purchase.saveReceipt')}
+              </Button>
+            </Stack>
+          </ResponsiveActionsBar>
         </Stack>
       </Box>
 
