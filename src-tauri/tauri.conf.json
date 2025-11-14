@@ -1,17 +1,17 @@
 {
   "package": {
-    "productName": "Clothing POS",
+    "productName": "Lariche Boutique POS",
     "version": "0.1.0"
   },
   "tauri": {
     "bundle": {
-      "identifier": "com.clothing.pos",
+      "identifier": "ai.imenu.lariche",
       "targets": ["msi", "dmg", "app", "updater"],
       "active": true
     },
     "windows": [
       {
-        "title": "Clothing POS",
+        "title": "Lariche Boutique POS",
         "width": 1200,
         "height": 800,
         "resizable": true,
@@ -23,5 +23,4 @@
     "security": { "csp": null }
   }
 }
-
 
