@@ -107,7 +107,7 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
                           type="number"
                           value={l.qty}
                           onChange={(e) => setQty(l.id, e.target.value)}
-                          inputProps={{ min: 0, step: 1, style: { width: 56, textAlign: 'right' } }}
+                          inputProps={{ min: 0, step: 1, style: { width: 56, textAlign: 'end' } }}
                           error={over}
                           helperText={over ? t('cart.overOnHand') : ''}
                         />
@@ -116,12 +116,12 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
                     )}
                   </TableCell>
                   <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                    <TextField
+                      <TextField
                       size="small"
                       type="number"
                       value={l.unitPrice}
                       onChange={(e) => setUnitPrice(l.id, e.target.value)}
-                      inputProps={{ min: 0, step: '0.01', style: { width: 96, textAlign: 'right' } }}
+                        inputProps={{ min: 0, step: '0.01', style: { width: 96, textAlign: 'end' } }}
                     />
                   </TableCell>
                   <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>

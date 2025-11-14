@@ -454,7 +454,7 @@ export default function NewPurchaseReceipt({ companies }) {
             />
           </Stack>
 
-          <Box sx={{ textAlign: 'right' }}>
+          <Box sx={{ textAlign: 'end' }}>
             <Typography>{t('receipt.subtotal')}: {formatNumber(totals.itemSubtotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
             <Typography>{t('receipt.itemDiscounts')}: −{formatNumber(totals.itemDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
             <Typography>{t('receipt.billDiscount')}: −{formatNumber(totals.billDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>

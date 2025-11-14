@@ -68,7 +68,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
           {isReturn && (
             <TextField label={t('checkout.returnReasonOptional')} value={reason} onChange={(e) => setReason(e.target.value)} multiline minRows={2} />
           )}
-          <Typography variant="h6" sx={{ textAlign: 'right' }}>{t('common.total')}: {formatNumber(grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+          <Typography variant="h6" sx={{ textAlign: 'end' }}>{t('common.total')}: {formatNumber(grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
         </Stack>
       </DialogContent>
       <DialogActions>

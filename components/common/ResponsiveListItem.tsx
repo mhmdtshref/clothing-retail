@@ -31,7 +31,7 @@ export default function ResponsiveListItem({ title, subtitle, metaStart, metaEnd
               </Box>
             )}
           </Stack>
-          <Stack spacing={0.5} alignItems="flex-end" sx={{ textAlign: 'right', minWidth: 0 }}>
+          <Stack spacing={0.5} alignItems="flex-end" sx={{ textAlign: 'end', minWidth: 0 }}>
             {metaStart}
             {metaEnd && (
               <Typography variant="body2" color="text.secondary" noWrap>
