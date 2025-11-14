@@ -27,11 +27,17 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
+    "@capacitor/ios": "^7.4.4",
     "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "i": "^0.3.7",
+    "npm": "^11.6.2",
     "prettier": "^3.6.2",
     "sass": "^1.93.2"
   },
