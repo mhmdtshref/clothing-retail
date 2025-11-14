@@ -3,6 +3,7 @@ import ThemeRegistry from '@/components/ThemeRegistry';
 import LayoutShell from '@/components/LayoutShell';
 import './globals.scss';
 import { I18nProvider } from '@/components/i18n/I18nProvider';
+import RegisterSW from '@/components/pwa/RegisterSW';
 import { isRtl, normalizeLocale } from '@/lib/i18n/config';
 
 export const metadata = {
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
           <I18nProvider locale={locale}>
             <ThemeRegistry>
               <LayoutShell>{children}</LayoutShell>
+              <RegisterSW />
             </ThemeRegistry>
           </I18nProvider>
         </ClerkProvider>

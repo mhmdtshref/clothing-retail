@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { AppBar, Toolbar, Typography, Button, Container, Box, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { useI18n } from '@/components/i18n/useI18n';
+import InstallPrompt from '@/components/pwa/InstallPrompt';
 
 export default function LayoutShell({ children }) {
   const { locale, setLocale, t } = useI18n();
@@ -85,6 +86,7 @@ export default function LayoutShell({ children }) {
           {children}
         </Container>
       )}
+      <InstallPrompt />
     </Box>
   );
 }

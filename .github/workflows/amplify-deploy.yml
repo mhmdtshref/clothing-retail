@@ -1,0 +1,161 @@
+name: Amplify Deploy (Wait + Logs)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: clothing-retail-${{ github.ref_name }}
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AMPLIFY_APP_ID: ${{ secrets.AMPLIFY_APP_ID }}
+      AMPLIFY_BRANCH_NAME: ${{ github.ref_name }}
+      AMPLIFY_BUILD_SPEC_PATH: amplify.yml
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq curl
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Set Amplify env vars (ARN for build)
+        env:
+          APP_SECRET_ARN: ${{ secrets.APP_SECRET_ARN }}
+        run: |
+          if [ -z "$APP_SECRET_ARN" ]; then
+            echo "APP_SECRET_ARN is not provided in GitHub secrets/variables."
+            exit 1
+          fi
+          echo "Updating Amplify env: APP_SECRET_ARN"
+          KV=$(jq -nc --arg arn "$APP_SECRET_ARN" '{APP_SECRET_ARN: $arn}')
+          aws amplify update-branch \
+            --app-id "$AMPLIFY_APP_ID" \
+            --branch-name "$AMPLIFY_BRANCH_NAME" \
+            --environment-variables "$KV" \
+            --region "$AWS_REGION" \
+            >/dev/null
+
+      - name: Update Amplify build spec
+        if: ${{ env.AMPLIFY_BUILD_SPEC_PATH != '' }}
+        env:
+          BUILD_SPEC_PATH: ${{ env.AMPLIFY_BUILD_SPEC_PATH }}
+        run: |
+          if [ ! -f "$BUILD_SPEC_PATH" ]; then
+            echo "Build spec file not found at path: $BUILD_SPEC_PATH"
+            exit 1
+          fi
+          echo "Updating Amplify build spec from $BUILD_SPEC_PATH"
+          aws amplify update-branch \
+            --app-id "$AMPLIFY_APP_ID" \
+            --branch-name "$AMPLIFY_BRANCH_NAME" \
+            --build-spec "file://$BUILD_SPEC_PATH" \
+            --region "$AWS_REGION" \
+            >/dev/null
+
+      - name: Start Amplify job
+        id: start
+        run: |
+          RESP=$(aws amplify start-job \
+            --app-id "$AMPLIFY_APP_ID" \
+            --branch-name "$AMPLIFY_BRANCH_NAME" \
+            --job-type RELEASE \
+            --job-reason "Triggered by GitHub Actions")
+          echo "$RESP"
+          JOB_ID=$(echo "$RESP" | jq -r '.jobSummary.jobId')
+          echo "job-id=$JOB_ID" >> "$GITHUB_OUTPUT"
+          echo "Started Amplify job: $JOB_ID"
+
+      - name: Wait for job & mirror logs
+        id: wait
+        run: |
+          JOB_ID="${{ steps.start.outputs.job-id }}"
+          echo "Waiting on Amplify job: $JOB_ID"
+
+          mkdir -p amplify-logs
+          ATTEMPTS=0
+          MAX_ATTEMPTS=180 # ~30 min at 10s
+          SLEEP=10
+          printed=""
+
+          while true; do
+            JOB_JSON=$(aws amplify get-job --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --job-id "$JOB_ID")
+            STATUS=$(echo "$JOB_JSON" | jq -r '.job.summary.status')
+            echo "::group::Amplify Status"
+            echo "Status: $STATUS"
+            echo "::endgroup::"
+
+            # Print step logs or URLs
+            steps_json=$(echo "$JOB_JSON" | jq -c '.job.steps[]?')
+            i=0
+            echo "$steps_json" | while read -r STEP; do
+              i=$((i+1))
+              NAME=$(echo "$STEP" | jq -r '.stepName')
+              STATE=$(echo "$STEP" | jq -r '.status')
+              LOG_URL=$(echo "$STEP" | jq -r '.logUrl // empty')
+
+              token="[$i][$STATE]"
+              case "$printed" in
+                *"$token"*) continue;;
+              esac
+
+              echo "Step #$i: $NAME ($STATE)"
+              if [ -n "$LOG_URL" ]; then
+                OUT="amplify-logs/step_${i}_${NAME//[^a-zA-Z0-9_-]/_}.log"
+                if curl -fsSL "$LOG_URL" -o "$OUT"; then
+                  echo "---- Begin $NAME ----"
+                  tail -n 200 "$OUT" || true
+                  echo "---- End $NAME ----"
+                else
+                  echo "Log URL (open in browser): $LOG_URL"
+                fi
+              fi
+              printed="${printed}${token}"
+            done
+
+            if [ "$STATUS" = "SUCCEED" ]; then
+              echo "Amplify job SUCCEEDED."
+              break
+            elif [ "$STATUS" = "FAILED" ] || [ "$STATUS" = "CANCELLED" ]; then
+              echo "Amplify job ended with status: $STATUS"
+              break
+            fi
+
+            ATTEMPTS=$((ATTEMPTS+1))
+            if [ $ATTEMPTS -ge $MAX_ATTEMPTS ]; then
+              echo "Timeout waiting for Amplify job."
+              break
+            fi
+            sleep $SLEEP
+          done
+
+          echo "final-status=$STATUS" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Amplify logs artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: amplify-logs
+          path: amplify-logs
+
+      - name: Fail if Amplify failed
+        if: steps.wait.outputs.final-status != 'SUCCEED'
+        run: |
+          echo "Amplify job did not succeed (status=${{ steps.wait.outputs.final-status }})"
+          exit 1
