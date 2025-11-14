@@ -2,10 +2,11 @@
 
 import * as React from 'react';
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
+  DialogTitle, DialogContent, DialogActions,
   Button, Stack, TextField, MenuItem, Typography, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
+import FullScreenDialog from '@/components/common/FullScreenDialog';
 
 export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, isReturn = false, initialContact }) {
   const { t, formatNumber } = useI18n();
@@ -33,7 +34,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
 
   return (
     <>
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <FullScreenDialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle>{t('pos.checkout')}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
@@ -67,7 +68,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
           {isReturn && (
             <TextField label={t('checkout.returnReasonOptional')} value={reason} onChange={(e) => setReason(e.target.value)} multiline minRows={2} />
           )}
-          <Typography variant="h6" sx={{ textAlign: 'right' }}>{t('common.total')}: {formatNumber(grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+          <Typography variant="h6" sx={{ textAlign: 'end' }}>{t('common.total')}: {formatNumber(grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -85,7 +86,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
           {isReturn ? t('checkout.confirmReturn') : t('checkout.confirmAndPay')}
         </Button>
       </DialogActions>
-    </Dialog>
+    </FullScreenDialog>
     </>
   );
 }

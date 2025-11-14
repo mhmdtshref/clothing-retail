@@ -5,7 +5,6 @@ import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip, Butto
 import Link from 'next/link';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import WifiIcon from '@mui/icons-material/Wifi';
-import WifiOffIcon from '@mui/icons-material/WifiOff';
 import { useUser } from '@clerk/nextjs';
 import POSCatalog from '@/components/pos/POSCatalog';
 import CartView from '@/components/pos/CartView';
@@ -21,6 +20,7 @@ import CloseCashboxDialog from '@/components/pos/cashbox/CloseCashboxDialog';
 import CashboxZReport from '@/components/pos/cashbox/CashboxZReport';
 import ViewCashboxDialog from '@/components/pos/cashbox/ViewCashboxDialog';
 import { enqueueReceipt } from '@/lib/offline/sync';
+import ResponsiveActionsBar from '@/components/common/ResponsiveActionsBar';
 
 function useClock() {
   const [now, setNow] = React.useState(() => new Date());
@@ -57,6 +57,8 @@ export default function POSShell() {
   const handlePickVariant = React.useCallback((variant, product) => {
     cart.addVariant(variant, product);
   }, [cart]);
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => { setMounted(true); }, []);
 
   // Bill-level modifiers state
   const [billDiscount, setBillDiscount] = React.useState({ mode: 'amount', value: 0 });
@@ -200,32 +202,34 @@ export default function POSShell() {
   // SW registration moved to a global registrar
 
   return (
-    <Box sx={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', maxWidth: '100vw', overflowX: 'hidden' }}>
       <AppBar position="static" color="primary">
-        <Toolbar sx={{ gap: 2 }}>
+        <Toolbar sx={{ gap: 1, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
           <Typography variant="h6" sx={{ flexGrow: 0 }}>
             {t('pos.title')}
           </Typography>
-          <Chip
-            size="small"
-            label={online ? t('status.online') : t('status.offline')}
-            icon={online ? <WifiIcon /> : <WifiOffIcon />}
-            color={online ? 'success' : 'default'}
-          />
-          <Chip
-            size="small"
-            color={cashbox.open ? 'success' : 'default'}
-            label={cashbox.open ? t('cashbox.open') : t('cashbox.closed')}
-            onClick={() => setViewDialog(true)}
-            sx={{ cursor: 'pointer' }}
-          />
+          <Box component="span" suppressHydrationWarning sx={{ display: 'inline-flex', gap: 1, minWidth: 0 }}>
+            <Chip
+              size="small"
+              icon={<WifiIcon />}
+              label={online ? t('status.online') : t('status.offline')}
+              color={online ? 'success' : 'default'}
+            />
+            <Chip
+              size="small"
+              color={cashbox.open ? 'success' : 'default'}
+              label={cashbox.open ? t('cashbox.open') : t('cashbox.closed')}
+              onClick={() => setViewDialog(true)}
+              sx={{ cursor: 'pointer' }}
+            />
+          </Box>
           <Box sx={{ flexGrow: 1 }} />
-          <Chip size="small" label={`${t('pos.items')}: ${cart.items.length}`} color="secondary" />
-          <Typography variant="body2" sx={{ mr: 2 }} suppressHydrationWarning>
-            {formatDate(now)}
+          <Chip size="small" label={`${t('pos.items')}: ${cart.items.length}`} color="secondary" sx={{ display: { xs: 'none', sm: 'inline-flex' } }} />
+          <Typography variant="body2" sx={{ mr: 2, display: { xs: 'none', sm: 'inline' }, minWidth: 0 }} suppressHydrationWarning>
+            {mounted ? formatDate(now) : ''}
           </Typography>
-          <Typography variant="body2">
-            {user?.fullName || user?.primaryEmailAddress?.emailAddress || 'User'}
+          <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'inline' } }} suppressHydrationWarning>
+            {mounted ? (user?.fullName || user?.primaryEmailAddress?.emailAddress || 'User') : ''}
           </Typography>
           {!cashbox.open ? (
             <Button color="inherit" variant="outlined" onClick={() => setOpenDialog(true)}>
@@ -233,25 +237,25 @@ export default function POSShell() {
             </Button>
           ) : (
             <>
-              <Button color="inherit" onClick={() => setAdjustDialog(true)}>{t('cashbox.adjust')}</Button>
-              <Button color="inherit" variant="outlined" onClick={() => setCloseDialog(true)}>{t('cashbox.close')}</Button>
+              <Button color="inherit" onClick={() => setAdjustDialog(true)} sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>{t('cashbox.adjust')}</Button>
+              <Button color="inherit" variant="outlined" onClick={() => setCloseDialog(true)} sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>{t('cashbox.close')}</Button>
               {lastReport && (
-                <Button color="inherit" onClick={() => window.print()}>{t('cashbox.printZReport')}</Button>
+                <Button color="inherit" onClick={() => window.print()} sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>{t('cashbox.printZReport')}</Button>
               )}
             </>
           )}
-          <Button component={Link} href="/pos/history" color="inherit" variant="outlined">
+          <Button component={Link} href="/pos/history" color="inherit" variant="outlined" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
             {t('pos.history')}
           </Button>
-          <IconButton color="inherit" title="Refresh">
+          <IconButton color="inherit" title="Refresh" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
             <RefreshIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ p: 2, flex: 1, width: '100%', maxWidth: '100%', display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>
-        <Box sx={{ height: '100%' }}>
-          <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', ...(cart.mode === 'sale_return' ? { border: '1px solid', borderColor: 'warning.main', bgcolor: 'warning.light' } : {}) }}>
+      <Box sx={{ px: { xs: 1, sm: 2 }, py: 1, flex: 1, width: '100%', maxWidth: '100%', display: 'grid', gridTemplateColumns: '1fr', gap: 2, pb: { xs: '96px', sm: 0 } }}>
+        <Box sx={{ height: { xs: 'auto', sm: '100%' } }}>
+          <Paper sx={{ p: 2, height: { xs: 'auto', sm: '100%' }, display: 'flex', flexDirection: 'column', mb: { xs: 6, sm: 0 }, ...(cart.mode === 'sale_return' ? { border: '1px solid', borderColor: 'warning.main', bgcolor: 'warning.light' } : {}) }}>
             <Typography variant="h6" gutterBottom>
               {t('pos.sale')}
             </Typography>
@@ -266,8 +270,8 @@ export default function POSShell() {
             </Stack>
           </Paper>
         </Box>
-        <Box sx={{ height: '100%' }}>
-          <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ height: { xs: 'auto', sm: '100%' } }}>
+          <Paper sx={{ p: 2, height: { xs: 'auto', sm: '100%' }, display: 'flex', flexDirection: 'column', mb: { xs: 6, sm: 0 } }}>
             <Typography variant="h6" gutterBottom>
               {success ? t('pos.receipt') : (cart.mode === 'sale_return' ? t('cart.returnCart') : t('cart.title'))}
             </Typography>
@@ -299,41 +303,44 @@ export default function POSShell() {
                 <CheckoutSuccess receipt={success.receipt} totals={success.totals} paidTotal={success.paidTotal} dueTotal={success.dueTotal} onNewSale={startNewSale} />
               )}
             </Stack>
-            {!success && (
-              <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                spacing={2}
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{ mt: 1 }}
-              >
-                <ToggleButtonGroup
-                  size="small"
-                  exclusive
-                  value={cart.mode}
-                  onChange={(_e, val) => { if (val) cart.setMode(val); }}
-                >
-                  <ToggleButton value="sale">
-                    {t('pos.sale')}
-                  </ToggleButton>
-                  <ToggleButton value="sale_return">
-                    {t('pos.return')}
-                  </ToggleButton>
-                </ToggleButtonGroup>
-                <Button
-                  variant={(!canCheckout || submitting) ? 'outlined' : 'contained'}
-                  color={cart.mode === 'sale_return' ? 'warning' : 'secondary'}
-                  disabled={!canCheckout || submitting}
-                  onClick={() => setCheckingOut(true)}
-                  title={!cashbox.open ? t('cashbox.openCashbox') : undefined}
-                >
-                  {t('pos.checkout')}
-                </Button>
-              </Stack>
-            )}
+            {!success && null}
           </Paper>
         </Box>
       </Box>
+      {!success && (
+        <ResponsiveActionsBar>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems={{ xs: 'stretch', sm: 'center' }}
+            justifyContent="space-between"
+          >
+            <ToggleButtonGroup
+              size="small"
+              exclusive
+              value={cart.mode}
+              onChange={(_e, val) => { if (val) cart.setMode(val); }}
+            >
+              <ToggleButton value="sale">
+                {t('pos.sale')}
+              </ToggleButton>
+              <ToggleButton value="sale_return">
+                {t('pos.return')}
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <Button
+              variant={(!canCheckout || submitting) ? 'outlined' : 'contained'}
+              color={cart.mode === 'sale_return' ? 'warning' : 'secondary'}
+              disabled={!canCheckout || submitting}
+              onClick={() => setCheckingOut(true)}
+              title={!cashbox.open ? t('cashbox.openCashbox') : undefined}
+              sx={{ minWidth: 180 }}
+            >
+              {t('pos.checkout')}
+            </Button>
+          </Stack>
+        </ResponsiveActionsBar>
+      )}
       <CheckoutDialog
         open={checkingOut}
         onClose={() => setCheckingOut(false)}

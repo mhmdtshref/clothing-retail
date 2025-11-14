@@ -8,6 +8,7 @@ import {
 import { ProductImageUploader } from '@/components/uploads';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/components/i18n/useI18n';
+import ResponsiveActionsBar from '@/components/common/ResponsiveActionsBar';
 
 export default function ProductDetailsPage({ productId }) {
   const router = useRouter();
@@ -112,10 +113,12 @@ export default function ProductDetailsPage({ productId }) {
             </Stack>
           </Paper>
 
-          <Stack direction="row" justifyContent="flex-end" spacing={1}>
-            <Button variant="outlined" onClick={onReset} disabled={!product}>{t('common.reset')}</Button>
-            <Button variant="contained" onClick={onSave} disabled={!product}>{t('common.save')}</Button>
-          </Stack>
+          <ResponsiveActionsBar>
+            <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="flex-end" spacing={1}>
+              <Button variant="outlined" onClick={onReset} disabled={!product}>{t('common.reset')}</Button>
+              <Button variant="contained" onClick={onSave} disabled={!product}>{t('common.save')}</Button>
+            </Stack>
+          </ResponsiveActionsBar>
         </Stack>
       )}
 

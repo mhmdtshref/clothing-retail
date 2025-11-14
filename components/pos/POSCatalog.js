@@ -4,11 +4,12 @@ import * as React from 'react';
 import {
   Box, Stack, TextField, InputAdornment, IconButton, Typography,
   Chip, Pagination, CircularProgress, Button, Tooltip, Card, CardContent, CardActionArea,
-  Dialog, DialogTitle, DialogContent, DialogActions, Table, TableHead, TableRow, TableCell, TableBody,
+  DialogTitle, DialogContent, DialogActions, Table, TableHead, TableRow, TableCell, TableBody,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { useI18n } from '@/components/i18n/useI18n';
+import FullScreenDialog from '@/components/common/FullScreenDialog';
 
 function useDebounced(value, delay = 400) {
   const [v, setV] = React.useState(value);
@@ -52,21 +53,28 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
   React.useEffect(() => { fetchList(); }, [fetchList]);
 
   return (
-    <Stack spacing={2} sx={{ height: '100%', minHeight: 0 }}>
+    <Stack spacing={2}>
       <Stack direction="row" spacing={1} alignItems="center">
         <TextField
           id="pos-catalog-search"
           size="small"
-          fullWidth
           placeholder={t('posCatalog.searchPlaceholder')}
           value={query}
           onChange={(e) => { setQuery(e.target.value); setPage(1); }}
           InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>) }}
+          sx={{ flex: 1, minWidth: 0 }}
         />
         <IconButton onClick={fetchList} title={t('common.refresh')}><RefreshIcon /></IconButton>
       </Stack>
 
-      <Box sx={{ position: 'relative', flex: 1, overflow: 'auto', borderRadius: 2 }}>
+      <Box
+        sx={{
+          position: 'relative',
+          borderRadius: 2,
+          // Reserve space for sticky bottom actions bar on mobile so last cards are not obscured
+          pb: { xs: '96px', sm: 2 },
+        }}
+      >
         {loading && (
           <Stack alignItems="center" justifyContent="center" sx={{ py: 6 }}>
             <CircularProgress />
@@ -85,6 +93,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
           <Box sx={{
             display: 'grid',
             gap: 2,
+            minWidth: 0,
             gridTemplateColumns: {
               xs: 'repeat(2, 1fr)',
               sm: 'repeat(2, 1fr)',
@@ -94,7 +103,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
             },
           }}>
             {items.map((p) => (
-              <Card key={p._id} variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <Card key={p._id} variant="outlined" sx={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                 <CardActionArea onClick={() => setSelected(p)} sx={{ alignItems: 'stretch' }}>
                   <Box sx={{ width: '100%', height: 140, position: 'relative', bgcolor: 'background.default', borderBottom: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
                     {p.image?.url ? (
@@ -129,7 +138,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
         />
       </Stack>
       {/* Variant picker dialog */}
-      <Dialog open={Boolean(selected)} onClose={() => setSelected(null)} maxWidth="md" fullWidth>
+      <FullScreenDialog open={Boolean(selected)} onClose={() => setSelected(null)} maxWidth="md" fullWidth>
         <DialogTitle>{t('posCatalog.pickVariant')}</DialogTitle>
         <DialogContent dividers>
           {selected && (
@@ -193,7 +202,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
         <DialogActions>
           <Button onClick={() => setSelected(null)}>{t('common.close')}</Button>
         </DialogActions>
-      </Dialog>
+      </FullScreenDialog>
     </Stack>
   );
 }

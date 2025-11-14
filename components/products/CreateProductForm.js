@@ -24,6 +24,7 @@ import {
 import { z } from 'zod';
 import { ProductImageUploader } from '@/components/uploads';
 import { useI18n } from '@/components/i18n/useI18n';
+import ResponsiveActionsBar from '@/components/common/ResponsiveActionsBar';
 
 const productSchema = z.object({
   code: z
@@ -274,7 +275,8 @@ export default function CreateProductForm({ companies }) {
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
               {t('products.variantPreview')} ({preview.total} {t('common.total')})
             </Typography>
-            <Table size="small">
+            <Box sx={{ overflowX: 'auto' }}>
+            <Table size="small" sx={{ minWidth: 480 }}>
               <TableHead>
                 <TableRow>
                   <TableCell>{t('products.size')}</TableCell>
@@ -299,29 +301,32 @@ export default function CreateProductForm({ companies }) {
                 )}
               </TableBody>
             </Table>
+            </Box>
           </Box>
 
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button
-              variant="outlined"
-              onClick={() =>
-                setValues({
-                  code: '',
-                  name: '',
-                  basePrice: '',
-                  status: 'active',
-                  sizes: [],
-                  colors: [],
-                  companyIds: [],
-                })
-              }
-            >
-              {t('common.reset')}
-            </Button>
-            <Button type="submit" variant="contained" disabled={submitting}>
-              {submitting ? t('products.creating') : t('products.createWithVariants')}
-            </Button>
-          </Stack>
+          <ResponsiveActionsBar>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end">
+              <Button
+                variant="outlined"
+                onClick={() =>
+                  setValues({
+                    code: '',
+                    name: '',
+                    basePrice: '',
+                    status: 'active',
+                    sizes: [],
+                    colors: [],
+                    companyIds: [],
+                  })
+                }
+              >
+                {t('common.reset')}
+              </Button>
+              <Button type="submit" variant="contained" disabled={submitting}>
+                {submitting ? t('products.creating') : t('products.createWithVariants')}
+              </Button>
+            </Stack>
+          </ResponsiveActionsBar>
         </Stack>
       </Box>
 

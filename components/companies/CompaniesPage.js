@@ -20,6 +20,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CompanyDialog from '@/components/companies/CompanyDialog';
 import { useI18n } from '@/components/i18n/useI18n';
+import ResponsiveListItem from '@/components/common/ResponsiveListItem';
 
 export default function CompaniesPage() {
   const { t } = useI18n();
@@ -89,7 +90,8 @@ export default function CompaniesPage() {
           <Button onClick={fetchCompanies} startIcon={<AddIcon />} variant="outlined">{t('common.retry')}</Button>
         </Box>
       ) : (
-        <Table size="small">
+        <>
+        <Table size="small" sx={{ display: { xs: 'none', sm: 'table' } }}>
           <TableHead>
             <TableRow>
               <TableCell>{t('common.name')}</TableCell>
@@ -117,6 +119,24 @@ export default function CompaniesPage() {
             )}
           </TableBody>
         </Table>
+
+        <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
+          {items.length === 0 && (
+            <Typography variant="body2" color="text.secondary">{t('companies.none')}</Typography>
+          )}
+          {items.map((row) => (
+            <ResponsiveListItem
+              key={String(row._id)}
+              title={row.name}
+              actions={(
+                <Button size="small" startIcon={<EditIcon fontSize="small" />} onClick={() => onEdit(row)}>
+                  {t('common.edit') || 'Edit'}
+                </Button>
+              )}
+            />
+          ))}
+        </Stack>
+        </>
       )}
 
       <CompanyDialog

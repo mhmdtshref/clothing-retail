@@ -10,6 +10,7 @@ import submitDelivery from '@/components/delivery/submitDelivery';
 import { useCart } from '@/components/pos/useCart';
 import { computeReceiptTotals } from '@/lib/pricing';
 import ReceiptPrintTemplate from '@/components/pos/ReceiptPrintTemplate';
+import ResponsiveActionsBar from '@/components/common/ResponsiveActionsBar';
 
 export default function DeliveryWizardShell() {
   const { t, formatNumber } = useI18n();
@@ -119,9 +120,11 @@ export default function DeliveryWizardShell() {
               />
             </Box>
           </Stack>
-          <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
-            <Button variant="contained" onClick={() => setActiveStep(1)} disabled={!canNextFromStep1}>{t('common.next')}</Button>
-          </Stack>
+          <ResponsiveActionsBar>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end">
+              <Button variant="contained" onClick={() => setActiveStep(1)} disabled={!canNextFromStep1}>{t('common.next')}</Button>
+            </Stack>
+          </ResponsiveActionsBar>
         </Paper>
       )}
 
@@ -145,17 +148,19 @@ export default function DeliveryWizardShell() {
                 <TextField label={t('delivery.contactPhone')} value={deliveryContact.phone} onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))} fullWidth />
               </Stack>
             )}
-            <Stack direction="row" spacing={2} justifyContent="flex-end" alignItems="center">
-              <Typography variant="body2" color="text.secondary">
-                {t('delivery.codToCollect')}: {formatNumber(codToCollect, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </Typography>
-              <Button variant="outlined" onClick={() => setActiveStep(0)}>{t('common.back')}</Button>
-              {hasReturn ? (
-                <Button variant="contained" onClick={() => setActiveStep(2)}>{t('common.next')}</Button>
-              ) : (
-                <Button variant="contained" onClick={handleSubmit} disabled={submitting}>{submitting ? t('common.submitting') : t('common.submit')}</Button>
-              )}
-            </Stack>
+            <ResponsiveActionsBar>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end" alignItems="center">
+                <Typography variant="body2" color="text.secondary" sx={{ mr: { sm: 'auto' } }}>
+                  {t('delivery.codToCollect')}: {formatNumber(codToCollect, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </Typography>
+                <Button variant="outlined" onClick={() => setActiveStep(0)}>{t('common.back')}</Button>
+                {hasReturn ? (
+                  <Button variant="contained" onClick={() => setActiveStep(2)}>{t('common.next')}</Button>
+                ) : (
+                  <Button variant="contained" onClick={handleSubmit} disabled={submitting}>{submitting ? t('common.submitting') : t('common.submit')}</Button>
+                )}
+              </Stack>
+            </ResponsiveActionsBar>
           </Stack>
         </Paper>
       )}
@@ -186,15 +191,17 @@ export default function DeliveryWizardShell() {
               {/* Moved COD display to the bottom actions row */}
             </Box>
           </Stack>
-          <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }} alignItems="center">
-            <Typography variant="body2" color="text.secondary">
-              {t('delivery.codToCollect')}: {formatNumber(codToCollect, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </Typography>
-            <Button variant="outlined" onClick={() => setActiveStep(1)}>{t('common.back')}</Button>
-            <Button variant="contained" onClick={handleSubmit} disabled={submitting || !canNextFromReturns}>
-              {submitting ? t('common.submitting') : t('common.submit')}
-            </Button>
-          </Stack>
+          <ResponsiveActionsBar>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end" alignItems="center">
+              <Typography variant="body2" color="text.secondary" sx={{ mr: { sm: 'auto' } }}>
+                {t('delivery.codToCollect')}: {formatNumber(codToCollect, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </Typography>
+              <Button variant="outlined" onClick={() => setActiveStep(1)}>{t('common.back')}</Button>
+              <Button variant="contained" onClick={handleSubmit} disabled={submitting || !canNextFromReturns}>
+                {submitting ? t('common.submitting') : t('common.submit')}
+              </Button>
+            </Stack>
+          </ResponsiveActionsBar>
         </Paper>
       )}
 

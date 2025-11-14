@@ -4,14 +4,21 @@ import * as React from 'react';
 import { useServerInsertedHTML } from 'next/navigation';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
+import { prefixer } from 'stylis';
+import rtlPlugin from 'stylis-plugin-rtl';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import theme from '@/theme';
+import createAppTheme from '@/theme';
+import { useI18nInternal } from '@/components/i18n/I18nProvider';
 
 export default function ThemeRegistry({ children }) {
-  const [{ cache, flush }] = React.useState(() => {
-    const cache = createCache({ key: 'mui', prepend: true });
+  const { dir } = useI18nInternal?.() || { dir: 'ltr' };
+  const { cache, flush } = React.useMemo(() => {
+    const cache = createCache({
+      key: dir === 'rtl' ? 'mui-rtl' : 'mui',
+      prepend: true,
+      stylisPlugins: dir === 'rtl' ? [prefixer, rtlPlugin] : [prefixer],
+    });
     cache.compat = true;
-
     const prevInsert = cache.insert;
     let inserted = [];
     cache.insert = (...args) => {
@@ -25,7 +32,8 @@ export default function ThemeRegistry({ children }) {
       return prev;
     };
     return { cache, flush };
-  });
+  }, [dir]);
+  const muiTheme = React.useMemo(() => createAppTheme(dir), [dir]);
 
   useServerInsertedHTML(() => {
     const names = flush();
@@ -41,7 +49,7 @@ export default function ThemeRegistry({ children }) {
 
   return (
     <CacheProvider value={cache}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={muiTheme}>
         <CssBaseline />
         {children}
       </ThemeProvider>
