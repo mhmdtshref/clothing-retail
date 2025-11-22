@@ -275,48 +275,35 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Fetch app secrets to .env
+        shell: pwsh
         run: |
-          set -euo pipefail
-          if [ -z "${APP_SECRET_ARN:-}" ]; then
-            echo "APP_SECRET_ARN is not set"
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:APP_SECRET_ARN) {
+            Write-Error "APP_SECRET_ARN is not set"
             exit 1
-          fi
-          aws --version
-          aws secretsmanager get-secret-value \
-            --secret-id "$APP_SECRET_ARN" \
-            --region "$AWS_REGION" \
-            --output json > secret_resp.json
-          node - <<'NODE'
-          const fs = require('fs');
-          let resp = {};
-          try {
-            resp = JSON.parse(fs.readFileSync('secret_resp.json', 'utf8'));
-          } catch (e) {
-            console.error('Failed to parse Secrets Manager response JSON');
-            process.exit(1);
           }
-          const secretString = resp && resp.SecretString;
-          if (!secretString || typeof secretString !== 'string') {
-            console.error('SecretString missing or empty in Secrets Manager response');
-            process.exit(1);
+          $respJson = aws secretsmanager get-secret-value `
+            --secret-id "$env:APP_SECRET_ARN" `
+            --region "$env:AWS_REGION" `
+            --output json `
+            --no-cli-pager
+          $resp = $respJson | ConvertFrom-Json
+          if (-not $resp.SecretString) {
+            Write-Error "SecretString is empty for secret: $env:APP_SECRET_ARN"
+            exit 1
           }
-          let envObj = {};
-          try {
-            envObj = JSON.parse(secretString);
-          } catch (e) {
-            console.error('SecretString is not valid JSON');
-            process.exit(1);
+          $envObj = $resp.SecretString | ConvertFrom-Json
+          $lines = @()
+          foreach ($p in $envObj.PSObject.Properties) {
+            if (-not ($p.Value -is [System.Management.Automation.PSObject])) {
+              $lines += "$($p.Name)=$($p.Value)"
+            }
           }
-          const lines = Object.entries(envObj)
-            .filter(([k, v]) => typeof v !== 'object')
-            .map(([k, v]) => `${k}=${String(v)}`);
-          const content = lines.join('\n') + '\n';
-          fs.writeFileSync('.env', content);
-          fs.mkdirSync('src-tauri', { recursive: true });
-          fs.writeFileSync('src-tauri/.env', content);
-          console.log('Wrote .env files with', lines.length, 'entries');
-          NODE
-          rm -f secret_resp.json
+          $content = ($lines -join "`n") + "`n"
+          Set-Content -Path .env -Value $content -NoNewline -Encoding UTF8
+          New-Item -ItemType Directory -Force -Path src-tauri | Out-Null
+          Set-Content -Path src-tauri/.env -Value $content -NoNewline -Encoding UTF8
+          Write-Host "Wrote .env entries: $($lines.Count)"
 
       - name: Build Tauri (MSI)
         run: |
