@@ -282,12 +282,21 @@ jobs:
             Write-Error "APP_SECRET_ARN is not set"
             exit 1
           }
-          $respJson = aws secretsmanager get-secret-value `
+          # Force UTF-8 for AWS CLI (Python-based) and disable pagers/output transforms
+          $env:PYTHONIOENCODING = 'utf-8'
+          $env:AWS_PAGER = ''
+          $env:AWS_DEFAULT_OUTPUT = 'json'
+
+          # Write JSON response directly to a UTF-8 file to avoid console codepage issues
+          aws secretsmanager get-secret-value `
             --secret-id "$env:APP_SECRET_ARN" `
             --region "$env:AWS_REGION" `
             --output json `
-            --no-cli-pager
-          $resp = $respJson | ConvertFrom-Json
+            --no-cli-pager | Out-File -FilePath secret_resp.json -Encoding utf8
+
+          $respText = Get-Content -Path secret_resp.json -Raw -Encoding UTF8
+          Remove-Item secret_resp.json -Force
+          $resp = $respText | ConvertFrom-Json
           if (-not $resp.SecretString) {
             Write-Error "SecretString is empty for secret: $env:APP_SECRET_ARN"
             exit 1
