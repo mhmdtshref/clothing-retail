@@ -274,48 +274,53 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Fetch app secrets to .env
-        shell: pwsh
+      - name: Install AWS SDK (Secrets Manager)
         run: |
-          $ErrorActionPreference = 'Stop'
-          if (-not $env:APP_SECRET_ARN) {
-            Write-Error "APP_SECRET_ARN is not set"
-            exit 1
-          }
-          # Force UTF-8 encodings and console codepage to avoid charmap errors
-          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-          [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
-          chcp 65001 | Out-Null
-          $env:PYTHONIOENCODING = 'utf-8'
-          $env:AWS_PAGER = ''
-          $env:AWS_DEFAULT_OUTPUT = 'json'
+          npm install --no-save @aws-sdk/client-secrets-manager
 
-          # Fetch only SecretString as text and persist to UTF-8 file to avoid truncation
-          aws secretsmanager get-secret-value `
-            --secret-id "$env:APP_SECRET_ARN" `
-            --region "$env:AWS_REGION" `
-            --query SecretString `
-            --output text `
-            --no-cli-pager | Set-Content -Path secret_string.json -Encoding UTF8
-
-          $secretText = Get-Content -Path secret_string.json -Raw -Encoding UTF8
-          Remove-Item secret_string.json -Force
-          if (-not $secretText) {
-            Write-Error "SecretString is empty for secret: $env:APP_SECRET_ARN"
-            exit 1
-          }
-          $envObj = $secretText | ConvertFrom-Json
-          $lines = @()
-          foreach ($p in $envObj.PSObject.Properties) {
-            if (-not ($p.Value -is [System.Management.Automation.PSObject])) {
-              $lines += "$($p.Name)=$($p.Value)"
+      - name: Fetch app secrets to .env (Node SDK)
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('fs');
+          const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager');
+          (async () => {
+            const region = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1';
+            const secretId = process.env.APP_SECRET_ARN;
+            if (!secretId) {
+              console.error('APP_SECRET_ARN is not set');
+              process.exit(1);
             }
-          }
-          $content = ($lines -join "`n") + "`n"
-          Set-Content -Path .env -Value $content -NoNewline -Encoding UTF8
-          New-Item -ItemType Directory -Force -Path src-tauri | Out-Null
-          Set-Content -Path src-tauri/.env -Value $content -NoNewline -Encoding UTF8
-          Write-Host "Wrote .env entries: $($lines.Count)"
+            const client = new SecretsManagerClient({ region });
+            let resp;
+            try {
+              resp = await client.send(new GetSecretValueCommand({ SecretId: secretId }));
+            } catch (e) {
+              console.error('Failed to fetch secret from Secrets Manager:', e?.message || e);
+              process.exit(1);
+            }
+            const secretString = resp && resp.SecretString;
+            if (!secretString) {
+              console.error('SecretString is empty for secret:', secretId);
+              process.exit(1);
+            }
+            let envObj = {};
+            try {
+              envObj = JSON.parse(secretString);
+            } catch (e) {
+              console.error('SecretString is not valid JSON');
+              process.exit(1);
+            }
+            const lines = Object.entries(envObj)
+              .filter(([k, v]) => typeof v !== 'object')
+              .map(([k, v]) => `${k}=${String(v)}`);
+            const content = lines.join('\n') + '\n';
+            fs.writeFileSync('.env', content, { encoding: 'utf8' });
+            fs.mkdirSync('src-tauri', { recursive: true });
+            fs.writeFileSync('src-tauri/.env', content, { encoding: 'utf8' });
+            console.log('Wrote .env files with', lines.length, 'entries');
+          })();
+          NODE
 
       - name: Build web assets (produce ./out)
         run: |
