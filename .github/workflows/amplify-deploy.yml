@@ -159,3 +159,93 @@ jobs:
         run: |
           echo "Amplify job did not succeed (status=${{ steps.wait.outputs.final-status }})"
           exit 1
+
+  tauri-msi-to-s3:
+    name: Tauri MSI → S3
+    runs-on: windows-latest
+    needs: deploy
+    defaults:
+      run:
+        shell: bash
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      TAURI_S3_URL: ${{ secrets.TAURI_S3_URL }}
+      TAURI_ICON_URL: ${{ secrets.TAURI_ICON_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install WiX Toolset (for MSI)
+        run: choco install wixtoolset --no-progress --yes
+
+      - name: Install dependencies (auto-detect PM)
+        run: |
+          set -euo pipefail
+          corepack enable
+          if [ -f pnpm-lock.yaml ]; then
+            corepack prepare pnpm@latest --activate
+            pnpm install --frozen-lockfile
+          elif [ -f yarn.lock ]; then
+            corepack prepare yarn@stable --activate
+            yarn install --frozen-lockfile
+          else
+            npm ci
+          fi
+
+      - name: Download app icon from URL
+        run: |
+          set -euo pipefail
+          if [ -z "${TAURI_ICON_URL:-}" ]; then
+            echo "TAURI_ICON_URL is not set. Please add it to GitHub Secrets."
+            exit 1
+          fi
+          echo "Downloading icon from $TAURI_ICON_URL"
+          curl -fsSL "$TAURI_ICON_URL" -o icon.png
+          if [ ! -s icon.png ]; then
+            echo "Downloaded icon.png is empty or missing."
+            exit 1
+          fi
+
+      - name: Generate Tauri icons
+        run: |
+          npx -y @tauri-apps/cli@latest icon ./icon.png
+
+      - name: Build Tauri (MSI)
+        run: |
+          npx -y @tauri-apps/cli@latest --version
+          npx -y @tauri-apps/cli@latest build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Upload MSI(s) to S3
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(find src-tauri/target -type f -name "*.msi" || true)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No MSI files found in src-tauri/target"
+            exit 1
+          fi
+          for f in "${files[@]}"; do
+            echo "Uploading $f -> $TAURI_S3_URL"
+            aws s3 cp "$f" "$TAURI_S3_URL"
+          done
+
+      - name: Upload MSI(s) as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-msi
+          path: |
+            src-tauri/target/**/bundle/msi/*.msi
