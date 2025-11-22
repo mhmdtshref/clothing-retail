@@ -352,9 +352,18 @@ jobs:
             echo "No MSI files found in src-tauri/target"
             exit 1
           fi
-          for f in "${files[@]}"; do
-            echo "Uploading $f -> $TAURI_S3_URL"
-            aws s3 cp "$f" "$TAURI_S3_URL"
+          TS="$(date -u +%Y%m%d%H%M)"
+          BASE_ID="${TAURI_IDENTIFIER:-app}-${TS}"
+          DEST_DIR="${TAURI_S3_URL%/}"
+          for idx in "${!files[@]}"; do
+            f="${files[$idx]}"
+            dest="${DEST_DIR}/${BASE_ID}.msi"
+            # If multiple files exist, add an index suffix to avoid overwrites
+            if [ ${#files[@]} -gt 1 ]; then
+              dest="${DEST_DIR}/${BASE_ID}-${idx}.msi"
+            fi
+            echo "Uploading $f -> $dest"
+            aws s3 cp "$f" "$dest"
           done
 
       - name: Upload MSI(s) as artifact
