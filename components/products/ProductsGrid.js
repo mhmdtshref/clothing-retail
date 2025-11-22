@@ -107,7 +107,7 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
                 <CardContent sx={{ flex: 1 }}>
                   <Stack spacing={0.5}>
                     <Typography variant="subtitle1" fontWeight={700}>{p.code}</Typography>
-                    <Typography variant="body2" color="text.secondary">{p.name || '\u00A0'}</Typography>
+                    <Typography variant="body2" color="text.secondary">{p.localCode || '\u00A0'}</Typography>
                     <Chip size="small" label={p.status} color={p.status === 'active' ? 'success' : (p.status === 'archived' ? 'default' : 'warning')} sx={{ alignSelf: 'flex-start' }} />
                   </Stack>
                 </CardContent>
@@ -133,7 +133,7 @@ export default function ProductsGrid({ initialQuery = '', initialPage = 1, initi
               </Box>
               <Box sx={{ flex: 1 }}>
                 <Typography fontWeight={700}>{p.code}</Typography>
-                <Typography variant="body2" color="text.secondary">{p.name || '\u00A0'}</Typography>
+                <Typography variant="body2" color="text.secondary">{p.localCode || '\u00A0'}</Typography>
               </Box>
               <Chip size="small" label={p.status} />
               </Stack>

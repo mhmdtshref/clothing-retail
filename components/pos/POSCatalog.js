@@ -115,7 +115,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
                   <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Stack spacing={0.5}>
                       <Typography variant="subtitle1" fontWeight={700}>{p.code}</Typography>
-                      <Typography variant="body2" color="text.secondary">{p.name || '-'}</Typography>
+                      <Typography variant="body2" color="text.secondary">{p.localCode || '-'}</Typography>
                       <Chip size="small" label={`${formatNumber(p.variants?.length || 0)} ${t('products.variants')}`} sx={{ alignSelf: 'flex-start' }} />
                     </Stack>
                   </CardContent>
@@ -153,7 +153,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
                 </Box>
                 <Stack>
                   <Typography variant="subtitle1" fontWeight={700}>{selected.code}</Typography>
-                  <Typography variant="body2" color="text.secondary">{selected.name || '-'}</Typography>
+                  <Typography variant="body2" color="text.secondary">{selected.localCode || '-'}</Typography>
                   <Chip size="small" label={`${formatNumber(selected.variants?.length || 0)} ${t('products.variants')}`} sx={{ alignSelf: 'flex-start' }} />
                 </Stack>
               </Stack>

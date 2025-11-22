@@ -19,11 +19,23 @@ const ImageSchema = z
 
 const ProductCreateSchema = z.object({
   code: z.string().min(1, 'code is required').max(120).trim(),
-  name: z.string().max(200).trim().optional().default(''),
   basePrice: z.number().nonnegative().default(0),
   status: z.enum(['active', 'archived']).optional().default('active'),
   image: ImageSchema,
 });
+
+async function generateLocalCode() {
+  const yy = String(new Date().getFullYear()).slice(-2);
+  let n = await Product.countDocuments().exec();
+  for (let i = 0; i < 5; i++) {
+    n += 1;
+    const candidate = `${yy}-${String(n).padStart(6, '0')}`;
+    // eslint-disable-next-line no-await-in-loop
+    const exists = await Product.exists({ localCode: candidate });
+    if (!exists) return candidate;
+  }
+  return `${yy}-${String(n + 1).padStart(6, '0')}`;
+}
 
 export async function POST(req) {
   try {
@@ -42,7 +54,7 @@ export async function POST(req) {
       );
     }
 
-    const { code, name, basePrice, status, image } = parsed.data;
+    const { code, basePrice, status, image } = parsed.data;
 
     await connectToDB();
 
@@ -55,7 +67,20 @@ export async function POST(req) {
       );
     }
 
-    const doc = await Product.create({ code, name, basePrice, status, image: image || undefined });
+    // Generate localCode (YY-XXXXXX) and create product
+    let localCode = await generateLocalCode();
+    let doc;
+    try {
+      doc = await Product.create({ code, localCode, basePrice, status, image: image || undefined });
+    } catch (e) {
+      // In rare case of duplicate localCode, retry once
+      if (e?.code === 11000 && e?.keyPattern?.localCode) {
+        localCode = await generateLocalCode();
+        doc = await Product.create({ code, localCode, basePrice, status, image: image || undefined });
+      } else {
+        throw e;
+      }
+    }
     // Normalize output
     return NextResponse.json(
       {
@@ -63,7 +88,7 @@ export async function POST(req) {
         product: {
           _id: doc._id,
           code: doc.code,
-          name: doc.name ?? '',
+          localCode: doc.localCode,
           basePrice: doc.basePrice ?? 0,
           status: doc.status,
           createdAt: doc.createdAt,
@@ -93,7 +118,7 @@ const QuerySchema = z.object({
   status: z.enum(['active', 'archived', 'all']).optional().default('active'),
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().max(100).optional().default(20),
-  sort: z.enum(['createdAt', 'code', 'name']).optional().default('createdAt'),
+  sort: z.enum(['createdAt', 'code', 'localCode']).optional().default('createdAt'),
   order: z.enum(['asc', 'desc']).optional().default('desc'),
   includeVariantCounts: z
     .union([z.literal('true'), z.literal('false')])
@@ -123,7 +148,7 @@ export async function GET(req) {
   const filter = {};
   if (q) {
     const rx = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-    filter.$or = [{ code: rx }, { name: rx }];
+    filter.$or = [{ code: rx }, { localCode: rx }];
   }
   if (status !== 'all') {
     filter.status = status;
@@ -174,7 +199,7 @@ export async function GET(req) {
     const payload = items.map((doc) => ({
       _id: doc._id,
       code: doc.code,
-      name: doc.name ?? '',
+      localCode: doc.localCode,
       basePrice: doc.basePrice ?? 0,
       status: doc.status,
       image: doc.image || undefined,

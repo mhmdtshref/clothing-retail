@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 // A line in the cart
-// { id, variantId, productId, code, name, size, color, companyName, onHand, qty, unitPrice, discount: {mode, value} }
+// { id, variantId, productId, code, localCode, size, color, companyName, onHand, qty, unitPrice, discount: {mode, value} }
 
 function newLineFromPick(variant, product) {
   return {
@@ -11,7 +11,7 @@ function newLineFromPick(variant, product) {
     variantId: variant._id,
     productId: product._id,
     code: product.code,
-    name: product.name || '',
+    localCode: product.localCode || '',
     size: variant.size,
     color: variant.color,
     companyName: variant.company?.name || '',

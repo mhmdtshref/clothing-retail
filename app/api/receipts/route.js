@@ -342,7 +342,7 @@ export async function POST(req) {
 
     const productIdSet = new Set(variants.map((v) => String(v.productId)));
     const productIds = [...productIdSet].map((id) => new mongoose.Types.ObjectId(id));
-    const products = await Product.find({ _id: { $in: productIds } }, { code: 1, name: 1 })
+    const products = await Product.find({ _id: { $in: productIds } }, { code: 1, localCode: 1 })
       .lean()
       .exec();
     const productMap = new Map(products.map((p) => [String(p._id), p]));
@@ -362,7 +362,7 @@ export async function POST(req) {
           : undefined,
         snapshot: {
           productCode: p?.code || '',
-          productName: p?.name || '',
+          productName: p?.localCode || '',
           size: v.size,
           color: v.color,
         },

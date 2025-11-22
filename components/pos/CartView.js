@@ -69,7 +69,7 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
                 <TableRow key={l.id} hover>
                   <TableCell sx={{ overflow: 'hidden' }}>
                     <Typography fontWeight={600} noWrap title={l.code}>{l.code}</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{l.name || '\u00A0'}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{l.localCode || '\u00A0'}</Typography>
                   </TableCell>
                   <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                     <Typography variant="body2">{l.size} / {l.color}</Typography>

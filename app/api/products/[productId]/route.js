@@ -15,7 +15,7 @@ export async function GET(_req, context) {
   if (!productId || !mongoose.isValidObjectId(productId)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
   try {
     await connectToDB();
-    const doc = await Product.findById(productId, { code: 1, name: 1, basePrice: 1, status: 1, image: 1, createdAt: 1, updatedAt: 1 }).lean();
+    const doc = await Product.findById(productId, { code: 1, localCode: 1, basePrice: 1, status: 1, image: 1, createdAt: 1, updatedAt: 1 }).lean();
     if (!doc) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
     return NextResponse.json({ ok: true, product: { ...doc, _id: String(doc._id) } });
   } catch (e) {
@@ -36,7 +36,6 @@ const ImageSchema = z
 
 const PatchSchema = z.object({
   code: z.string().min(1).max(120).trim().optional(),
-  name: z.string().max(200).trim().optional(),
   basePrice: z.number().nonnegative().optional(),
   status: z.enum(['active', 'archived']).optional(),
   image: ImageSchema,
@@ -68,7 +67,6 @@ export async function PATCH(req, context) {
 
     const update = {};
     if (typeof input.code !== 'undefined') update.code = input.code;
-    if (typeof input.name !== 'undefined') update.name = input.name;
     if (typeof input.basePrice !== 'undefined') update.basePrice = input.basePrice;
     if (typeof input.status !== 'undefined') update.status = input.status;
     if (typeof input.image !== 'undefined') {
@@ -76,7 +74,7 @@ export async function PATCH(req, context) {
       else update.image = input.image;
     }
 
-    const doc = await Product.findByIdAndUpdate(productId, update, { new: true, projection: { code: 1, name: 1, basePrice: 1, status: 1, image: 1, createdAt: 1, updatedAt: 1 } }).lean();
+    const doc = await Product.findByIdAndUpdate(productId, update, { new: true, projection: { code: 1, localCode: 1, basePrice: 1, status: 1, image: 1, createdAt: 1, updatedAt: 1 } }).lean();
     if (!doc) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
     return NextResponse.json({ ok: true, product: { ...doc, _id: String(doc._id) } });
   } catch (e) {
