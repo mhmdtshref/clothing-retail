@@ -176,6 +176,7 @@ jobs:
       TAURI_IDENTIFIER: ${{ vars.TAURI_IDENTIFIER }}
       TAURI_APP_TITLE: ${{ vars.TAURI_APP_TITLE }}
       TAURI_APP_URL: ${{ vars.TAURI_APP_URL }}
+      APP_SECRET_ARN: ${{ secrets.APP_SECRET_ARN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -265,6 +266,52 @@ jobs:
       - name: Generate Tauri icons
         run: |
           npx -y @tauri-apps/cli@latest icon ./icon.png
+      
+      - name: Configure AWS credentials (for secrets)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Install AWS CLI
+        run: choco install awscli --no-progress --yes
+
+      - name: Fetch app secrets to .env
+        run: |
+          set -euo pipefail
+          if [ -z "${APP_SECRET_ARN:-}" ]; then
+            echo "APP_SECRET_ARN is not set"
+            exit 1
+          fi
+          SECRET_JSON=$(aws secretsmanager get-secret-value \
+            --secret-id "$APP_SECRET_ARN" \
+            --region "$AWS_REGION" \
+            --query SecretString --output text)
+          if [ -z "${SECRET_JSON:-}" ] || [ "${SECRET_JSON:-}" = "None" ]; then
+            echo "SecretString is empty for secret: $APP_SECRET_ARN"
+            exit 1
+          fi
+          printf "%s" "$SECRET_JSON" > secret.json
+          node - <<'NODE'
+          const fs = require('fs');
+          let envObj = {};
+          try {
+            envObj = JSON.parse(fs.readFileSync('secret.json', 'utf8'));
+          } catch (e) {
+            console.error('SecretString is not valid JSON');
+            process.exit(1);
+          }
+          const lines = Object.entries(envObj)
+            .filter(([k, v]) => typeof v !== 'object')
+            .map(([k, v]) => `${k}=${String(v)}`);
+          const content = lines.join('\n') + '\n';
+          fs.writeFileSync('.env', content);
+          fs.mkdirSync('src-tauri', { recursive: true });
+          fs.writeFileSync('src-tauri/.env', content);
+          console.log('Wrote .env files with', lines.length, 'entries');
+          NODE
+          rm -f secret.json
 
       - name: Build Tauri (MSI)
         run: |
