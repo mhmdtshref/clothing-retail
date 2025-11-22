@@ -164,6 +164,7 @@ jobs:
     name: Tauri MSI → S3
     runs-on: windows-latest
     needs: deploy
+    environment: clothing-retail-${{ github.ref_name }}
     defaults:
       run:
         shell: bash
