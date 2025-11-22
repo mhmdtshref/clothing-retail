@@ -274,9 +274,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Install AWS CLI
-        run: choco install awscli --no-progress --yes
-
       - name: Fetch app secrets to .env
         run: |
           set -euo pipefail
@@ -284,20 +281,28 @@ jobs:
             echo "APP_SECRET_ARN is not set"
             exit 1
           fi
-          SECRET_JSON=$(aws secretsmanager get-secret-value \
+          aws --version
+          aws secretsmanager get-secret-value \
             --secret-id "$APP_SECRET_ARN" \
             --region "$AWS_REGION" \
-            --query SecretString --output text)
-          if [ -z "${SECRET_JSON:-}" ] || [ "${SECRET_JSON:-}" = "None" ]; then
-            echo "SecretString is empty for secret: $APP_SECRET_ARN"
-            exit 1
-          fi
-          printf "%s" "$SECRET_JSON" > secret.json
+            --output json > secret_resp.json
           node - <<'NODE'
           const fs = require('fs');
+          let resp = {};
+          try {
+            resp = JSON.parse(fs.readFileSync('secret_resp.json', 'utf8'));
+          } catch (e) {
+            console.error('Failed to parse Secrets Manager response JSON');
+            process.exit(1);
+          }
+          const secretString = resp && resp.SecretString;
+          if (!secretString || typeof secretString !== 'string') {
+            console.error('SecretString missing or empty in Secrets Manager response');
+            process.exit(1);
+          }
           let envObj = {};
           try {
-            envObj = JSON.parse(fs.readFileSync('secret.json', 'utf8'));
+            envObj = JSON.parse(secretString);
           } catch (e) {
             console.error('SecretString is not valid JSON');
             process.exit(1);
@@ -311,7 +316,7 @@ jobs:
           fs.writeFileSync('src-tauri/.env', content);
           console.log('Wrote .env files with', lines.length, 'entries');
           NODE
-          rm -f secret.json
+          rm -f secret_resp.json
 
       - name: Build Tauri (MSI)
         run: |
