@@ -172,6 +172,10 @@ jobs:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       TAURI_S3_URL: ${{ secrets.TAURI_S3_URL }}
       TAURI_ICON_URL: ${{ secrets.TAURI_ICON_URL }}
+      TAURI_PRODUCT_NAME: ${{ vars.TAURI_PRODUCT_NAME }}
+      TAURI_IDENTIFIER: ${{ vars.TAURI_IDENTIFIER }}
+      TAURI_APP_TITLE: ${{ vars.TAURI_APP_TITLE }}
+      TAURI_APP_URL: ${{ vars.TAURI_APP_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -179,7 +183,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+          check-latest: true
 
       - name: Setup Rust (stable)
         uses: dtolnay/rust-toolchain@stable
@@ -200,6 +205,48 @@ jobs:
           else
             npm ci
           fi
+
+      - name: Override Tauri config from GitHub vars
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'src-tauri/tauri.conf.json';
+          const cfg = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const env = process.env;
+
+          function setIf(value, setter) {
+            if (value !== undefined && value !== null && String(value).length > 0) {
+              setter(String(value));
+            }
+          }
+
+          setIf(env.TAURI_PRODUCT_NAME, v => { cfg.productName = v; });
+
+          // Handle windows config as array (Tauri v2 default) or object defensively
+          if (!cfg.app) cfg.app = {};
+          if (!cfg.app.windows) cfg.app.windows = [{}];
+          if (Array.isArray(cfg.app.windows) && cfg.app.windows.length === 0) {
+            cfg.app.windows.push({});
+          }
+          const firstWin = Array.isArray(cfg.app.windows) ? cfg.app.windows[0] : cfg.app.windows;
+          setIf(env.TAURI_APP_TITLE, v => { firstWin.title = v; });
+          setIf(env.TAURI_APP_URL, v => { firstWin.url = v; });
+
+          const desiredIdentifier = env.TAURI_IDENTIFIER || cfg.identifier;
+          if (!desiredIdentifier) {
+            console.error('Tauri identifier is missing. Set TAURI_IDENTIFIER GitHub variable.');
+            process.exit(1);
+          }
+          if (!/^[A-Za-z0-9.-]+$/.test(desiredIdentifier)) {
+            console.error(`Invalid Tauri identifier: "${desiredIdentifier}". Use only A-Z, a-z, 0-9, ".", "-"`);
+            process.exit(1);
+          }
+          cfg.identifier = desiredIdentifier;
+
+          fs.writeFileSync(path, JSON.stringify(cfg, null, 2));
+          console.log('Applied Tauri config overrides.');
+          NODE
 
       - name: Download app icon from URL
         run: |
