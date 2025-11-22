@@ -101,6 +101,7 @@
   "common.sortBy": "ترتيب حسب",
   "products.createdAt": "تاريخ الإنشاء",
   "products.code": "الكود",
+  "products.localCode": "الرمز المحلي",
   "products.basePrice": "السعر الأساسي",
   "products.variants": "الأنماط",
   "products.created": "تم الإنشاء",

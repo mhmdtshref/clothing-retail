@@ -271,7 +271,7 @@ export default function NewPurchaseReceipt({ companies }) {
             <Autocomplete
               loading={loadingProducts}
               options={productOptions}
-              getOptionLabel={(o) => `${o.code}${o.name ? ' — ' + o.name : ''}`}
+              getOptionLabel={(o) => `${o.code}${o.localCode ? ' — ' + o.localCode : ''}`}
               onChange={(_, val) => setSelectedProduct(val)}
               value={selectedProduct}
               renderInput={(params) => <TextField {...params} label={t('purchase.chooseProduct')} />}

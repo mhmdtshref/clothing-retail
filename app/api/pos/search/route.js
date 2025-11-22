@@ -104,7 +104,7 @@ export async function GET(req) {
               $project: {
                 _id: 1,
                 code: 1,
-                name: 1,
+              localCode: 1,
                 status: 1,
                 image: 1,
                 basePrice: { $ifNull: ['$basePrice', 0] },

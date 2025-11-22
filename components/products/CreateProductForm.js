@@ -32,7 +32,6 @@ const productSchema = z.object({
     .min(1)
     .max(120)
     .transform((s) => s.trim()),
-  name: z.string().max(200).optional().default(''),
   basePrice: z.preprocess(
     (v) => (typeof v === 'string' ? Number(v) : v),
     z.number().nonnegative().default(0),
@@ -67,7 +66,6 @@ export default function CreateProductForm({ companies }) {
   const { t } = useI18n();
   const [values, setValues] = React.useState({
     code: '',
-    name: '',
     basePrice: '',
     status: 'active',
     sizes: [],
@@ -102,7 +100,6 @@ export default function CreateProductForm({ companies }) {
 
       const prodInput = productSchema.parse({
         code: values.code,
-        name: values.name,
         basePrice: values.basePrice === '' ? 0 : values.basePrice,
         status: values.status,
       });
@@ -185,7 +182,6 @@ export default function CreateProductForm({ companies }) {
               required
               fullWidth
             />
-            <TextField label={t('common.name')} value={values.name} onChange={handleChange('name')} fullWidth />
           </Stack>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -311,7 +307,6 @@ export default function CreateProductForm({ companies }) {
                 onClick={() =>
                   setValues({
                     code: '',
-                    name: '',
                     basePrice: '',
                     status: 'active',
                     sizes: [],

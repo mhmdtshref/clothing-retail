@@ -16,7 +16,7 @@ const ImageSchema = new Schema(
 const ProductSchema = new Schema(
   {
     code: { type: String, required: true, trim: true }, // merchant product code (globally unique)
-    name: { type: String, trim: true },
+    localCode: { type: String, required: true, trim: true }, // auto-generated YY-XXXXXX
     basePrice: { type: Number, default: 0 },
     status: {
       type: String,
@@ -30,5 +30,6 @@ const ProductSchema = new Schema(
 
 // Code must be unique now that we removed company scoping
 ProductSchema.index({ code: 1 }, { unique: true });
+ProductSchema.index({ localCode: 1 }, { unique: true });
 
 export default mongoose.models.Product || mongoose.model('Product', ProductSchema);

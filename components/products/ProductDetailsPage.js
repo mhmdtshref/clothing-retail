@@ -29,7 +29,7 @@ export default function ProductDetailsPage({ productId }) {
       setProduct(pJson.product);
       setEditing({
         code: pJson.product.code || '',
-        name: pJson.product.name || '',
+        localCode: pJson.product.localCode || '',
         basePrice: Number(pJson.product.basePrice || 0),
         status: pJson.product.status || 'active',
         image: pJson.product.image || null,
@@ -50,7 +50,6 @@ export default function ProductDetailsPage({ productId }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           code: editing.code,
-          name: editing.name,
           basePrice: Number(editing.basePrice || 0),
           status: editing.status,
           image: typeof editing.image === 'undefined' ? undefined : editing.image,
@@ -70,7 +69,7 @@ export default function ProductDetailsPage({ productId }) {
     if (!product) return;
     setEditing({
       code: product.code || '',
-      name: product.name || '',
+      localCode: product.localCode || '',
       basePrice: Number(product.basePrice || 0),
       status: product.status || 'active',
       image: product.image || null,
@@ -94,7 +93,7 @@ export default function ProductDetailsPage({ productId }) {
           <Paper sx={{ p: 2 }}>
             <Stack spacing={2}>
               <TextField label={t('products.code')} value={editing.code} onChange={(e) => setEditing((s) => ({ ...s, code: e.target.value }))} fullWidth />
-              <TextField label={t('common.name')} value={editing.name} onChange={(e) => setEditing((s) => ({ ...s, name: e.target.value }))} fullWidth />
+              <TextField label={t('products.localCode')} value={product.localCode || ''} fullWidth disabled />
               <TextField label={t('products.basePrice')} type="number" value={editing.basePrice} onChange={(e) => setEditing((s) => ({ ...s, basePrice: e.target.value }))} fullWidth />
               <FormControl fullWidth>
                 <InputLabel>{t('common.status')}</InputLabel>

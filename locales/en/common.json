@@ -101,6 +101,7 @@
   "common.sortBy": "Sort by",
   "products.createdAt": "Created At",
   "products.code": "Code",
+  "products.localCode": "Local Code",
   "products.basePrice": "Base Price",
   "products.variants": "Variants",
   "products.created": "Created",

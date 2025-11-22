@@ -183,7 +183,7 @@ export default function ProductsListPage() {
           >
             <MenuItem value="createdAt">{t('products.createdAt')}</MenuItem>
             <MenuItem value="code">{t('products.code')}</MenuItem>
-            <MenuItem value="name">{t('common.name')}</MenuItem>
+            <MenuItem value="localCode">{t('products.localCode')}</MenuItem>
           </Select>
         </FormControl>
 
@@ -249,7 +249,7 @@ export default function ProductsListPage() {
               >
                 <MenuItem value="createdAt">{t('products.createdAt')}</MenuItem>
                 <MenuItem value="code">{t('products.code')}</MenuItem>
-                <MenuItem value="name">{t('common.name')}</MenuItem>
+                <MenuItem value="localCode">{t('products.localCode')}</MenuItem>
               </Select>
             </FormControl>
 
@@ -302,7 +302,7 @@ export default function ProductsListPage() {
               <TableHead>
                 <TableRow>
                   <TableCell>{t('products.code')}</TableCell>
-                  <TableCell>{t('common.name')}</TableCell>
+                  <TableCell>{t('products.localCode')}</TableCell>
                   <TableCell align="right">{t('products.basePrice')}</TableCell>
                   <TableCell>{t('common.status')}</TableCell>
                   <TableCell align="right">{t('products.variants')}</TableCell>
@@ -324,7 +324,7 @@ export default function ProductsListPage() {
                     <TableCell>
                       <Typography fontWeight={600}>{p.code}</Typography>
                     </TableCell>
-                    <TableCell>{p.name || '-'}</TableCell>
+                    <TableCell>{p.localCode || '-'}</TableCell>
                     <TableCell align="right">{formatNumber(Number(p.basePrice || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                     <TableCell>{p.status}</TableCell>
                     <TableCell align="right">{formatNumber(p.variantCount ?? 0)}</TableCell>
@@ -342,7 +342,7 @@ export default function ProductsListPage() {
               {data.items.map((p) => (
                 <ResponsiveListItem
                   key={p._id}
-                  title={p.name || '-'}
+                  title={p.localCode || '-'}
                   subtitle={p.code}
                   metaEnd={`${formatNumber(Number(p.basePrice || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                 >
