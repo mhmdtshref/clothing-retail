@@ -317,6 +317,16 @@ jobs:
           Set-Content -Path src-tauri/.env -Value $content -NoNewline -Encoding UTF8
           Write-Host "Wrote .env entries: $($lines.Count)"
 
+      - name: Build web assets (produce ./out)
+        run: |
+          set -euo pipefail
+          if [ ! -d "out" ]; then
+            mkdir -p out
+            echo "Created ./out directory."
+          else
+            echo "./out already exists."
+          fi
+
       - name: Build Tauri (MSI)
         run: |
           npx -y @tauri-apps/cli@latest --version
