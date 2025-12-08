@@ -54,8 +54,9 @@ export async function POST(req) {
     const publicUrl = publicUrlForKey(key);
     return NextResponse.json({ ok: true, key, publicUrl, contentType });
   } catch (e) {
-    console.log('s3 upload error', JSON.stringify(e, null, 2));
-    return NextResponse.json({ error: e?.message || 'Upload failed', errjson: JSON.stringify(e, null, 2) }, { status: 500 });
+    console.log('s3 upload error', e);
+    console.log('s3 upload error string', String(e));
+    return NextResponse.json({ error: e?.message || 'Upload failed', errjson: String(e) }, { status: 500 });
   }
 }
 
