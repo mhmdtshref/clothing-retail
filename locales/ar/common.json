@@ -148,7 +148,9 @@
   "companies.none": "لا توجد شركات.",
   "companies.edit": "تعديل شركة",
   "companies.new": "شركة جديدة",
+  "companies.searchPlaceholder": "ابحث في الشركات…",
   "errors.loadCompanies": "فشل في تحميل الشركات",
+  "errors.companyNameExists": "اسم الشركة موجود بالفعل.",
   "common.retry": "إعادة المحاولة",
   "common.cancel": "إلغاء",
   "common.create": "إنشاء"

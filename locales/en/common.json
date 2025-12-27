@@ -148,7 +148,9 @@
   "companies.none": "No companies found.",
   "companies.edit": "Edit Company",
   "companies.new": "New Company",
+  "companies.searchPlaceholder": "Search companies…",
   "errors.loadCompanies": "Failed to load companies",
+  "errors.companyNameExists": "Company name already exists.",
   "common.retry": "Retry",
   "common.cancel": "Cancel",
   "common.create": "Create"
