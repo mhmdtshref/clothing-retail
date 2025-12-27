@@ -70,7 +70,7 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
         <div>#{shortId}</div>
       </div>
       <div className="row">
-        <div>{formatDate(new Date(receipt?.date || Date.now()))}</div>
+        <div>{receipt?.date ? formatDate(new Date(receipt.date)) : ''}</div>
         <div className="muted">{t(`status.${receipt?.status}`)}</div>
       </div>
       {isSale && receipt?.customer && (

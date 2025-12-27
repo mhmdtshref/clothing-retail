@@ -62,6 +62,8 @@ export default function NewPurchaseReceipt({ companies }) {
   const [selectedProduct, setSelectedProduct] = React.useState(null);
   const [variantOptions, setVariantOptions] = React.useState([]);
   const [loadingVariants, setLoadingVariants] = React.useState(false);
+  const [selectedSizes, setSelectedSizes] = React.useState([]);
+  const [selectedColors, setSelectedColors] = React.useState([]);
 
   const [items, setItems] = React.useState([]);
   const [snack, setSnack] = React.useState({ open: false, severity: 'success', message: '' });
@@ -102,6 +104,47 @@ export default function NewPurchaseReceipt({ companies }) {
     }
   }, [selectedProduct?._id, companyId]);
 
+  React.useEffect(() => {
+    // When product/company changes, reset generator filters
+    setSelectedSizes([]);
+    setSelectedColors([]);
+  }, [selectedProduct?._id, companyId]);
+
+  const availableSizes = React.useMemo(() => {
+    const s = new Set();
+    for (const v of variantOptions || []) {
+      if (v?.size) s.add(String(v.size));
+    }
+    return Array.from(s).sort((a, b) => a.localeCompare(b));
+  }, [variantOptions]);
+
+  const availableColors = React.useMemo(() => {
+    const s = new Set();
+    for (const v of variantOptions || []) {
+      if (v?.color) s.add(String(v.color));
+    }
+    return Array.from(s).sort((a, b) => a.localeCompare(b));
+  }, [variantOptions]);
+
+  const matchingVariants = React.useMemo(() => {
+    const sizesSet = new Set(selectedSizes || []);
+    const colorsSet = new Set(selectedColors || []);
+    return (variantOptions || []).filter((v) => {
+      const okSize = (selectedSizes || []).length === 0 || sizesSet.has(String(v?.size || ''));
+      const okColor = (selectedColors || []).length === 0 || colorsSet.has(String(v?.color || ''));
+      return okSize && okColor;
+    });
+  }, [variantOptions, selectedSizes, selectedColors]);
+
+  const preview = React.useMemo(() => {
+    const limit = 10;
+    const rows = (matchingVariants || []).slice(0, limit).map((v) => ({
+      size: String(v?.size || ''),
+      color: String(v?.color || ''),
+    }));
+    return { rows, total: (matchingVariants || []).length, limit };
+  }, [matchingVariants]);
+
   const addBlankItem = () => {
     setItems((arr) => [
       ...arr,
@@ -115,6 +158,27 @@ export default function NewPurchaseReceipt({ companies }) {
       },
     ]);
   };
+
+  const generateLines = React.useCallback(() => {
+    setItems((arr) => {
+      const existing = new Set((arr || []).map((x) => String(x?.variantId || '')).filter(Boolean));
+      const toAdd = [];
+      for (const v of matchingVariants || []) {
+        const variantId = String(v?._id || '');
+        if (!variantId || existing.has(variantId)) continue;
+        toAdd.push({
+          id: crypto.randomUUID(),
+          variantId,
+          variantLabel: `${v?.size || ''}/${v?.color || ''}`,
+          qty: 0,
+          unitCost: 0,
+          discount: { mode: 'amount', value: 0 },
+        });
+        existing.add(variantId);
+      }
+      return [...(arr || []), ...toAdd];
+    });
+  }, [matchingVariants]);
 
   const removeItem = (id) => setItems((arr) => arr.filter((x) => x.id !== id));
   const updateItem = (id, patch) =>
@@ -148,11 +212,12 @@ export default function NewPurchaseReceipt({ companies }) {
       setSnack({ open: true, severity: 'error', message: t('errors.selectCompany') });
       return;
     }
-    if (items.length === 0) {
+    const itemsToSubmit = (items || []).filter((it) => Number(it.qty) > 0);
+    if (itemsToSubmit.length === 0) {
       setSnack({ open: true, severity: 'error', message: t('errors.addAtLeastOneLine') });
       return;
     }
-    if (items.some((it) => !it.variantId)) {
+    if (itemsToSubmit.some((it) => !it.variantId)) {
       setSnack({ open: true, severity: 'error', message: t('errors.chooseVariantEach') });
       return;
     }
@@ -162,7 +227,7 @@ export default function NewPurchaseReceipt({ companies }) {
         type: 'purchase',
         status,
         companyId,
-        items: items.map((it) => ({
+        items: itemsToSubmit.map((it) => ({
           variantId: it.variantId,
           qty: Number(it.qty) || 0,
           unitCost: Number(it.unitCost) || 0,
@@ -286,6 +351,87 @@ export default function NewPurchaseReceipt({ companies }) {
               {t('purchase.addLine')}
             </Button>
           </Stack>
+
+          {/* Variant generator */}
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle1">{t('purchase.variantGenerator')}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                {t('purchase.linesQtyZeroHint')}
+              </Typography>
+
+              <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+                <Autocomplete
+                  multiple
+                  options={availableSizes}
+                  value={selectedSizes}
+                  onChange={(_, newVal) => setSelectedSizes(newVal)}
+                  disabled={!selectedProduct || loadingVariants || availableSizes.length === 0}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t('products.sizes')}
+                      placeholder={availableSizes.length ? '' : t('common.loading')}
+                      fullWidth
+                    />
+                  )}
+                  sx={{ flex: 1, minWidth: 0 }}
+                />
+                <Autocomplete
+                  multiple
+                  options={availableColors}
+                  value={selectedColors}
+                  onChange={(_, newVal) => setSelectedColors(newVal)}
+                  disabled={!selectedProduct || loadingVariants || availableColors.length === 0}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t('products.colors')}
+                      placeholder={availableColors.length ? '' : t('common.loading')}
+                      fullWidth
+                    />
+                  )}
+                  sx={{ flex: 1, minWidth: 0 }}
+                />
+                <Button
+                  variant="contained"
+                  disabled={!selectedProduct || loadingVariants || preview.total === 0}
+                  onClick={generateLines}
+                >
+                  {t('purchase.generateLines')}
+                </Button>
+              </Stack>
+
+              <Typography variant="subtitle2" sx={{ mt: 0.5 }}>
+                {t('products.variantPreview')} ({preview.total} {t('common.total')})
+              </Typography>
+              <Box sx={{ overflowX: 'auto' }}>
+                <Table size="small" sx={{ minWidth: 360 }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>{t('products.size')}</TableCell>
+                      <TableCell>{t('products.color')}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {preview.rows.map((r, i) => (
+                      <TableRow key={i}>
+                        <TableCell>{r.size}</TableCell>
+                        <TableCell>{r.color}</TableCell>
+                      </TableRow>
+                    ))}
+                    {preview.total > preview.rows.length && (
+                      <TableRow>
+                        <TableCell colSpan={2}>
+                          …{t('common.and')} {preview.total - preview.rows.length} {t('common.more')}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Stack>
+          </Paper>
 
           <Box sx={{ overflowX: 'auto' }}>
           <Table size="small" sx={{ minWidth: 720 }}>
