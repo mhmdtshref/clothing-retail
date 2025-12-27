@@ -6,6 +6,7 @@ import {
   Toolbar,
   Stack,
   Button,
+  TextField,
   Table,
   TableHead,
   TableRow,
@@ -18,9 +19,11 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import SearchIcon from '@mui/icons-material/Search';
 import CompanyDialog from '@/components/companies/CompanyDialog';
 import { useI18n } from '@/components/i18n/useI18n';
 import ResponsiveListItem from '@/components/common/ResponsiveListItem';
+import { normalizeCompanyName } from '@/lib/company-name';
 
 export default function CompaniesPage() {
   const { t } = useI18n();
@@ -29,6 +32,7 @@ export default function CompaniesPage() {
   const [error, setError] = React.useState('');
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [editing, setEditing] = React.useState(null);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   const fetchCompanies = React.useCallback(async () => {
     setLoading(true);
@@ -48,6 +52,12 @@ export default function CompaniesPage() {
   React.useEffect(() => {
     fetchCompanies();
   }, [fetchCompanies]);
+
+  const filteredItems = React.useMemo(() => {
+    const q = normalizeCompanyName(searchQuery);
+    if (!q) return items || [];
+    return (items || []).filter((c) => normalizeCompanyName(c?.name || '').includes(q));
+  }, [items, searchQuery]);
 
   function onAdd() {
     setEditing(null);
@@ -76,6 +86,16 @@ export default function CompaniesPage() {
           {t('companies.title')}
         </Typography>
         <Stack direction="row" spacing={1}>
+          <TextField
+            size="small"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t('companies.searchPlaceholder')}
+            InputProps={{
+              startAdornment: <SearchIcon fontSize="small" style={{ opacity: 0.7, marginRight: 8 }} />,
+            }}
+            sx={{ width: { xs: 180, sm: 260 } }}
+          />
           <Button onClick={onAdd} variant="contained" startIcon={<AddIcon />}>{t('companies.add')}</Button>
         </Stack>
       </Toolbar>
@@ -99,14 +119,14 @@ export default function CompaniesPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.length === 0 ? (
+            {filteredItems.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={2}>
                   <Typography variant="body2" color="text.secondary">{t('companies.none')}</Typography>
                 </TableCell>
               </TableRow>
             ) : (
-              items.map((row) => (
+              filteredItems.map((row) => (
                 <TableRow key={String(row._id)} hover>
                   <TableCell>{row.name}</TableCell>
                   <TableCell align="right">
@@ -121,10 +141,10 @@ export default function CompaniesPage() {
         </Table>
 
         <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
-          {items.length === 0 && (
+          {filteredItems.length === 0 && (
             <Typography variant="body2" color="text.secondary">{t('companies.none')}</Typography>
           )}
-          {items.map((row) => (
+          {filteredItems.map((row) => (
             <ResponsiveListItem
               key={String(row._id)}
               title={row.name}
@@ -144,6 +164,7 @@ export default function CompaniesPage() {
         onClose={onCloseDialog}
         onSaved={onSaved}
         initialValue={editing}
+        existingCompanies={items}
       />
     </Paper>
   );

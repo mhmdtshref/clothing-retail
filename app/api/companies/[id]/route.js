@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
 import Company from '@/models/company';
 import { CompanyUpdateSchema } from '@/lib/validators/company';
+import { normalizeCompanyName } from '@/lib/company-name';
 
 export async function PATCH(req, context) {
   const { userId } = await auth();
@@ -31,16 +32,26 @@ export async function PATCH(req, context) {
   }
 
   const update = {};
-  if (typeof input.name !== 'undefined') update.name = input.name;
+  if (typeof input.name !== 'undefined') {
+    update.name = input.name;
+    update.nameKey = normalizeCompanyName(input.name);
+  }
 
   try {
     await connectToDB();
 
     if (typeof update.name !== 'undefined') {
-      const conflict = await Company.findOne({ _id: { $ne: id }, name: update.name }).lean().exec();
+      const existing = await Company.findOne({ _id: { $ne: id }, nameKey: update.nameKey }).lean().exec();
+      const conflict =
+        Boolean(existing) ||
+        (await Company.find({ _id: { $ne: id } }, { name: 1 })
+          .lean()
+          .exec())
+          .some((c) => normalizeCompanyName(c?.name || '') === update.nameKey);
+
       if (conflict) {
         return NextResponse.json(
-          { error: 'Conflict', message: 'Company name already exists.' },
+          { error: 'Conflict', message: 'Company name must be unique.' },
           { status: 409 },
         );
       }

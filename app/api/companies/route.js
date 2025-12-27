@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
 import Company from '@/models/company';
 import { CompanyCreateSchema } from '@/lib/validators/company';
+import { normalizeCompanyName } from '@/lib/company-name';
 
 export async function GET() {
   const { userId } = await auth();
@@ -50,18 +51,26 @@ export async function POST(req) {
     }
 
     const { name } = parsed.data;
+    const nameKey = normalizeCompanyName(name);
 
     await connectToDB();
 
-    const existing = await Company.findOne({ name }).lean().exec();
-    if (existing) {
+    const existing = await Company.findOne({ nameKey }).lean().exec();
+    const conflict =
+      Boolean(existing) ||
+      (await Company.find({}, { name: 1 })
+        .lean()
+        .exec())
+        .some((c) => normalizeCompanyName(c?.name || '') === nameKey);
+
+    if (conflict) {
       return NextResponse.json(
-        { error: 'Conflict', message: 'Company name already exists.' },
+        { error: 'Conflict', message: 'Company name must be unique.' },
         { status: 409 },
       );
     }
 
-    const doc = await Company.create({ name });
+    const doc = await Company.create({ name, nameKey });
     return NextResponse.json(
       {
         ok: true,
