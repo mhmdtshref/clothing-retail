@@ -38,7 +38,7 @@ export default function CheckoutSuccess({ receipt, totals, paidTotal, dueTotal, 
       <Divider sx={{ mb: 2 }} />
       <Box ref={printRef} sx={{ bgColor: 'white' }}>
         <Typography variant="subtitle2" color="text.secondary">{isReturn ? t('receipt.return') : t('pos.receipt')} #{String(receipt?._id || '').slice(-6)}</Typography>
-        <Typography variant="body2">{t('common.date')}: {formatDate(new Date(receipt?.date || Date.now()))}</Typography>
+        <Typography variant="body2">{t('common.date')}: {receipt?.date ? formatDate(new Date(receipt.date)) : '-'}</Typography>
         <Divider sx={{ my: 1 }} />
         <Table size="small">
           <TableHead>
