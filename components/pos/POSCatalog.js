@@ -2,8 +2,9 @@
 
 import * as React from 'react';
 import {
+  Autocomplete,
   Box, Stack, TextField, InputAdornment, IconButton, Typography,
-  Chip, Pagination, CircularProgress, Button, Tooltip, Card, CardContent, CardActionArea,
+  Chip, CircularProgress, Button, Tooltip,
   DialogTitle, DialogContent, DialogActions, Table, TableHead, TableRow, TableCell, TableBody,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -20,122 +21,158 @@ function useDebounced(value, delay = 400) {
   return v;
 }
 
-export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
+export default function POSCatalog({ onPickVariant, isReturnMode = false, compact = false }) {
   const { t, formatNumber } = useI18n();
   const [query, setQuery] = React.useState('');
   const q = useDebounced(query);
-  const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(20);
+  const [limit] = React.useState(12);
+  const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [items, setItems] = React.useState([]);
-  const [meta, setMeta] = React.useState({ total: 0, pages: 1 });
   const [selected, setSelected] = React.useState(null); // product for modal
+  const searchInputRef = React.useRef(null);
+  const fetchSeq = React.useRef(0);
 
-  const fetchList = React.useCallback(async () => {
+  const fetchList = React.useCallback(async (search) => {
+    const trimmed = (search ?? '').trim();
+    const seq = ++fetchSeq.current;
+    if (trimmed.length < 1) {
+      setLoading(false);
+      setError('');
+      setItems([]);
+      return;
+    }
     setLoading(true); setError('');
     try {
-      const params = new URLSearchParams({ q, page: String(page), limit: String(limit) });
+      const params = new URLSearchParams({ q: trimmed, page: '1', limit: String(limit) });
       const res = await fetch(`/api/pos/search?${params.toString()}`, { cache: 'no-store' });
       const json = await res.json();
       if (!res.ok) throw new Error('Failed to load POS catalog');
+      if (seq !== fetchSeq.current) return; // stale response
       setItems(json.items || []);
-      setMeta(json.meta || { total: 0, pages: 1 });
     } catch (e) {
+      if (seq !== fetchSeq.current) return; // stale response
       setError(e?.message || String(e));
       setItems([]);
-      setMeta({ total: 0, pages: 1 });
     } finally {
+      if (seq !== fetchSeq.current) return;
       setLoading(false);
     }
-  }, [q, page, limit]);
+  }, [limit]);
 
-  React.useEffect(() => { fetchList(); }, [fetchList]);
+  React.useEffect(() => { fetchList(q); }, [fetchList, q]);
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={compact ? 0 : 2}>
       <Stack direction="row" spacing={1} alignItems="center">
-        <TextField
+        <Autocomplete
           id="pos-catalog-search"
-          size="small"
-          placeholder={t('posCatalog.searchPlaceholder')}
-          value={query}
-          onChange={(e) => { setQuery(e.target.value); setPage(1); }}
-          InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>) }}
+          open={open && query.trim().length >= 1}
+          onOpen={() => { if (query.trim().length >= 1) setOpen(true); }}
+          onClose={() => setOpen(false)}
+          options={items}
+          loading={loading}
+          value={null}
+          inputValue={query}
+          size={compact ? 'small' : undefined}
+          onInputChange={(_e, newValue, reason) => {
+            const trimmed = (newValue ?? '').trim();
+            if (reason === 'input') {
+              setQuery(newValue);
+              if (trimmed.length >= 1) {
+                setOpen(true);
+              } else {
+                // Empty search should show no dropdown suggestions and do no fetch.
+                setOpen(false);
+                fetchSeq.current += 1; // invalidate any in-flight request
+                setLoading(false);
+                setError('');
+                setItems([]);
+              }
+            }
+            if (reason === 'clear') {
+              setQuery('');
+              setOpen(false);
+              fetchSeq.current += 1; // invalidate any in-flight request
+              setLoading(false);
+              setError('');
+              setItems([]);
+            }
+            // Ignore "reset" so selecting an option doesn't overwrite what the cashier typed.
+          }}
+          onChange={(_e, option) => {
+            if (option) {
+              setSelected(option);
+              setOpen(false);
+            }
+          }}
+          isOptionEqualToValue={(opt, val) => opt?._id === val?._id}
+          filterOptions={(x) => x}
+          noOptionsText={query.trim().length >= 1 ? t('products.none') : t('posCatalog.searchPlaceholder')}
+          getOptionLabel={(option) => option?.code || ''}
+          renderOption={(props, option) => (
+            <Box component="li" {...props} key={option._id} sx={{ py: 1 }}>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%', minWidth: 0 }}>
+                <Box
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 1,
+                    flex: '0 0 auto',
+                    bgcolor: 'background.default',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    overflow: 'hidden',
+                    position: 'relative',
+                  }}
+                >
+                  {option.image?.url ? (
+                    <Box sx={{ position: 'absolute', inset: 0, backgroundImage: `url(${option.image.url})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                  ) : null}
+                </Box>
+                <Box sx={{ minWidth: 0, flex: 1 }}>
+                  <Typography variant="body2" fontWeight={700} noWrap>{option.code}</Typography>
+                  <Typography variant="caption" color="text.secondary" noWrap>{option.localCode || '-'}</Typography>
+                </Box>
+                <Chip size="small" label={`${formatNumber(option.variants?.length || 0)} ${t('products.variants')}`} />
+              </Stack>
+            </Box>
+          )}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              inputRef={searchInputRef}
+              size="small"
+              placeholder={t('posCatalog.searchPlaceholder')}
+              error={Boolean(error)}
+              helperText={error || ''}
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <>
+                    {loading ? <CircularProgress color="inherit" size={16} sx={{ mr: 1 }} /> : null}
+                    {params.InputProps.endAdornment}
+                  </>
+                ),
+              }}
+              sx={{ minWidth: 0 }}
+            />
+          )}
           sx={{ flex: 1, minWidth: 0 }}
         />
-        <IconButton onClick={fetchList} title={t('common.refresh')}><RefreshIcon /></IconButton>
-      </Stack>
-
-      <Box
-        sx={{
-          position: 'relative',
-          borderRadius: 2,
-          // Reserve space for sticky bottom actions bar on mobile so last cards are not obscured
-          pb: { xs: '96px', sm: 2 },
-        }}
-      >
-        {loading && (
-          <Stack alignItems="center" justifyContent="center" sx={{ py: 6 }}>
-            <CircularProgress />
-          </Stack>
-        )}
-
-        {!loading && error && (
-          <Typography color="error" sx={{ p: 2 }}>{error}</Typography>
-        )}
-
-        {!loading && !error && items.length === 0 && (
-          <Typography color="text.secondary" sx={{ p: 2 }}>{t('products.none')}</Typography>
-        )}
-
-        {!loading && !error && items.length > 0 && (
-          <Box sx={{
-            display: 'grid',
-            gap: 2,
-            minWidth: 0,
-            gridTemplateColumns: {
-              xs: 'repeat(2, 1fr)',
-              sm: 'repeat(2, 1fr)',
-              md: 'repeat(3, 1fr)',
-              lg: 'repeat(4, 1fr)',
-              xl: 'repeat(5, 1fr)',
-            },
-          }}>
-            {items.map((p) => (
-              <Card key={p._id} variant="outlined" sx={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                <CardActionArea onClick={() => setSelected(p)} sx={{ alignItems: 'stretch' }}>
-                  <Box sx={{ width: '100%', height: 140, position: 'relative', bgcolor: 'background.default', borderBottom: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
-                    {p.image?.url ? (
-                      <Box sx={{ position: 'absolute', inset: 0, backgroundImage: `url(${p.image.url})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
-                    ) : (
-                      <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>{t('products.noImage')}</Box>
-                    )}
-                  </Box>
-                  <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Stack spacing={0.5}>
-                      <Typography variant="subtitle1" fontWeight={700}>{p.code}</Typography>
-                      <Typography variant="body2" color="text.secondary">{p.localCode || '-'}</Typography>
-                      <Chip size="small" label={`${formatNumber(p.variants?.length || 0)} ${t('products.variants')}`} sx={{ alignSelf: 'flex-start' }} />
-                    </Stack>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            ))}
-          </Box>
-        )}
-      </Box>
-
-      <Stack direction="row" justifyContent="flex-end" alignItems="center">
-        <Pagination
-          page={page}
-          count={meta.pages || 1}
-          onChange={(_e, p) => setPage(p)}
-          color="primary"
-          shape="rounded"
-          showFirstButton
-          showLastButton
-        />
+        <IconButton
+          onClick={() => { fetchList(query); setOpen(true); }}
+          title={t('common.refresh')}
+          disabled={query.trim().length < 1}
+        >
+          <RefreshIcon />
+        </IconButton>
       </Stack>
       {/* Variant picker dialog */}
       <FullScreenDialog open={Boolean(selected)} onClose={() => setSelected(null)} maxWidth="md" fullWidth>
@@ -184,7 +221,18 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false }) {
                                 size="small"
                                 variant="contained"
                                 color={out ? 'warning' : 'primary'}
-                                onClick={() => { if (onPickVariant) onPickVariant(v, selected); setSelected(null); }}
+                                onClick={() => {
+                                  if (onPickVariant) onPickVariant(v, selected);
+                                  setSelected(null);
+                                  setQuery('');
+                                  setOpen(false);
+                                  fetchSeq.current += 1; // invalidate any in-flight request
+                                  setLoading(false);
+                                  setItems([]);
+                                  setError('');
+                                  // Re-focus search for quick scanning
+                                  setTimeout(() => searchInputRef.current?.focus(), 50);
+                                }}
                               >
                                 {t('common.add')}
                               </Button>

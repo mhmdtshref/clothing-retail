@@ -3,20 +3,85 @@
 import * as React from 'react';
 import {
   Box, Stack, Table, TableHead, TableRow, TableCell, TableBody,
-  IconButton, TextField, Select, MenuItem, Button, Typography, Tooltip, useMediaQuery, useTheme,
+  IconButton, TextField, Select, MenuItem, Button, Typography,
+  Dialog, DialogTitle, DialogContent, DialogActions,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import { computeLine, computeReceiptTotals } from '@/lib/pricing';
 import { useI18n } from '@/components/i18n/useI18n';
 
-export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDiscount, removeLine, clear, billDiscount, setBillDiscount, taxPercent, setTaxPercent }) {
+export default function CartView({
+  items,
+  inc,
+  dec,
+  setQty,
+  setUnitPrice,
+  setDiscount,
+  removeLine,
+  clear,
+  billDiscount,
+  setBillDiscount,
+  taxPercent,
+  setTaxPercent,
+  selectedLineId: selectedLineIdProp,
+  onSelectLineId: onSelectLineIdProp,
+  showEditor = true,
+  showTotals = true,
+}) {
   const { t, formatNumber } = useI18n();
-  const subtotal = items.reduce((sum, l) => sum + (computeLine({ qty: l.qty, unit: l.unitPrice, discount: l.discount }).net || 0), 0);
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down('sm'));
+  // Allow selection to be controlled by a parent (e.g. POS page sidebar editor).
+  const [selectedLineIdInternal, setSelectedLineIdInternal] = React.useState(null);
+  const selectedLineId = selectedLineIdProp ?? selectedLineIdInternal;
+  const onSelectLineId = onSelectLineIdProp ?? setSelectedLineIdInternal;
+
+  React.useEffect(() => {
+    if (selectedLineId && !items.some((l) => l.id === selectedLineId)) {
+      onSelectLineId(null);
+    }
+  }, [items, selectedLineId, onSelectLineId]);
+
+  const handleRemoveLine = React.useCallback((id) => {
+    removeLine(id);
+    if (id === selectedLineId) onSelectLineId(null);
+  }, [removeLine, selectedLineId, onSelectLineId]);
+
+  const selectedLine = React.useMemo(
+    () => items.find((l) => l.id === selectedLineId) || null,
+    [items, selectedLineId],
+  );
+
+  const [qtyDialogOpen, setQtyDialogOpen] = React.useState(false);
+  const [priceDialogOpen, setPriceDialogOpen] = React.useState(false);
+  const [qtyDraft, setQtyDraft] = React.useState('');
+  const [priceDraft, setPriceDraft] = React.useState('');
+
+  const openQtyDialog = React.useCallback(() => {
+    if (!selectedLine) return;
+    setQtyDraft(String(Math.max(0, Math.floor(Number(selectedLine.qty) || 0))));
+    setQtyDialogOpen(true);
+  }, [selectedLine]);
+
+  const openPriceDialog = React.useCallback(() => {
+    if (!selectedLine) return;
+    setPriceDraft(String(Math.max(0, Number(selectedLine.unitPrice) || 0)));
+    setPriceDialogOpen(true);
+  }, [selectedLine]);
+
+  const closeQtyDialog = React.useCallback(() => setQtyDialogOpen(false), []);
+  const closePriceDialog = React.useCallback(() => setPriceDialogOpen(false), []);
+
+  const saveQty = React.useCallback(() => {
+    if (!selectedLine) return;
+    setQty(selectedLine.id, Math.max(0, Math.floor(Number(qtyDraft) || 0)));
+    setQtyDialogOpen(false);
+  }, [selectedLine, qtyDraft, setQty]);
+
+  const savePrice = React.useCallback(() => {
+    if (!selectedLine) return;
+    setUnitPrice(selectedLine.id, Math.max(0, Number(priceDraft) || 0));
+    setPriceDialogOpen(false);
+  }, [selectedLine, priceDraft, setUnitPrice]);
 
   const pricingPayload = React.useMemo(() => ({
     type: 'sale',
@@ -32,127 +97,184 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
   const { totals } = computeReceiptTotals(pricingPayload);
 
   return (
-    <Stack spacing={2} sx={{ pb: { xs: '96px', sm: 0 } }}>
-      <Box sx={{ width: '100%', overflowX: 'hidden' }}>
-        <Table
-          size="small"
-          stickyHeader
+    <Stack spacing={2} sx={{ pb: { xs: showTotals ? '96px' : '140px', sm: 0 } }}>
+      {showEditor ? (
+        <Box
           sx={{
-            width: '100%',
-            tableLayout: 'fixed',
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '1fr 260px' },
+            // Mobile: editor above table. Desktop: editor on the right.
+            gridTemplateAreas: { xs: '"editor" "table"', md: '"table editor"' },
+            gap: 2,
+            alignItems: 'start',
           }}
         >
-          <TableHead>
-            <TableRow>
-              <TableCell>{t('common.product')}</TableCell>
-              <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('common.variant')}</TableCell>
-              <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('pos.onHand')}</TableCell>
-              <TableCell align="right" sx={{ width: 72 }}>{t('common.qty')}</TableCell>
-              <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('pos.unitPrice')}</TableCell>
-              <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('common.discount')}</TableCell>
-              <TableCell align="right" sx={{ width: 96 }}>{t('cart.lineTotal')}</TableCell>
-              <TableCell align="right" sx={{ width: 64 }}>{t('common.actions')}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {items.length === 0 && (
+          {/* Editor sidebar */}
+          <Box
+            sx={{
+              gridArea: 'editor',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 2,
+              p: 1.5,
+              position: { md: 'sticky' },
+              top: { md: 8 },
+            }}
+          >
+            <Stack spacing={1}>
+              <Button fullWidth variant="contained" onClick={openQtyDialog} disabled={!selectedLine}>
+                {t('common.qty')}
+              </Button>
+              <Button fullWidth variant="outlined" onClick={openPriceDialog} disabled={!selectedLine}>
+                {t('pos.unitPrice')}
+              </Button>
+            </Stack>
+          </Box>
+
+          {/* Cart table */}
+          <Box sx={{ width: '100%', overflowX: 'hidden', gridArea: 'table' }}>
+          <Table
+            size="small"
+            stickyHeader
+            sx={{
+              width: '100%',
+              tableLayout: 'fixed',
+            }}
+          >
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={8}>
-                  <Typography color="text.secondary" sx={{ py: 2 }}>{t('cart.empty')}</Typography>
-                </TableCell>
+                <TableCell>{t('common.product')}</TableCell>
+                <TableCell align="right" sx={{ width: 72 }}>{t('common.qty')}</TableCell>
+                <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('pos.unitPrice')}</TableCell>
+                <TableCell align="right" sx={{ width: 96 }}>{t('cart.lineTotal')}</TableCell>
+                <TableCell align="right" sx={{ width: 64 }}>{t('common.actions')}</TableCell>
               </TableRow>
-            )}
-            {items.map((l) => {
-              const { line, lineDiscount, net } = computeLine({ qty: l.qty, unit: l.unitPrice, discount: l.discount });
-              const over = l.qty > l.onHand;
-              return (
-                <TableRow key={l.id} hover>
-                  <TableCell sx={{ overflow: 'hidden' }}>
-                    <Typography fontWeight={600} noWrap title={l.code}>{l.code}</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{l.localCode || '\u00A0'}</Typography>
-                  </TableCell>
-                  <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                    <Typography variant="body2">{l.size} / {l.color}</Typography>
-                    <Typography variant="caption" color="text.secondary">{l.companyName}</Typography>
-                  </TableCell>
-                  <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{formatNumber(l.onHand)}</TableCell>
-                  <TableCell align="right" sx={{ width: 72 }}>
-                    {isXs ? (
-                      <Stack direction="column" spacing={0} alignItems="center" justifyContent="center">
-                        <IconButton size="small" onClick={() => inc(l.id)} aria-label="Increase">
-                          <AddIcon fontSize="small" />
-                        </IconButton>
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            width: 28,
-                            textAlign: 'center',
-                            color: over ? 'error.main' : 'inherit',
-                            fontWeight: 600,
-                            lineHeight: 1.2,
-                          }}
-                          title={over ? t('cart.overOnHand') : undefined}
-                        >
-                          {formatNumber(l.qty)}
-                        </Typography>
-                        <IconButton size="small" onClick={() => dec(l.id)} disabled={l.qty <= 0} aria-label="Decrease">
-                          <RemoveIcon fontSize="small" />
-                        </IconButton>
-                      </Stack>
-                    ) : (
-                      <Stack direction="row" spacing={0.5} justifyContent="flex-end" alignItems="center">
-                        <IconButton size="small" onClick={() => dec(l.id)} disabled={l.qty <= 0}><RemoveIcon fontSize="small" /></IconButton>
-                        <TextField
-                          size="small"
-                          type="number"
-                          value={l.qty}
-                          onChange={(e) => setQty(l.id, e.target.value)}
-                          inputProps={{ min: 0, step: 1, style: { width: 56, textAlign: 'end' } }}
-                          error={over}
-                          helperText={over ? t('cart.overOnHand') : ''}
-                        />
-                        <IconButton size="small" onClick={() => inc(l.id)}><AddIcon fontSize="small" /></IconButton>
-                      </Stack>
-                    )}
-                  </TableCell>
-                  <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                      <TextField
-                      size="small"
-                      type="number"
-                      value={l.unitPrice}
-                      onChange={(e) => setUnitPrice(l.id, e.target.value)}
-                        inputProps={{ min: 0, step: '0.01', style: { width: 96, textAlign: 'end' } }}
-                    />
-                  </TableCell>
-                  <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <Select size="small" value={l.discount?.mode || 'amount'} onChange={(e) => setDiscount(l.id, { mode: e.target.value })}>
-                        <MenuItem value="amount">{t('discount.amount')}</MenuItem>
-                        <MenuItem value="percent">{t('discount.percent')}</MenuItem>
-                      </Select>
-                      <TextField
-                        size="small"
-                        type="number"
-                        value={l.discount?.value || 0}
-                        onChange={(e) => setDiscount(l.id, { value: Math.max(0, Number(e.target.value) || 0) })}
-                        inputProps={{ min: 0, step: '0.01', style: { width: 96 } }}
-                      />
-                    </Stack>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Tooltip title={`${t('cart.line')}: ${formatNumber(line, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} • ${t('cart.itemDisc')}: ${formatNumber(lineDiscount, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}>
-                      <span>{formatNumber(net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton color="error" onClick={() => removeLine(l.id)}><DeleteIcon /></IconButton>
+            </TableHead>
+            <TableBody>
+              {items.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5}>
+                    <Typography color="text.secondary" sx={{ py: 2 }}>{t('cart.empty')}</Typography>
                   </TableCell>
                 </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </Box>
+              )}
+              {items.map((l) => {
+                const { net } = computeLine({ qty: l.qty, unit: l.unitPrice, discount: l.discount });
+                return (
+                  <TableRow
+                    key={l.id}
+                    hover
+                    selected={selectedLineId === l.id}
+                    onClick={() => onSelectLineId(l.id)}
+                    sx={{
+                      cursor: 'pointer',
+                      '&.Mui-selected': { bgcolor: 'action.selected' },
+                      '&.Mui-selected:hover': { bgcolor: 'action.selected' },
+                    }}
+                  >
+                    <TableCell sx={{ overflow: 'hidden' }}>
+                      <Typography fontWeight={600} noWrap title={l.code}>{l.code}</Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{l.localCode || '\u00A0'}</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                        {l.size} / {l.color} • {l.companyName}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right" sx={{ width: 72 }}>
+                      <Typography fontWeight={600}>{formatNumber(l.qty)}</Typography>
+                    </TableCell>
+                    <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
+                      {formatNumber(l.unitPrice, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </TableCell>
+                    <TableCell align="right">
+                      {formatNumber(net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        color="error"
+                        onClick={(e) => { e.stopPropagation(); handleRemoveLine(l.id); }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+          </Box>
+        </Box>
+      ) : (
+        <Box sx={{ width: '100%', overflowX: 'hidden' }}>
+          <Table
+            size="small"
+            stickyHeader
+            sx={{
+              width: '100%',
+              tableLayout: 'fixed',
+            }}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell>{t('common.product')}</TableCell>
+                <TableCell align="right" sx={{ width: 72 }}>{t('common.qty')}</TableCell>
+                <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('pos.unitPrice')}</TableCell>
+                <TableCell align="right" sx={{ width: 96 }}>{t('cart.lineTotal')}</TableCell>
+                <TableCell align="right" sx={{ width: 64 }}>{t('common.actions')}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {items.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5}>
+                    <Typography color="text.secondary" sx={{ py: 2 }}>{t('cart.empty')}</Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+              {items.map((l) => {
+                const { net } = computeLine({ qty: l.qty, unit: l.unitPrice, discount: l.discount });
+                return (
+                  <TableRow
+                    key={l.id}
+                    hover
+                    selected={selectedLineId === l.id}
+                    onClick={() => onSelectLineId(l.id)}
+                    sx={{
+                      cursor: 'pointer',
+                      '&.Mui-selected': { bgcolor: 'action.selected' },
+                      '&.Mui-selected:hover': { bgcolor: 'action.selected' },
+                    }}
+                  >
+                    <TableCell sx={{ overflow: 'hidden' }}>
+                      <Typography fontWeight={600} noWrap title={l.code}>{l.code}</Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{l.localCode || '\u00A0'}</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                        {l.size} / {l.color} • {l.companyName}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right" sx={{ width: 72 }}>
+                      <Typography fontWeight={600}>{formatNumber(l.qty)}</Typography>
+                    </TableCell>
+                    <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
+                      {formatNumber(l.unitPrice, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </TableCell>
+                    <TableCell align="right">
+                      {formatNumber(net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        color="error"
+                        onClick={(e) => { e.stopPropagation(); handleRemoveLine(l.id); }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Box>
+      )}
       {/* Bill-level modifiers */}
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ xs: 'stretch', sm: 'center' }}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center" sx={{ flexGrow: 1 }}>
@@ -191,13 +313,55 @@ export default function CartView({ items, inc, dec, setQty, setUnitPrice, setDis
       </Stack>
 
       {/* Totals */}
-      <Stack spacing={0.5} alignItems="flex-end">
-        <Typography>{t('receipt.subtotal')}: {formatNumber(totals.itemSubtotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-        <Typography>{t('receipt.itemDiscounts')}: −{formatNumber(totals.itemDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-        <Typography>{t('receipt.billDiscount')}: −{formatNumber(totals.billDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-        <Typography>{t('receipt.tax')} ({formatNumber(totals.taxPercent)}%): {formatNumber(totals.taxTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-        <Typography variant="h6">{t('receipt.grandTotal')}: {formatNumber(totals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-      </Stack>
+      {showTotals && (
+        <Stack spacing={0.5} alignItems="flex-end">
+          <Typography>{t('receipt.subtotal')}: {formatNumber(totals.itemSubtotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+          <Typography>{t('receipt.billDiscount')}: −{formatNumber(totals.billDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+          <Typography>{t('receipt.tax')} ({formatNumber(totals.taxPercent)}%): {formatNumber(totals.taxTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+          <Typography variant="h6">{t('receipt.grandTotal')}: {formatNumber(totals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+        </Stack>
+      )}
+
+      {/* Edit dialogs */}
+      <Dialog open={qtyDialogOpen} onClose={closeQtyDialog} fullWidth maxWidth="xs">
+        <DialogTitle>{t('common.qty')}</DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            fullWidth
+            autoFocus
+            margin="dense"
+            label={t('common.qty')}
+            type="number"
+            value={qtyDraft}
+            onChange={(e) => setQtyDraft(e.target.value)}
+            inputProps={{ min: 0, step: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeQtyDialog}>{t('common.cancel')}</Button>
+          <Button variant="contained" onClick={saveQty} disabled={!selectedLine}>{t('common.save')}</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={priceDialogOpen} onClose={closePriceDialog} fullWidth maxWidth="xs">
+        <DialogTitle>{t('pos.unitPrice')}</DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            fullWidth
+            autoFocus
+            margin="dense"
+            label={t('pos.unitPrice')}
+            type="number"
+            value={priceDraft}
+            onChange={(e) => setPriceDraft(e.target.value)}
+            inputProps={{ min: 0, step: '0.01' }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closePriceDialog}>{t('common.cancel')}</Button>
+          <Button variant="contained" onClick={savePrice} disabled={!selectedLine}>{t('common.save')}</Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   );
 }
