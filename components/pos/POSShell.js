@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip, Button, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip, Button, ToggleButtonGroup, ToggleButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import Link from 'next/link';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import WifiIcon from '@mui/icons-material/Wifi';
@@ -63,6 +63,50 @@ export default function POSShell() {
   // Bill-level modifiers state
   const [billDiscount, setBillDiscount] = React.useState({ mode: 'amount', value: 0 });
   const [taxPercent, setTaxPercent] = React.useState(0);
+
+  // Cart row selection + editor dialogs (POS)
+  const [selectedLineId, setSelectedLineId] = React.useState(null);
+  const selectedLine = React.useMemo(
+    () => cart.items.find((l) => l.id === selectedLineId) || null,
+    [cart.items, selectedLineId],
+  );
+  React.useEffect(() => {
+    if (selectedLineId && !cart.items.some((l) => l.id === selectedLineId)) {
+      setSelectedLineId(null);
+    }
+  }, [cart.items, selectedLineId]);
+
+  const [qtyDialogOpen, setQtyDialogOpen] = React.useState(false);
+  const [priceDialogOpen, setPriceDialogOpen] = React.useState(false);
+  const [qtyDraft, setQtyDraft] = React.useState('');
+  const [priceDraft, setPriceDraft] = React.useState('');
+
+  const openQtyDialog = React.useCallback(() => {
+    if (!selectedLine) return;
+    setQtyDraft(String(Math.max(0, Math.floor(Number(selectedLine.qty) || 0))));
+    setQtyDialogOpen(true);
+  }, [selectedLine]);
+
+  const openPriceDialog = React.useCallback(() => {
+    if (!selectedLine) return;
+    setPriceDraft(String(Math.max(0, Number(selectedLine.unitPrice) || 0)));
+    setPriceDialogOpen(true);
+  }, [selectedLine]);
+
+  const closeQtyDialog = React.useCallback(() => setQtyDialogOpen(false), []);
+  const closePriceDialog = React.useCallback(() => setPriceDialogOpen(false), []);
+
+  const saveQty = React.useCallback(() => {
+    if (!selectedLine) return;
+    cart.setQty(selectedLine.id, Math.max(0, Math.floor(Number(qtyDraft) || 0)));
+    setQtyDialogOpen(false);
+  }, [cart, selectedLine, qtyDraft]);
+
+  const savePrice = React.useCallback(() => {
+    if (!selectedLine) return;
+    cart.setUnitPrice(selectedLine.id, Math.max(0, Number(priceDraft) || 0));
+    setPriceDialogOpen(false);
+  }, [cart, selectedLine, priceDraft]);
 
   // Checkout state
   const [checkingOut, setCheckingOut] = React.useState(false);
@@ -253,47 +297,59 @@ export default function POSShell() {
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ px: { xs: 1, sm: 2 }, py: 1, flex: 1, width: '100%', maxWidth: '100%', display: 'grid', gridTemplateColumns: '1fr', gap: 2, pb: { xs: '96px', sm: 0 } }}>
-        <Box sx={{ height: { xs: 'auto', sm: '100%' } }}>
-          <Paper sx={{ p: 2, height: { xs: 'auto', sm: '100%' }, display: 'flex', flexDirection: 'column', mb: { xs: 6, sm: 0 }, ...(cart.mode === 'sale_return' ? { border: '1px solid', borderColor: 'warning.main', bgcolor: 'warning.light' } : {}) }}>
-            <Typography variant="h6" gutterBottom>
-              {t('pos.sale')}
-            </Typography>
-            <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
-              {!success ? (
-                <POSCatalog onPickVariant={handlePickVariant} isReturnMode={cart.mode === 'sale_return'} />
-              ) : (
-                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>
-                  {success?.receipt?.status === 'pending' ? t('pos.salePendingMsg') : t('pos.saleCompletedMsg')}
-                </Box>
-              )}
-            </Stack>
-          </Paper>
-        </Box>
-        <Box sx={{ height: { xs: 'auto', sm: '100%' } }}>
+      <Box
+        sx={{
+          px: { xs: 1, sm: 2 },
+          py: 1,
+          flex: 1,
+          width: '100%',
+          maxWidth: '100%',
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: (!success ? '1fr 220px' : '1fr') },
+          gap: 2,
+          pb: { xs: '96px', sm: 0 },
+        }}
+      >
+        <Box sx={{ height: { xs: 'auto', sm: '100%' }, gridColumn: 1, gridRow: 1 }}>
           <Paper sx={{ p: 2, height: { xs: 'auto', sm: '100%' }, display: 'flex', flexDirection: 'column', mb: { xs: 6, sm: 0 } }}>
             <Typography variant="h6" gutterBottom>
               {success ? t('pos.receipt') : (cart.mode === 'sale_return' ? t('cart.returnCart') : t('cart.title'))}
             </Typography>
             {!success && (
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                <Button size="small" variant="outlined" onClick={() => setCustomerOpen(true)}>
-                  {cart.customer ? t('pos.changeCustomer') : t('pos.selectCustomer')}
-                </Button>
-                {cart.customer && (
-                  <>
-                    <Typography variant="body2" sx={{ flex: 1 }}>
-                      {cart.customer.name || t('common.noName')} • {cart.customer.phone}
-                    </Typography>
-                    <Button size="small" onClick={() => cart.clearCustomer()}>{t('common.clear')}</Button>
-                  </>
-                )}
+              <Stack spacing={1} sx={{ mb: 1 }}>
+                <Stack
+                  direction={{ xs: 'column', sm: 'row' }}
+                  spacing={1}
+                  alignItems={{ xs: 'stretch', sm: 'center' }}
+                >
+                  <Stack direction="row" spacing={1} alignItems="center" sx={{ flexShrink: 0 }}>
+                    <Button size="small" variant="outlined" onClick={() => setCustomerOpen(true)}>
+                      {cart.customer ? t('pos.changeCustomer') : t('pos.selectCustomer')}
+                    </Button>
+                    {cart.customer && (
+                      <>
+                        <Typography variant="body2" sx={{ flex: 1 }}>
+                          {cart.customer.name || t('common.noName')} • {cart.customer.phone}
+                        </Typography>
+                        <Button size="small" onClick={() => cart.clearCustomer()}>{t('common.clear')}</Button>
+                      </>
+                    )}
+                  </Stack>
+                  <Box sx={{ flex: 1, minWidth: 220 }}>
+                    {/* Embedded product search (dropdown suggestions) */}
+                    <POSCatalog onPickVariant={handlePickVariant} isReturnMode={cart.mode === 'sale_return'} compact />
+                  </Box>
+                </Stack>
               </Stack>
             )}
             <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
               {!success ? (
                 <CartView
                   {...cart}
+                  showEditor={false}
+                  showTotals={false}
+                  selectedLineId={selectedLineId}
+                  onSelectLineId={setSelectedLineId}
                   billDiscount={billDiscount}
                   setBillDiscount={setBillDiscount}
                   taxPercent={taxPercent}
@@ -306,38 +362,105 @@ export default function POSShell() {
             {!success && null}
           </Paper>
         </Box>
+
+        {/* POS cart editor sidebar (outside the cart panel) */}
+        {!success && (
+          <Box
+            sx={{
+              gridColumn: { xs: 1, md: 2 },
+              gridRow: { xs: 2, md: 1 },
+              alignSelf: 'start',
+              position: { md: 'sticky' },
+              top: { md: 8 },
+            }}
+          >
+            <Paper sx={{ p: 2 }}>
+              <Stack spacing={1}>
+                <Button fullWidth variant="contained" onClick={openQtyDialog} disabled={!selectedLine}>
+                  {t('common.qty')}
+                </Button>
+                <Button fullWidth variant="outlined" onClick={openPriceDialog} disabled={!selectedLine}>
+                  {t('pos.unitPrice')}
+                </Button>
+              </Stack>
+            </Paper>
+          </Box>
+        )}
       </Box>
       {!success && (
         <ResponsiveActionsBar>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            alignItems={{ xs: 'stretch', sm: 'center' }}
-            justifyContent="space-between"
-          >
-            <ToggleButtonGroup
-              size="small"
-              exclusive
-              value={cart.mode}
-              onChange={(_e, val) => { if (val) cart.setMode(val); }}
+          <Stack spacing={1}>
+            {/* Sticky one-line summary */}
+            <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between" sx={{ minWidth: 0 }}>
+              <Stack
+                direction="row"
+                spacing={2}
+                alignItems="center"
+                sx={{ flex: 1, minWidth: 0, overflowX: 'auto', pr: 1, whiteSpace: 'nowrap' }}
+              >
+                <Typography variant="body2" noWrap>
+                  {t('receipt.subtotal')}: {formatNumber(clientTotals.itemSubtotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </Typography>
+                <Typography variant="body2" noWrap>
+                  {t('receipt.billDiscount')}: −{formatNumber(clientTotals.billDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </Typography>
+                <Typography variant="body2" noWrap>
+                  {t('receipt.tax')} ({formatNumber(clientTotals.taxPercent)}%): {formatNumber(clientTotals.taxTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </Typography>
+              </Stack>
+              <Box
+                sx={{
+                  flexShrink: 0,
+                  bgcolor: 'common.black',
+                  color: 'common.white',
+                  px: 2,
+                  py: 0.75,
+                  borderRadius: 1.5,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                <Typography variant="caption" sx={{ opacity: 0.9 }} noWrap>
+                  {t('receipt.grandTotal')}
+                </Typography>
+                <Typography variant="subtitle1" fontWeight={800} noWrap>
+                  {formatNumber(clientTotals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </Typography>
+              </Box>
+            </Stack>
+
+            {/* Existing actions */}
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={2}
+              alignItems={{ xs: 'stretch', sm: 'center' }}
+              justifyContent="space-between"
             >
-              <ToggleButton value="sale">
-                {t('pos.sale')}
-              </ToggleButton>
-              <ToggleButton value="sale_return">
-                {t('pos.return')}
-              </ToggleButton>
-            </ToggleButtonGroup>
-            <Button
-              variant={(!canCheckout || submitting) ? 'outlined' : 'contained'}
-              color={cart.mode === 'sale_return' ? 'warning' : 'secondary'}
-              disabled={!canCheckout || submitting}
-              onClick={() => setCheckingOut(true)}
-              title={!cashbox.open ? t('cashbox.openCashbox') : undefined}
-              sx={{ minWidth: 180 }}
-            >
-              {t('pos.checkout')}
-            </Button>
+              <ToggleButtonGroup
+                size="small"
+                exclusive
+                value={cart.mode}
+                onChange={(_e, val) => { if (val) cart.setMode(val); }}
+              >
+                <ToggleButton value="sale">
+                  {t('pos.sale')}
+                </ToggleButton>
+                <ToggleButton value="sale_return">
+                  {t('pos.return')}
+                </ToggleButton>
+              </ToggleButtonGroup>
+              <Button
+                variant={(!canCheckout || submitting) ? 'outlined' : 'contained'}
+                color={cart.mode === 'sale_return' ? 'warning' : 'secondary'}
+                disabled={!canCheckout || submitting}
+                onClick={() => setCheckingOut(true)}
+                title={!cashbox.open ? t('cashbox.openCashbox') : undefined}
+                sx={{ minWidth: 180 }}
+              >
+                {t('pos.checkout')}
+              </Button>
+            </Stack>
           </Stack>
         </ResponsiveActionsBar>
       )}
@@ -349,6 +472,48 @@ export default function POSShell() {
         isReturn={cart.mode === 'sale_return'}
         initialContact={cart.customer || undefined}
       />
+
+      {/* Cart editor dialogs */}
+      <Dialog open={qtyDialogOpen} onClose={closeQtyDialog} fullWidth maxWidth="xs">
+        <DialogTitle>{t('common.qty')}</DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            fullWidth
+            autoFocus
+            margin="dense"
+            label={t('common.qty')}
+            type="number"
+            value={qtyDraft}
+            onChange={(e) => setQtyDraft(e.target.value)}
+            inputProps={{ min: 0, step: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeQtyDialog}>{t('common.cancel')}</Button>
+          <Button variant="contained" onClick={saveQty} disabled={!selectedLine}>{t('common.save')}</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={priceDialogOpen} onClose={closePriceDialog} fullWidth maxWidth="xs">
+        <DialogTitle>{t('pos.unitPrice')}</DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            fullWidth
+            autoFocus
+            margin="dense"
+            label={t('pos.unitPrice')}
+            type="number"
+            value={priceDraft}
+            onChange={(e) => setPriceDraft(e.target.value)}
+            inputProps={{ min: 0, step: '0.01' }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closePriceDialog}>{t('common.cancel')}</Button>
+          <Button variant="contained" onClick={savePrice} disabled={!selectedLine}>{t('common.save')}</Button>
+        </DialogActions>
+      </Dialog>
+
       <CustomerDialog
         open={customerOpen}
         onClose={() => setCustomerOpen(false)}
