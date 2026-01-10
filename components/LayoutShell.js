@@ -1,22 +1,26 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AppBar, Toolbar, Typography, Button, Container, Box, ToggleButtonGroup, ToggleButton, IconButton } from '@mui/material';
+import { Container, Box, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { useI18n } from '@/components/i18n/useI18n';
 import InstallPrompt from '@/components/pwa/InstallPrompt';
 import AppDrawer from '@/components/navigation/AppDrawer';
+import AppSidebar from '@/components/navigation/AppSidebar';
 
 export default function LayoutShell({ children }) {
-  const { locale, setLocale, t } = useI18n();
+  const { t } = useI18n();
   const pathname = usePathname();
   const pathSegments = (pathname || '').split('/').filter(Boolean);
   const isPOS = pathSegments.includes('pos');
   const isDelivery = pathSegments.includes('delivery');
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  const [sidebarPrefReady, setSidebarPrefReady] = React.useState(false);
+  const SIDEBAR_EXPANDED = 300;
+  const SIDEBAR_COLLAPSED = 72;
+  const desktopSidebarWidth = sidebarCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED;
 
   const [online, setOnline] = React.useState(true);
   const [mounted, setMounted] = React.useState(false);
@@ -33,93 +37,101 @@ export default function LayoutShell({ children }) {
     };
   }, []);
 
-  const handleLang = (_e, next) => {
-    if (!next || next === locale) return;
+  // Restore sidebar collapse preference
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
     try {
-      document.cookie = `lang=${next}; path=/; max-age=31536000`;
+      const raw = window.localStorage.getItem('sidebarCollapsed');
+      if (raw != null) {
+        setSidebarCollapsed(raw === '1' || raw === 'true');
+      }
     } catch {}
-    setLocale?.(next);
-  };
+    setSidebarPrefReady(true);
+  }, []);
+
+  // Persist sidebar collapse preference
+  React.useEffect(() => {
+    if (!sidebarPrefReady) return;
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem('sidebarCollapsed', sidebarCollapsed ? '1' : '0');
+    } catch {}
+  }, [sidebarCollapsed, sidebarPrefReady]);
+
   return (
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'column',
         minHeight: '100dvh',
         bgcolor: 'background.default',
         width: '100%',
         maxWidth: '100vw',
       }}
     >
-      <AppBar position="static" color="default" elevation={0} sx={{ width: '100%' }}>
-        <Toolbar sx={{ gap: 1 }}>
+      {/* Desktop sidebar */}
+      <Box
+        sx={{
+          display: { xs: 'none', md: 'block' },
+          width: desktopSidebarWidth,
+          flexShrink: 0,
+          transition: 'width 180ms ease',
+        }}
+      >
+        <AppSidebar
+          variant="permanent"
+          collapsed={sidebarCollapsed}
+          onToggleCollapsed={() => setSidebarCollapsed((v) => !v)}
+          expandedWidth={SIDEBAR_EXPANDED}
+          collapsedWidth={SIDEBAR_COLLAPSED}
+        />
+      </Box>
+
+      {/* Mobile drawer */}
+      <AppDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+
+      {/* Main content column */}
+      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+        {/* Mobile menu button (no header; doesn't take vertical space) */}
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 'calc(8px + env(safe-area-inset-top, 0px))',
+            insetInlineStart: 8,
+            zIndex: (theme) => theme.zIndex.drawer + 2,
+            display: { xs: 'block', md: 'none' },
+          }}
+        >
           <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
+            aria-label="Open navigation menu"
             onClick={() => setDrawerOpen(true)}
-            sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+            sx={{
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: 1,
+            }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" sx={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {process.env.NEXT_PUBLIC_SHOP_NAME || t('nav.appTitle')}
-          </Typography>
-          <Button component={Link} href="/" color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
-            {t('nav.home')}
-          </Button>
-          <ToggleButtonGroup size="small" exclusive value={(locale || 'en').split('-')[0]} onChange={handleLang}>
-            <ToggleButton value="en">EN</ToggleButton>
-            <ToggleButton value="ar">AR</ToggleButton>
-          </ToggleButtonGroup>
-          <SignedIn>
-            <Button component={Link} href="/dashboard" color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
-              {t('nav.dashboard')}
-            </Button>
-            <Button component={Link} href="/products" color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
-              {t('nav.products')}
-            </Button>
-            <Button component={Link} href="/companies" color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
-              {t('nav.companies')}
-            </Button>
-            <Button component={Link} href="/expenses" color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
-              {t('nav.expenses')}
-            </Button>
-            <Button component={Link} href="/receipts/new" color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
-              {t('nav.newPurchase')}
-            </Button>
-            <Button component={Link} href="/delivery/new" color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
-              {t('nav.delivery')}
-            </Button>
-            <Button component={Link} href="/pos" color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
-              {t('nav.pos')}
-            </Button>
-            <UserButton />
-          </SignedIn>
-          <SignedOut>
-            <Button component={Link} href="/sign-in" variant="outlined">
-              {t('nav.signIn')}
-            </Button>
-          </SignedOut>
-        </Toolbar>
-      </AppBar>
-      {mounted && !online && (
-        <Box sx={{ bgcolor: 'warning.light', color: 'warning.contrastText', textAlign: 'center', py: 0.5 }}>
-          {t('status.offline')}
         </Box>
-      )}
-      <AppDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      {isPOS || isDelivery ? (
-        <Box component="main" sx={{ width: '100%', maxWidth: '100vw', flexGrow: 1 }}>
-          {children}
-        </Box>
-      ) : (
-        <Container component="main" maxWidth="lg" sx={{ py: 3, width: '100%' }}>
-          {children}
-        </Container>
-      )}
-      <InstallPrompt />
+        {mounted && !online && (
+          <Box sx={{ bgcolor: 'warning.light', color: 'warning.contrastText', textAlign: 'center', py: 0.5 }}>
+            {t('status.offline')}
+          </Box>
+        )}
+
+        {isPOS || isDelivery ? (
+          <Box component="main" sx={{ width: '100%', flexGrow: 1, minWidth: 0, p: 0, m: 0 }}>
+            {children}
+          </Box>
+        ) : (
+          <Container component="main" maxWidth="lg" sx={{ py: 3, width: '100%', flexGrow: 1 }}>
+            {children}
+          </Container>
+        )}
+        <InstallPrompt />
+      </Box>
     </Box>
   );
 }

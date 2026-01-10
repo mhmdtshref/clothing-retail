@@ -38,6 +38,8 @@
   "nav.companies": "الشركات",
   "nav.expenses": "المصروفات",
   "nav.newPurchase": "فاتورة شراء",
+  "nav.depositReceipts": "إيصالات العربون",
+  "nav.depositReceiptsPos": "إيصالات العربون (نقطة البيع)",
   "nav.delivery": "التسليم",
   "nav.pos": "نقطة البيع",
   "nav.signIn": "تسجيل الدخول",

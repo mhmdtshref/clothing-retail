@@ -1,19 +1,33 @@
 export const runtime = 'nodejs';
 
+import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import mongoose from 'mongoose';
 import { connectToDB } from '@/lib/mongoose';
 import ExpenseCategory from '@/models/expense-category';
 import { ExpenseCategoryUpdateSchema } from '@/lib/validators/expense-category';
+import { makeExpenseCategorySlug } from '@/lib/slug/expenseCategorySlug';
 
-function slugify(input) {
-  return String(input)
-    .toLowerCase()
-    .trim()
-    .replace(/['"]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+async function ensureUniqueSlugForUpdate({ name, excludeId }) {
+  const base = makeExpenseCategorySlug(name);
+  let slug = base;
+  let i = 1;
+
+  while (await ExpenseCategory.exists({ _id: { $ne: excludeId }, slug })) {
+    i += 1;
+    if (i <= 20) {
+      const suffix = `-${i}`;
+      slug = `${base.slice(0, Math.max(1, 140 - suffix.length))}${suffix}`;
+      continue;
+    }
+
+    const rand = crypto.randomUUID().split('-')[0]; // 8 chars
+    const suffix = `-${rand}`;
+    slug = `${base.slice(0, Math.max(1, 140 - suffix.length))}${suffix}`;
+  }
+
+  return slug;
 }
 
 export async function PATCH(req, context) {
@@ -38,29 +52,22 @@ export async function PATCH(req, context) {
   }
 
   const update = { ...parsed.data };
-  if (typeof update.name === 'string' && update.name.trim().length > 0) {
-    update.slug = slugify(update.name);
-  }
+  const nextName = typeof update.name === 'string' && update.name.trim().length > 0 ? update.name.trim() : null;
 
   try {
     await connectToDB();
 
-    if (update.name || update.slug) {
-      const conflict = await ExpenseCategory.findOne({
-        _id: { $ne: id },
-        $or: [
-          ...(update.name ? [{ name: update.name }] : []),
-          ...(update.slug ? [{ slug: update.slug }] : []),
-        ],
-      })
-        .lean()
-        .exec();
-      if (conflict) {
+    if (nextName) {
+      const conflictName = await ExpenseCategory.findOne({ _id: { $ne: id }, name: nextName }).lean().exec();
+      if (conflictName) {
         return NextResponse.json(
           { error: 'Conflict', message: 'Category name already exists.' },
           { status: 409 },
         );
       }
+
+      update.name = nextName;
+      update.slug = await ensureUniqueSlugForUpdate({ name: nextName, excludeId: id });
     }
 
     const doc = await ExpenseCategory.findByIdAndUpdate(id, update, { new: true, runValidators: true }).lean();

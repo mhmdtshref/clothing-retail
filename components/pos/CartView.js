@@ -28,6 +28,10 @@ export default function CartView({
   onSelectLineId: onSelectLineIdProp,
   showEditor = true,
   showTotals = true,
+  showBillDiscountControls = true,
+  showTaxPercent = true,
+  scrollTable = false,
+  disableBottomPadding = false,
 }) {
   const { t, formatNumber } = useI18n();
   // Allow selection to be controlled by a parent (e.g. POS page sidebar editor).
@@ -97,7 +101,13 @@ export default function CartView({
   const { totals } = computeReceiptTotals(pricingPayload);
 
   return (
-    <Stack spacing={2} sx={{ pb: { xs: showTotals ? '96px' : '140px', sm: 0 } }}>
+    <Stack
+      spacing={2}
+      sx={{
+        pb: disableBottomPadding ? 0 : { xs: showTotals ? '96px' : '140px', sm: 0 },
+        ...(scrollTable ? { flex: 1, minHeight: 0 } : null),
+      }}
+    >
       {showEditor ? (
         <Box
           sx={{
@@ -204,7 +214,13 @@ export default function CartView({
           </Box>
         </Box>
       ) : (
-        <Box sx={{ width: '100%', overflowX: 'hidden' }}>
+        <Box
+          sx={{
+            width: '100%',
+            overflowX: 'hidden',
+            ...(scrollTable ? { flex: 1, minHeight: 0, overflowY: 'auto' } : null),
+          }}
+        >
           <Table
             size="small"
             stickyHeader
@@ -277,38 +293,46 @@ export default function CartView({
       )}
       {/* Bill-level modifiers */}
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ xs: 'stretch', sm: 'center' }}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center" sx={{ flexGrow: 1 }}>
-          <Select
-            size="small"
-            value={billDiscount.mode}
-            onChange={(e) => setBillDiscount((d) => ({ ...d, mode: e.target.value }))}
-            sx={{ width: { xs: '100%', sm: 140 } }}
-            fullWidth
-          >
-            <MenuItem value="amount">{t('discount.amount')}</MenuItem>
-            <MenuItem value="percent">{t('discount.percent')}</MenuItem>
-          </Select>
-          <TextField
-            size="small"
-            label={t('checkout.billDiscount')}
-            type="number"
-            value={billDiscount.value}
-            onChange={(e) => setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value) || 0) }))}
-            inputProps={{ min: 0, step: '0.01' }}
-            sx={{ width: { xs: '100%', sm: 160 } }}
-            fullWidth
-          />
-          <TextField
-            size="small"
-            label={t('checkout.taxPercent')}
-            type="number"
-            value={taxPercent}
-            onChange={(e) => setTaxPercent(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
-            inputProps={{ min: 0, max: 100, step: '0.01' }}
-            sx={{ width: { xs: '100%', sm: 160 } }}
-            fullWidth
-          />
-        </Stack>
+        {(showBillDiscountControls || showTaxPercent) && (
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center" sx={{ flexGrow: 1 }}>
+            {showBillDiscountControls && (
+              <Select
+                size="small"
+                value={billDiscount.mode}
+                onChange={(e) => setBillDiscount((d) => ({ ...d, mode: e.target.value }))}
+                sx={{ width: { xs: '100%', sm: 140 } }}
+                fullWidth
+              >
+                <MenuItem value="amount">{t('discount.amount')}</MenuItem>
+                <MenuItem value="percent">{t('discount.percent')}</MenuItem>
+              </Select>
+            )}
+            {showBillDiscountControls && (
+              <TextField
+                size="small"
+                label={t('checkout.billDiscount')}
+                type="number"
+                value={billDiscount.value}
+                onChange={(e) => setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value) || 0) }))}
+                inputProps={{ min: 0, step: '0.01' }}
+                sx={{ width: { xs: '100%', sm: 160 } }}
+                fullWidth
+              />
+            )}
+            {showTaxPercent && (
+              <TextField
+                size="small"
+                label={t('checkout.taxPercent')}
+                type="number"
+                value={taxPercent}
+                onChange={(e) => setTaxPercent(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
+                inputProps={{ min: 0, max: 100, step: '0.01' }}
+                sx={{ width: { xs: '100%', sm: 160 } }}
+                fullWidth
+              />
+            )}
+          </Stack>
+        )}
         <Button startIcon={<ClearAllIcon />} variant="outlined" color="warning" onClick={clear} disabled={items.length === 0}>{t('cart.clearCart')}</Button>
       </Stack>
 

@@ -38,6 +38,8 @@
   "nav.companies": "Companies",
   "nav.expenses": "Expenses",
   "nav.newPurchase": "New Purchase",
+  "nav.depositReceipts": "Deposit Receipts",
+  "nav.depositReceiptsPos": "Deposit Receipts (POS)",
   "nav.delivery": "Delivery",
   "nav.pos": "POS",
   "nav.signIn": "Sign in",

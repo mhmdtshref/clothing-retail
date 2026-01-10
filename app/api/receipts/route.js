@@ -8,6 +8,7 @@ import { connectToDB } from '@/lib/mongoose';
 import Product from '@/models/product';
 import Variant from '@/models/variant';
 import Company from '@/models/company';
+import Customer from '@/models/customer';
 import Receipt from '@/models/receipt';
 import CashboxSession from '@/models/cashboxSession';
 import CashMovement from '@/models/cashMovement';
@@ -91,8 +92,18 @@ export async function GET(req) {
               },
             },
             {
+              $lookup: {
+                from: Customer.collection.name,
+                localField: 'customerId',
+                foreignField: '_id',
+                as: 'customer',
+              },
+            },
+            {
               $addFields: {
                 companyName: { $ifNull: [{ $arrayElemAt: ['$company.name', 0] }, ''] },
+                customerName: { $ifNull: [{ $arrayElemAt: ['$customer.name', 0] }, ''] },
+                customerPhone: { $ifNull: [{ $arrayElemAt: ['$customer.phone', 0] }, ''] },
               },
             },
             {
@@ -103,6 +114,9 @@ export async function GET(req) {
                 status: 1,
                 companyId: 1,
                 companyName: 1,
+                customerId: 1,
+                customerName: 1,
+                customerPhone: 1,
                 type: 1,
                 items: 1,
                 billDiscount: 1,
@@ -148,6 +162,9 @@ export async function GET(req) {
         status: r.status,
         type: r.type,
         company: { id: r.companyId, name: r.companyName },
+        customer: r.customerId
+          ? { id: r.customerId, name: r.customerName || '', phone: r.customerPhone || '' }
+          : null,
         itemCount: Array.isArray(r.items) ? r.items.length : 0,
         grandTotal: totals.grandTotal,
         paidTotal,

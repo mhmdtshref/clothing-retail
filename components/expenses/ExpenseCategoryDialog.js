@@ -8,7 +8,6 @@ export default function ExpenseCategoryDialog({ open, onClose, onSaved, initialV
   const { t } = useI18n();
   const [name, setName] = React.useState(initialValue?.name || '');
   const [active, setActive] = React.useState(initialValue?.active ?? true);
-  const [sortOrder, setSortOrder] = React.useState(initialValue?.sortOrder ?? 0);
   const [submitting, setSubmitting] = React.useState(false);
 
   const isEdit = Boolean(initialValue && initialValue._id);
@@ -17,7 +16,6 @@ export default function ExpenseCategoryDialog({ open, onClose, onSaved, initialV
     if (open) {
       setName(initialValue?.name || '');
       setActive(initialValue?.active ?? true);
-      setSortOrder(initialValue?.sortOrder ?? 0);
     }
   }, [open, initialValue]);
 
@@ -25,7 +23,7 @@ export default function ExpenseCategoryDialog({ open, onClose, onSaved, initialV
     if (!name.trim()) return;
     setSubmitting(true);
     try {
-      const payload = { name: name.trim(), active, sortOrder: Number(sortOrder || 0) };
+      const payload = { name: name.trim(), active };
       const url = isEdit ? `/api/expense-categories/${initialValue._id}` : '/api/expense-categories';
       const method = isEdit ? 'PATCH' : 'POST';
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -45,7 +43,6 @@ export default function ExpenseCategoryDialog({ open, onClose, onSaved, initialV
       <DialogContent dividers>
         <Stack spacing={2} sx={{ mt: 1 }}>
           <TextField label={t('common.name')} value={name} onChange={(e) => setName(e.target.value)} />
-          <TextField label={t('expenses.sortOrder')} type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} inputProps={{ min: 0 }} />
           <FormControlLabel control={<Switch checked={active} onChange={(e) => setActive(e.target.checked)} />} label={t('status.active')} />
         </Stack>
       </DialogContent>

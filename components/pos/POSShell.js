@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip, Button, ToggleButtonGroup, ToggleButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip, Button, ToggleButtonGroup, ToggleButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Tooltip } from '@mui/material';
 import Link from 'next/link';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import WifiIcon from '@mui/icons-material/Wifi';
@@ -21,6 +21,8 @@ import CashboxZReport from '@/components/pos/cashbox/CashboxZReport';
 import ViewCashboxDialog from '@/components/pos/cashbox/ViewCashboxDialog';
 import { enqueueReceipt } from '@/lib/offline/sync';
 import ResponsiveActionsBar from '@/components/common/ResponsiveActionsBar';
+import QtyIcon from '@/components/pos/icons/QtyIcon';
+import UnitPriceIcon from '@/components/pos/icons/UnitPriceIcon';
 
 function useClock() {
   const [now, setNow] = React.useState(() => new Date());
@@ -62,7 +64,8 @@ export default function POSShell() {
 
   // Bill-level modifiers state
   const [billDiscount, setBillDiscount] = React.useState({ mode: 'amount', value: 0 });
-  const [taxPercent, setTaxPercent] = React.useState(0);
+  const taxPercent = 0;
+  const setTaxPercent = React.useCallback(() => {}, []);
 
   // Cart row selection + editor dialogs (POS)
   const [selectedLineId, setSelectedLineId] = React.useState(null);
@@ -140,15 +143,6 @@ export default function POSShell() {
 
   const canCheckout = cashbox.open && cart.items.length > 0 && cart.items.every((l) => Number(l.qty) > 0);
 
-  // Improve disabled contrast on dark app bar
-  const disabledOnDark = {
-    '&.Mui-disabled': {
-      color: 'rgba(255,255,255,0.7) !important',
-      borderColor: 'rgba(255,255,255,0.3) !important',
-      backgroundColor: 'rgba(255,255,255,0.08) !important',
-    },
-  };
-
   const clientTotals = computeReceiptTotals({
     type: cart.mode === 'sale_return' ? 'sale_return' : 'sale',
     items: cart.items.map((l) => ({
@@ -157,7 +151,7 @@ export default function POSShell() {
       discount: l.discount && Number(l.discount.value) > 0 ? l.discount : undefined,
     })),
     billDiscount: billDiscount && Number(billDiscount.value) > 0 ? billDiscount : undefined,
-    taxPercent: Number(taxPercent) || 0,
+    taxPercent: 0,
   }).totals;
 
   async function submitSale({ method, note, reason, payMode, depositAmount }) {
@@ -185,7 +179,7 @@ export default function POSShell() {
         billDiscount: billDiscount && Number(billDiscount.value) > 0
           ? { mode: billDiscount.mode, value: Number(billDiscount.value) }
           : undefined,
-        taxPercent: Number(taxPercent) || 0,
+        taxPercent: 0,
         note: [method, note].filter(Boolean).join(' • '),
         ...(isReturn && reason ? { returnReason: reason } : {}),
         ...(customerIdToUse ? { customerId: customerIdToUse } : {}),
@@ -204,7 +198,6 @@ export default function POSShell() {
       cart.clear();
       cart.clearCustomer();
       setBillDiscount({ mode: 'amount', value: 0 });
-      setTaxPercent(0);
     } catch (e) {
       // Fallback to offline outbox for receipts (queue when offline)
       try {
@@ -220,7 +213,7 @@ export default function POSShell() {
               : undefined,
           })),
           billDiscount: billDiscount && Number(billDiscount.value) > 0 ? { mode: billDiscount.mode, value: Number(billDiscount.value) } : undefined,
-          taxPercent: Number(taxPercent) || 0,
+          taxPercent: 0,
           note: [method, note].filter(Boolean).join(' • '),
           ...(cart.mode === 'sale_return' && reason ? { returnReason: reason } : {}),
           ...(cart.customer?._id ? { customerId: cart.customer._id } : {}),
@@ -246,7 +239,7 @@ export default function POSShell() {
   // SW registration moved to a global registrar
 
   return (
-    <Box sx={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', maxWidth: '100vw', overflowX: 'hidden' }}>
+    <Box sx={{ height: '100dvh', display: 'flex', flexDirection: 'column', maxWidth: '100vw', overflow: 'hidden' }}>
       <AppBar position="static" color="primary">
         <Toolbar sx={{ gap: 1, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
           <Typography variant="h6" sx={{ flexGrow: 0 }}>
@@ -302,16 +295,18 @@ export default function POSShell() {
           px: { xs: 1, sm: 2 },
           py: 1,
           flex: 1,
+          minHeight: 0,
           width: '100%',
           maxWidth: '100%',
+          overflow: 'hidden',
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: (!success ? '1fr 220px' : '1fr') },
+          gridTemplateColumns: { xs: '1fr', md: (!success ? '1fr 96px' : '1fr') },
+          gridTemplateRows: { xs: (!success ? '1fr auto' : '1fr'), md: '1fr' },
           gap: 2,
-          pb: { xs: '96px', sm: 0 },
         }}
       >
-        <Box sx={{ height: { xs: 'auto', sm: '100%' }, gridColumn: 1, gridRow: 1 }}>
-          <Paper sx={{ p: 2, height: { xs: 'auto', sm: '100%' }, display: 'flex', flexDirection: 'column', mb: { xs: 6, sm: 0 } }}>
+        <Box sx={{ height: '100%', minHeight: 0, gridColumn: 1, gridRow: 1 }}>
+          <Paper sx={{ p: 1.5, height: '100%', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <Typography variant="h6" gutterBottom>
               {success ? t('pos.receipt') : (cart.mode === 'sale_return' ? t('cart.returnCart') : t('cart.title'))}
             </Typography>
@@ -342,7 +337,7 @@ export default function POSShell() {
                 </Stack>
               </Stack>
             )}
-            <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
+            <Stack spacing={1} sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
               {!success ? (
                 <CartView
                   {...cart}
@@ -354,6 +349,10 @@ export default function POSShell() {
                   setBillDiscount={setBillDiscount}
                   taxPercent={taxPercent}
                   setTaxPercent={setTaxPercent}
+                  showBillDiscountControls={false}
+                  showTaxPercent={false}
+                  scrollTable
+                  disableBottomPadding
                 />
               ) : (
                 <CheckoutSuccess receipt={success.receipt} totals={success.totals} paidTotal={success.paidTotal} dueTotal={success.dueTotal} onNewSale={startNewSale} />
@@ -374,94 +373,168 @@ export default function POSShell() {
               top: { md: 8 },
             }}
           >
-            <Paper sx={{ p: 2 }}>
-              <Stack spacing={1}>
-                <Button fullWidth variant="contained" onClick={openQtyDialog} disabled={!selectedLine}>
-                  {t('common.qty')}
-                </Button>
-                <Button fullWidth variant="outlined" onClick={openPriceDialog} disabled={!selectedLine}>
-                  {t('pos.unitPrice')}
-                </Button>
+            <Paper sx={{ p: 1 }}>
+              <Stack direction="column" spacing={1} alignItems="center">
+                <Tooltip title={t('common.qty')}>
+                  <Box component="span">
+                    <IconButton
+                      size="small"
+                      onClick={openQtyDialog}
+                      disabled={!selectedLine}
+                      aria-label={t('common.qty')}
+                      sx={{
+                        width: 36,
+                        height: 36,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 1.5,
+                        bgcolor: 'background.paper',
+                      }}
+                    >
+                      <QtyIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </Tooltip>
+                <Tooltip title={t('pos.unitPrice')}>
+                  <Box component="span">
+                    <IconButton
+                      size="small"
+                      onClick={openPriceDialog}
+                      disabled={!selectedLine}
+                      aria-label={t('pos.unitPrice')}
+                      sx={{
+                        width: 36,
+                        height: 36,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 1.5,
+                        bgcolor: 'background.paper',
+                      }}
+                    >
+                      <UnitPriceIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </Tooltip>
               </Stack>
             </Paper>
           </Box>
         )}
       </Box>
       {!success && (
-        <ResponsiveActionsBar>
-          <Stack spacing={1}>
-            {/* Sticky one-line summary */}
-            <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between" sx={{ minWidth: 0 }}>
+        <ResponsiveActionsBar
+          sx={{
+            py: 1,
+            px: 1.5,
+            pb: 'calc(8px + env(safe-area-inset-bottom, 0px))',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'grid',
+              // Keep the important groups next to each other; leave any extra space at the end.
+              gridTemplateColumns: 'auto 220px 1fr auto',
+              gap: 1.25,
+              alignItems: 'center',
+            }}
+          >
+            {/* Column 1: subtotal + discount controls + bill discount */}
+            <Stack spacing={0.5} sx={{ minWidth: 0 }}>
+              <Typography variant="caption" noWrap sx={{ lineHeight: 1.2 }}>
+                {t('receipt.subtotal')}: {formatNumber(clientTotals.itemSubtotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </Typography>
               <Stack
-                direction="row"
-                spacing={2}
-                alignItems="center"
-                sx={{ flex: 1, minWidth: 0, overflowX: 'auto', pr: 1, whiteSpace: 'nowrap' }}
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={0.75}
+                alignItems={{ xs: 'stretch', sm: 'center' }}
               >
-                <Typography variant="body2" noWrap>
-                  {t('receipt.subtotal')}: {formatNumber(clientTotals.itemSubtotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </Typography>
-                <Typography variant="body2" noWrap>
-                  {t('receipt.billDiscount')}: −{formatNumber(clientTotals.billDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </Typography>
-                <Typography variant="body2" noWrap>
-                  {t('receipt.tax')} ({formatNumber(clientTotals.taxPercent)}%): {formatNumber(clientTotals.taxTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </Typography>
+                <Select
+                  size="small"
+                  value={billDiscount.mode}
+                  onChange={(e) => setBillDiscount((d) => ({ ...d, mode: e.target.value }))}
+                  sx={{
+                    width: { xs: '100%', sm: 96 },
+                    height: 32,
+                    '& .MuiSelect-select': { py: 0.5, fontSize: 13 },
+                  }}
+                  fullWidth
+                >
+                  <MenuItem value="amount">{t('discount.amount')}</MenuItem>
+                  <MenuItem value="percent">{t('discount.percent')}</MenuItem>
+                </Select>
+                <TextField
+                  size="small"
+                  label={t('checkout.billDiscount')}
+                  type="number"
+                  value={billDiscount.value}
+                  onChange={(e) => setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value) || 0) }))}
+                  inputProps={{ min: 0, step: '0.01' }}
+                  sx={{
+                    width: { xs: '100%', sm: 120 },
+                    '& .MuiOutlinedInput-root': { height: 32 },
+                    '& .MuiInputBase-input': { py: 0.5, fontSize: 13 },
+                    '& .MuiInputLabel-root': { fontSize: 12 },
+                  }}
+                  fullWidth
+                />
               </Stack>
+              <Typography variant="caption" noWrap sx={{ lineHeight: 1.2 }}>
+                {t('receipt.billDiscount')}: −{formatNumber(clientTotals.billDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </Typography>
+            </Stack>
+
+            {/* Column 2: grand total (highlighted) + checkout below */}
+            <Stack spacing={0.75} sx={{ minWidth: 0 }}>
               <Box
                 sx={{
-                  flexShrink: 0,
                   bgcolor: 'common.black',
                   color: 'common.white',
-                  px: 2,
-                  py: 0.75,
+                  px: 1.5,
+                  py: 0.5,
                   borderRadius: 1.5,
                   display: 'flex',
-                  alignItems: 'center',
+                  alignItems: 'baseline',
+                  justifyContent: 'space-between',
                   gap: 1,
                 }}
               >
                 <Typography variant="caption" sx={{ opacity: 0.9 }} noWrap>
                   {t('receipt.grandTotal')}
                 </Typography>
-                <Typography variant="subtitle1" fontWeight={800} noWrap>
+                <Typography variant="subtitle1" fontWeight={900} noWrap>
                   {formatNumber(clientTotals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </Typography>
               </Box>
-            </Stack>
-
-            {/* Existing actions */}
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={2}
-              alignItems={{ xs: 'stretch', sm: 'center' }}
-              justifyContent="space-between"
-            >
-              <ToggleButtonGroup
-                size="small"
-                exclusive
-                value={cart.mode}
-                onChange={(_e, val) => { if (val) cart.setMode(val); }}
-              >
-                <ToggleButton value="sale">
-                  {t('pos.sale')}
-                </ToggleButton>
-                <ToggleButton value="sale_return">
-                  {t('pos.return')}
-                </ToggleButton>
-              </ToggleButtonGroup>
               <Button
+                fullWidth
+                size="small"
                 variant={(!canCheckout || submitting) ? 'outlined' : 'contained'}
                 color={cart.mode === 'sale_return' ? 'warning' : 'secondary'}
                 disabled={!canCheckout || submitting}
                 onClick={() => setCheckingOut(true)}
                 title={!cashbox.open ? t('cashbox.openCashbox') : undefined}
-                sx={{ minWidth: 180 }}
               >
                 {t('pos.checkout')}
               </Button>
             </Stack>
-          </Stack>
+
+            {/* Column 3: sale/return toggle */}
+            <Box sx={{ display: 'flex', justifyContent: { xs: 'stretch', md: 'flex-end' }, alignItems: 'center' }}>
+              <ToggleButtonGroup
+                size="small"
+                exclusive
+                value={cart.mode}
+                onChange={(_e, val) => { if (val) cart.setMode(val); }}
+                sx={{ width: 'auto' }}
+              >
+                <ToggleButton value="sale" sx={{ py: 0.5, px: 1.25 }}>
+                  {t('pos.sale')}
+                </ToggleButton>
+                <ToggleButton value="sale_return" sx={{ py: 0.5, px: 1.25 }}>
+                  {t('pos.return')}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          </Box>
         </ResponsiveActionsBar>
       )}
       <CheckoutDialog
