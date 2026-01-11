@@ -543,6 +543,7 @@ export default function POSShell() {
         onConfirm={submitSale}
         grandTotal={clientTotals.grandTotal}
         isReturn={cart.mode === 'sale_return'}
+        hasCustomer={Boolean(cart.customer?._id)}
         initialContact={cart.customer || undefined}
       />
 

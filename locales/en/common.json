@@ -233,6 +233,7 @@
   "errors.phone10Digits": "Enter 10 digits",
   "checkout.fullPayment": "Full payment",
   "checkout.deposit": "Deposit",
+  "checkout.depositCustomerRequired": "Select a customer to create a deposit sale.",
   "checkout.paymentMethod": "Payment Method",
   "checkout.amountPaidNow": "Amount paid now",
   "checkout.returnReasonOptional": "Return Reason (optional)",

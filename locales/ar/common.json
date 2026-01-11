@@ -233,6 +233,7 @@
   "errors.phone10Digits": "أدخل 10 أرقام",
   "checkout.fullPayment": "دفع كامل",
   "checkout.deposit": "عربون",
+  "checkout.depositCustomerRequired": "يجب اختيار الزبون لإنشاء عملية بيع عربون.",
   "checkout.paymentMethod": "طريقة الدفع",
   "checkout.amountPaidNow": "المبلغ المدفوع الآن",
   "checkout.returnReasonOptional": "سبب الإرجاع (اختياري)",
