@@ -4,6 +4,7 @@ import * as React from 'react';
 import { DialogTitle, DialogContent, DialogActions, Button, Stack, Typography, Divider, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import FullScreenDialog from '@/components/common/FullScreenDialog';
+import { printUrlInIframe } from '@/lib/print/printUrlInIframe';
 
 export default function ReceiptDetailsDialog({ id, open, onClose }) {
   const [loading, setLoading] = React.useState(false);
@@ -31,8 +32,7 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
   const onPrint = () => {
     const id = data?.receipt?._id;
     if (!id) return;
-    const w = window.open(`/pos/print/${id}`, '_blank', 'noopener,noreferrer');
-    if (w) w.focus();
+    printUrlInIframe(`/pos/print/${encodeURIComponent(String(id))}?autoprint=0`).catch(() => {});
   };
 
   const r = data?.receipt || {}; const t = data?.totals || {};

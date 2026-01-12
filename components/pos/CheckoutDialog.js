@@ -3,12 +3,20 @@
 import * as React from 'react';
 import {
   DialogTitle, DialogContent, DialogActions,
-  Button, Stack, TextField, MenuItem, Typography, ToggleButtonGroup, ToggleButton,
+  Button, Stack, TextField, MenuItem, Typography, ToggleButtonGroup, ToggleButton, Alert,
 } from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
 import FullScreenDialog from '@/components/common/FullScreenDialog';
 
-export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, isReturn = false, initialContact }) {
+export default function CheckoutDialog({
+  open,
+  onClose,
+  onConfirm,
+  grandTotal,
+  isReturn = false,
+  initialContact,
+  hasCustomer = false,
+}) {
   const { t, formatNumber } = useI18n();
   const [method, setMethod] = React.useState('cash');
   const [note, setNote] = React.useState('');
@@ -32,6 +40,8 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
     }
   }, [open]);
 
+  const depositNeedsCustomer = !isReturn && payMode === 'deposit' && !hasCustomer;
+
   return (
     <>
     <FullScreenDialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
@@ -50,6 +60,13 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
               <ToggleButton value="deposit">{t('checkout.deposit')}</ToggleButton>
             </ToggleButtonGroup>
           )}
+
+          {depositNeedsCustomer && (
+            <Alert severity="warning">
+              {t('checkout.depositCustomerRequired')}
+            </Alert>
+          )}
+
           <TextField select label={t('checkout.paymentMethod')} value={method} onChange={(e) => setMethod(e.target.value)}>
           {METHODS.map((m) => (
             <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
@@ -75,6 +92,7 @@ export default function CheckoutDialog({ open, onClose, onConfirm, grandTotal, i
         <Button onClick={onClose}>{t('common.cancel')}</Button>
         <Button
           variant="contained"
+          disabled={depositNeedsCustomer}
           onClick={() => onConfirm({
             method,
             note,

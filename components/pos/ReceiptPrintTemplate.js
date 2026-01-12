@@ -35,7 +35,7 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
 
   return (
     <div className="receipt-80mm">
-      <style jsx global>{`
+      <style>{`
         @media print {
           @page { size: 80mm auto; margin: 0; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
