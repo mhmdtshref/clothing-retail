@@ -24,6 +24,7 @@ import PrintIcon from '@mui/icons-material/Print';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ReceiptDetailsDialog from '@/components/pos/ReceiptDetailsDialog';
 import { useI18n } from '@/components/i18n/useI18n';
+import { printUrlInIframe } from '@/lib/print/printUrlInIframe';
 
 function formatYYYYMMDD(d = new Date()) {
   const y = d.getFullYear();
@@ -85,8 +86,7 @@ export default function SalesReceiptsPage() {
   }, [fetchList]);
 
   const onPrint = (id) => {
-    const w = window.open(`/pos/print/${encodeURIComponent(String(id))}`, '_blank', 'noopener,noreferrer');
-    if (w) w.focus();
+    printUrlInIframe(`/pos/print/${encodeURIComponent(String(id))}?autoprint=0`).catch(() => {});
   };
 
   return (

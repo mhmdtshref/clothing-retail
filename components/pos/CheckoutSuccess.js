@@ -3,14 +3,14 @@
 import * as React from 'react';
 import { Box, Stack, Typography, Button, Divider, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
+import { printUrlInIframe } from '@/lib/print/printUrlInIframe';
 
 export default function CheckoutSuccess({ receipt, totals, paidTotal, dueTotal, onNewSale }) {
   const { t, formatNumber, formatDate } = useI18n();
   const printRef = React.useRef(null);
   const onPrint = () => {
     if (!receipt?._id) return;
-    const w = window.open(`/pos/print/${receipt._id}`, '_blank', 'noopener,noreferrer');
-    if (w) w.focus();
+    printUrlInIframe(`/pos/print/${encodeURIComponent(String(receipt._id))}?autoprint=0`).catch(() => {});
   };
   const isReturn = receipt?.type === 'sale_return';
   const isPending = receipt?.status === 'pending';

@@ -9,12 +9,13 @@ import Customer from '@/models/customer';
 import { computeReceiptTotals } from '@/lib/pricing';
 import ReceiptPrintTemplate from '@/components/pos/ReceiptPrintTemplate';
 
-export default async function POSPrintPage({ params }) {
+export default async function POSPrintPage({ params, searchParams }) {
   const { userId } = await auth();
   if (!userId) redirect('/sign-in?redirect_url=/pos');
 
   await connectToDB();
   const { id } = await params;
+  const sp = searchParams ? await searchParams : undefined;
   const r = await Receipt.findById(id).lean();
   if (!r) {
     return <div style={{ padding: 16 }}>Receipt not found</div>;
@@ -37,7 +38,8 @@ export default async function POSPrintPage({ params }) {
     items: (r.items || []).map((it) => ({ ...it, variantId: String(it.variantId) })),
   };
 
-  return <ReceiptPrintTemplate receipt={receipt} totals={totals} autoPrint />;
+  const autoPrint = !(sp && String(sp.autoprint || '') === '0');
+  return <ReceiptPrintTemplate receipt={receipt} totals={totals} autoPrint={autoPrint} />;
 }
 
 
