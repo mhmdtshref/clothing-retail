@@ -31,6 +31,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import HistoryIcon from '@mui/icons-material/History';
 
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { useI18n } from '@/components/i18n/useI18n';
@@ -81,11 +82,11 @@ export default function AppSidebar({
     { href: '/products', icon: <Inventory2Icon />, label: t('nav.products') },
     { href: '/companies', icon: <BusinessIcon />, label: t('nav.companies') },
     { href: '/expenses', icon: <PaymentsIcon />, label: t('nav.expenses') },
-    { href: '/receipts/new', icon: <ReceiptLongIcon />, label: t('nav.newPurchase') },
+    { href: '/receipts', icon: <ReceiptLongIcon />, label: t('nav.purchases') },
+    { href: '/receipts/sales', icon: <HistoryIcon />, label: t('nav.salesReceipts') },
     { href: '/receipts/deposits', icon: <PendingActionsIcon />, label: t('nav.depositReceipts') },
     { href: '/delivery/new', icon: <LocalShippingIcon />, label: t('nav.delivery') },
-    { href: '/pos', icon: <StoreIcon />, label: t('nav.pos') },
-    { href: '/pos/deposits', icon: <PendingActionsIcon />, label: t('nav.depositReceiptsPos') },
+    { href: '/pos', icon: <StoreIcon />, label: t('nav.pos') }
   ];
 
   const showCollapseToggle = variant === 'permanent' && typeof onToggleCollapsed === 'function';

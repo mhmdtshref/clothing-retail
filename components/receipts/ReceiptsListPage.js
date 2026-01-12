@@ -42,6 +42,7 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import Link from 'next/link';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ResponsiveListItem from '@/components/common/ResponsiveListItem';
+import { useI18n } from '@/components/i18n/useI18n';
 
 const DEFAULTS = {
   query: '',
@@ -55,9 +56,10 @@ const DEFAULTS = {
   dateTo: '',
 };
 
-export default function ReceiptsListPage({ companies }) {
+export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
   const router = useRouter();
   const sp = useSearchParams();
+  const { t } = useI18n();
 
   const state = {
     query: sp.get('query') ?? DEFAULTS.query,
@@ -107,6 +109,7 @@ export default function ReceiptsListPage({ companies }) {
       const qs = new URLSearchParams({
         query: state.query,
         status: state.status,
+        type: receiptType,
         companyId: state.companyId,
         sort: state.sort,
         order: state.order,
@@ -134,6 +137,7 @@ export default function ReceiptsListPage({ companies }) {
     state.limit,
     state.dateFrom,
     state.dateTo,
+    receiptType,
   ]);
 
   React.useEffect(() => {
@@ -164,6 +168,36 @@ export default function ReceiptsListPage({ companies }) {
     setMenuRow(null);
   };
 
+  const statusOptions = React.useMemo(() => {
+    if (!menuRow) return [];
+
+    // If this list is purchases-only, we can treat rows as purchase; otherwise respect row.type.
+    const type = receiptType === 'all' ? menuRow.type : receiptType;
+    const current = String(menuRow.status || '');
+
+    if (type === 'purchase') {
+      const purchaseNext = {
+        ordered: ['on_delivery', 'completed'],
+        on_delivery: ['completed'],
+        completed: [],
+      };
+      return (purchaseNext[current] || []).map((value) => ({
+        value,
+        label: t(`status.${value}`),
+        icon: value === 'on_delivery' ? <LocalShippingIcon fontSize="small" /> : <DoneIcon fontSize="small" />,
+      }));
+    }
+
+    // Default: keep existing status set, but don't show the current status.
+    return [
+      { value: 'ordered', label: 'ordered', icon: <PendingActionsIcon fontSize="small" /> },
+      { value: 'on_delivery', label: 'on_delivery', icon: <LocalShippingIcon fontSize="small" /> },
+      { value: 'payment_collected', label: 'payment_collected', icon: <DoneIcon fontSize="small" /> },
+      { value: 'ready_to_receive', label: 'ready_to_receive', icon: <DoneIcon fontSize="small" /> },
+      { value: 'completed', label: 'completed', icon: <DoneIcon fontSize="small" /> },
+    ].filter((o) => o.value !== current);
+  }, [menuRow, receiptType, t]);
+
   const setStatus = async (next) => {
     if (!menuRow) return;
     try {
@@ -186,6 +220,11 @@ export default function ReceiptsListPage({ companies }) {
   return (
     <Paper sx={{ p: 2 }}>
       <Toolbar sx={{ gap: 1, flexWrap: 'wrap' }}>
+        {receiptType === 'purchase' && (
+          <Typography variant="h6" sx={{ mr: 1 }}>
+            {t('nav.purchases')}
+          </Typography>
+        )}
         <TextField
           size="small"
           placeholder="Search receipts (note, product code/name)"
@@ -301,7 +340,7 @@ export default function ReceiptsListPage({ companies }) {
         </FormControl>
 
         <Button component={Link} href="/receipts/new" startIcon={<AddIcon />} variant="contained" sx={{ ml: { xs: 'auto', sm: 0 } }}>
-          New Purchase
+          {t('nav.newPurchase')}
         </Button>
         <IconButton onClick={fetchList} title="Refresh">
           <RefreshIcon />
@@ -434,7 +473,7 @@ export default function ReceiptsListPage({ companies }) {
 
                 {data.items.map((r) => {
                   const disabledEdit = r.status === 'completed';
-                  const disabledStatus = r.status === 'completed';
+                  const disabledStatus = r.status === 'completed' || (r.type === 'purchase' && r.status === 'completed');
 
                   return (
                     <TableRow key={r._id} hover>
@@ -447,15 +486,18 @@ export default function ReceiptsListPage({ companies }) {
                         <Tooltip
                           title={
                             disabledEdit
-                              ? 'Completed receipts cannot be edited (Step 4 adds editor)'
-                              : 'View / Edit (coming in Step 4)'
+                              ? 'View (completed is read-only)'
+                              : 'View / Edit'
                           }
                         >
-                          <span>
-                            <Button size="small" startIcon={<EditIcon />} disabled>
-                              {'View / Edit'}
-                            </Button>
-                          </span>
+                          <IconButton
+                            size="small"
+                            component={Link}
+                            href={`/receipts/${r._id}/edit`}
+                            aria-label="View / Edit"
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
                         </Tooltip>
 
                         <Tooltip
@@ -466,13 +508,14 @@ export default function ReceiptsListPage({ companies }) {
                           }
                         >
                           <span>
-                            <Button
+                            <IconButton
                               size="small"
                               onClick={(e) => (!disabledStatus ? openStatusMenu(e, r) : null)}
                               disabled={disabledStatus}
+                              aria-label="Change status"
                             >
-                              Change Status
-                            </Button>
+                              <PendingActionsIcon fontSize="small" />
+                            </IconButton>
                           </span>
                         </Tooltip>
                       </TableCell>
@@ -499,16 +542,28 @@ export default function ReceiptsListPage({ companies }) {
                     metaEnd={`${total}`}
                     actions={(
                       <Stack direction="row" spacing={1} sx={{ ml: 'auto' }}>
-                        <Button size="small" startIcon={<EditIcon />} disabled>
-                          {'View / Edit'}
-                        </Button>
-                        <Button
-                          size="small"
-                          onClick={(e) => (!disabledStatus ? openStatusMenu(e, r) : null)}
-                          disabled={disabledStatus}
-                        >
-                          Change Status
-                        </Button>
+                        <Tooltip title="View / Edit">
+                          <IconButton
+                            size="small"
+                            component={Link}
+                            href={`/receipts/${r._id}/edit`}
+                            aria-label="View / Edit"
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title={disabledStatus ? 'Completed receipts cannot change status' : 'Change Status'}>
+                          <span>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => (!disabledStatus ? openStatusMenu(e, r) : null)}
+                              disabled={disabledStatus}
+                              aria-label="Change status"
+                            >
+                              <PendingActionsIcon fontSize="small" />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
                       </Stack>
                     )}
                   >
@@ -549,36 +604,12 @@ export default function ReceiptsListPage({ companies }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <MenuItem onClick={() => setStatus('ordered')}>
-          <ListItemIcon>
-            <PendingActionsIcon fontSize="small" />
-          </ListItemIcon>
-          ordered
-        </MenuItem>
-        <MenuItem onClick={() => setStatus('on_delivery')}>
-          <ListItemIcon>
-            <LocalShippingIcon fontSize="small" />
-          </ListItemIcon>
-          on_delivery
-        </MenuItem>
-        <MenuItem onClick={() => setStatus('payment_collected')}>
-          <ListItemIcon>
-            <DoneIcon fontSize="small" />
-          </ListItemIcon>
-          payment_collected
-        </MenuItem>
-        <MenuItem onClick={() => setStatus('ready_to_receive')}>
-          <ListItemIcon>
-            <DoneIcon fontSize="small" />
-          </ListItemIcon>
-          ready_to_receive
-        </MenuItem>
-        <MenuItem onClick={() => setStatus('completed')}>
-          <ListItemIcon>
-            <DoneIcon fontSize="small" />
-          </ListItemIcon>
-          completed
-        </MenuItem>
+        {statusOptions.map((opt) => (
+          <MenuItem key={opt.value} onClick={() => setStatus(opt.value)}>
+            <ListItemIcon>{opt.icon}</ListItemIcon>
+            {opt.label}
+          </MenuItem>
+        ))}
       </Menu>
     </Paper>
   );

@@ -31,8 +31,8 @@ export async function PATCH(req, context) {
     const params = await context.params;
     const { id } = params || {};
     await connectToDB();
-    const current = await ensureReceiptEditable(id);
-    assertStatusTransition(current, next);
+    const { status: current, type } = await ensureReceiptEditable(id);
+    assertStatusTransition(current, next, { type });
 
     const updated = await Receipt.findByIdAndUpdate(
       id,

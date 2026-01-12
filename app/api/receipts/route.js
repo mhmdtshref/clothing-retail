@@ -314,6 +314,13 @@ export async function POST(req) {
     payments,
   } = parsed;
 
+  if (type === 'purchase' && status && !['ordered', 'on_delivery', 'completed'].includes(status)) {
+    return NextResponse.json(
+      { error: 'ValidationError', message: 'Invalid status for purchase receipt' },
+      { status: 400 },
+    );
+  }
+
   const supplierId = companyId || vendorId || undefined;
   if (type === 'purchase' && !supplierId) {
     return NextResponse.json(
