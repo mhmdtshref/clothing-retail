@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
 import CashboxSession from '@/models/cashboxSession';
@@ -11,8 +12,9 @@ const BodySchema = z.object({
 });
 
 export async function POST(req) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const userId = authSession.user?.id;
   let body;
   try {
     body = BodySchema.parse(await req.json());

@@ -1,7 +1,10 @@
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export default async function Dashboard() {
-  await auth.protect();
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect('/sign-in?redirect_url=/dashboard');
 
   return (
     <main style={{ padding: 24 }}>

@@ -1,13 +1,14 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import { connectToDB } from '@/lib/mongoose';
 import City from '@/models/city';
 
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
     await connectToDB();
     const docs = await City.find({ provider: 'optimus' }, { providerCityId: 1, name: 1 }).sort({ name: 1 }).lean();

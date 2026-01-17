@@ -1,17 +1,23 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import mongoose from 'mongoose';
 import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
 import Variant from '@/models/variant';
 import { getOnHandForVariant } from '@/lib/inventory';
 
-export async function GET(_req, { params }) {
+export async function GET(_req, context) {
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const { variantId } = await context.params;
+
   try {
-    const onHand = await getOnHandForVariant(params.variantId);
-    return NextResponse.json({ ok: true, variantId: params.variantId, onHand });
+    const onHand = await getOnHandForVariant(variantId);
+    return NextResponse.json({ ok: true, variantId, onHand });
   } catch (err) {
     return NextResponse.json({ ok: false, error: err?.message || String(err) }, { status: 500 });
   }
@@ -22,8 +28,8 @@ const PatchSchema = z.object({
 });
 
 export async function PATCH(req, context) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { variantId } = await context.params;
   if (!variantId || !mongoose.isValidObjectId(variantId)) {

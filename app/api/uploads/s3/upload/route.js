@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import crypto from 'node:crypto';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getS3, getBucket, publicUrlForKey } from '@/lib/aws/s3';
@@ -9,7 +10,7 @@ import { getS3, getBucket, publicUrlForKey } from '@/lib/aws/s3';
 // Parse MAX_BYTES safely (avoid BigInt / invalid values in env)
 const MAX_BYTES = (() => {
   const raw = process.env.S3_MAX_IMAGE_BYTES;
-  if (!raw) return 5 * 1024 * 1024; // default 5MB
+  if (!raw) return 40960; // default 40KB
   const normalized = String(raw).trim().replace(/_/g, '').replace(/n$/i, '');
   const parsed = Number(normalized);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 5 * 1024 * 1024;
@@ -38,8 +39,8 @@ export async function POST(req) {
     }
 
     // Perform auth AFTER accessing formData to avoid potential body locking
-    const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const productId = form.get('productId') ? String(form.get('productId')) : '';
     const givenExt = form.get('ext') ? String(form.get('ext')) : '';

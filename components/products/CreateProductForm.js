@@ -25,13 +25,19 @@ import { z } from 'zod';
 import { ProductImageUploader } from '@/components/uploads';
 import { useI18n } from '@/components/i18n/useI18n';
 import ResponsiveActionsBar from '@/components/common/ResponsiveActionsBar';
+import { pickLocalizedName } from '@/lib/i18n/name';
 
 const productSchema = z.object({
   code: z
-    .string()
-    .min(1)
-    .max(120)
-    .transform((s) => s.trim()),
+    .preprocess(
+      (v) => {
+        if (v === null || typeof v === 'undefined') return null;
+        const s = String(v).trim();
+        return s ? s : null;
+      },
+      z.union([z.string().max(120), z.null()]).optional(),
+    )
+    .optional(),
   basePrice: z.preprocess(
     (v) => (typeof v === 'string' ? Number(v) : v),
     z.number().nonnegative().default(0),
@@ -40,8 +46,8 @@ const productSchema = z.object({
 });
 
 const genSchema = z.object({
-  sizes: z.array(z.string().min(1)),
-  colors: z.array(z.string().min(1)),
+  sizeIds: z.array(z.string().min(1)),
+  colorIds: z.array(z.string().min(1)),
   companyIds: z.array(z.string().min(1)),
 });
 
@@ -61,15 +67,15 @@ function cartesianPreview(sizes, colors, companies, limit = 10) {
   return { rows, total };
 }
 
-export default function CreateProductForm({ companies }) {
+export default function CreateProductForm({ companies, variantSizes = [], variantColors = [] }) {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [values, setValues] = React.useState({
     code: '',
     basePrice: '',
     status: 'active',
-    sizes: [],
-    colors: [],
+    sizeIds: [],
+    colorIds: [],
     companyIds: [],
   });
   const [image, setImage] = React.useState(null);
@@ -77,16 +83,24 @@ export default function CreateProductForm({ companies }) {
   const [submitting, setSubmitting] = React.useState(false);
   const [snack, setSnack] = React.useState({ open: false, message: '', severity: 'success' });
 
-  const sizes = values.sizes;
-  const colors = values.colors;
+  const sizeIdSet = new Set((values.sizeIds || []).map((x) => String(x)));
+  const colorIdSet = new Set((values.colorIds || []).map((x) => String(x)));
+  const selectedSizes = React.useMemo(
+    () => (variantSizes || []).filter((s) => sizeIdSet.has(String(s?._id))),
+    [variantSizes, values.sizeIds],
+  );
+  const selectedColors = React.useMemo(
+    () => (variantColors || []).filter((c) => colorIdSet.has(String(c?._id))),
+    [variantColors, values.colorIds],
+  );
   const selectedCompanies = React.useMemo(
     () => companies.filter((c) => values.companyIds.includes(c._id)),
     [companies, values.companyIds],
   );
 
   const preview = React.useMemo(
-    () => cartesianPreview(sizes, colors, selectedCompanies, 10),
-    [sizes, colors, selectedCompanies],
+    () => cartesianPreview(selectedSizes, selectedColors, selectedCompanies, 10),
+    [selectedSizes, selectedColors, selectedCompanies],
   );
 
   const handleChange = (field) => (e) => {
@@ -105,14 +119,14 @@ export default function CreateProductForm({ companies }) {
       });
 
       const genInput = genSchema.parse({
-        sizes,
-        colors,
+        sizeIds: values.sizeIds,
+        colorIds: values.colorIds,
         companyIds: values.companyIds,
       });
 
       if (
-        genInput.sizes.length === 0 ||
-        genInput.colors.length === 0 ||
+        genInput.sizeIds.length === 0 ||
+        genInput.colorIds.length === 0 ||
         genInput.companyIds.length === 0
       ) {
         throw new Error(t('errors.provideSizeColorCompany'));
@@ -122,7 +136,12 @@ export default function CreateProductForm({ companies }) {
       const res1 = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...prodInput, image: image || undefined }),
+        body: JSON.stringify({
+          ...prodInput,
+          // allow backend to copy localCode if code is missing/null/blank
+          code: prodInput?.code ?? null,
+          image: image || undefined,
+        }),
       });
       const data1 = await res1.json();
       if (!res1.ok) {
@@ -179,7 +198,6 @@ export default function CreateProductForm({ companies }) {
               label={t('products.code')}
               value={values.code}
               onChange={handleChange('code')}
-              required
               fullWidth
             />
           </Stack>
@@ -211,39 +229,29 @@ export default function CreateProductForm({ companies }) {
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <Autocomplete
               multiple
-              freeSolo
-              options={[]}
-              value={values.sizes}
-              onChange={(_, newVal) =>
-                setValues((v) => ({
-                  ...v,
-                  sizes: Array.from(new Set(newVal.map((x) => String(x).trim()).filter(Boolean))),
-                }))
-              }
+              options={variantSizes}
+              getOptionLabel={(o) => pickLocalizedName(o?.name, locale)}
+              value={selectedSizes}
+              onChange={(_, newVal) => setValues((v) => ({ ...v, sizeIds: newVal.map((x) => x._id) }))}
               fullWidth
               sx={{ flex: 1, minWidth: 0 }}
               renderInput={(params) => (
-                <TextField {...params} label={t('products.sizes')} placeholder={t('products.typeAndEnter')} fullWidth />
+                <TextField {...params} label={t('products.sizes')} placeholder={t('products.selectOneOrMore')} fullWidth />
               )}
             />
             <Autocomplete
               multiple
-              freeSolo
-              options={[]}
-              value={values.colors}
-              onChange={(_, newVal) =>
-                setValues((v) => ({
-                  ...v,
-                  colors: Array.from(new Set(newVal.map((x) => String(x).trim()).filter(Boolean))),
-                }))
-              }
+              options={variantColors}
+              getOptionLabel={(o) => pickLocalizedName(o?.name, locale)}
+              value={selectedColors}
+              onChange={(_, newVal) => setValues((v) => ({ ...v, colorIds: newVal.map((x) => x._id) }))}
               fullWidth
               sx={{ flex: 1, minWidth: 0 }}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   label={t('products.colors')}
-                  placeholder={t('products.typeAndEnter')}
+                  placeholder={t('products.selectOneOrMore')}
                   fullWidth
                 />
               )}
@@ -283,8 +291,8 @@ export default function CreateProductForm({ companies }) {
               <TableBody>
                 {preview.rows.map((r, i) => (
                   <TableRow key={i}>
-                    <TableCell>{r.size}</TableCell>
-                    <TableCell>{r.color}</TableCell>
+                    <TableCell>{pickLocalizedName(r.size?.name, locale)}</TableCell>
+                    <TableCell>{pickLocalizedName(r.color?.name, locale)}</TableCell>
                     <TableCell>{r.companyName}</TableCell>
                   </TableRow>
                 ))}
@@ -309,8 +317,8 @@ export default function CreateProductForm({ companies }) {
                     code: '',
                     basePrice: '',
                     status: 'active',
-                    sizes: [],
-                    colors: [],
+                    sizeIds: [],
+                    colorIds: [],
                     companyIds: [],
                   })
                 }

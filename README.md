@@ -82,6 +82,10 @@ Environment variables:
 - `SABEQLAHEQ_API_URL` — base URL for Sabeq Laheq API
 - `SABEQLAHEQ_API_TOKEN` — bearer token for Sabeq Laheq API
 
+## S3 uploads (images)
+
+S3 configuration and the image size limit are documented in `docs/env.md`.
+
 HTTP cron (every 6 hours recommended):
 
 - Endpoint: `/api/delivery/sync?secret=YOUR_SECRET`

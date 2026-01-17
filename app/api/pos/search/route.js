@@ -1,11 +1,16 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import { connectToDB } from '@/lib/mongoose';
 import Product from '@/models/product';
 import Variant from '@/models/variant';
 import Company from '@/models/company';
+import VariantSize from '@/models/variantSize';
+import VariantColor from '@/models/variantColor';
+import { pickLocalizedName } from '@/lib/i18n/name';
+import { normalizeLocale } from '@/lib/i18n/config';
 // Receipts no longer needed for qty; using denormalized Variant.qty
 
 function escapeRx(s = '') {
@@ -13,14 +18,15 @@ function escapeRx(s = '') {
 }
 
 export async function GET(req) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(req.url);
   const q = (url.searchParams.get('q') || '').trim();
   const page = Math.max(1, Number(url.searchParams.get('page') || '1'));
   const limit = Math.min(100, Math.max(1, Number(url.searchParams.get('limit') || '20')));
   const skip = (page - 1) * limit;
+  const locale = normalizeLocale(req?.cookies?.get?.('lang')?.value);
 
   try {
     await connectToDB();
@@ -55,12 +61,30 @@ export async function GET(req) {
               },
             },
             {
+              $lookup: {
+                from: VariantSize.collection.name,
+                localField: 'sizeId',
+                foreignField: '_id',
+                as: 'sizeDoc',
+              },
+            },
+            {
+              $lookup: {
+                from: VariantColor.collection.name,
+                localField: 'colorId',
+                foreignField: '_id',
+                as: 'colorDoc',
+              },
+            },
+            {
               $addFields: {
                 companyName: { $ifNull: [{ $arrayElemAt: ['$company.name', 0] }, ''] },
                 companyObj: { $arrayElemAt: ['$company', 0] },
+                sizeName: { $ifNull: [{ $arrayElemAt: ['$sizeDoc.name', 0] }, {}] },
+                colorName: { $ifNull: [{ $arrayElemAt: ['$colorDoc.name', 0] }, {}] },
               },
             },
-            { $project: { company: 0 } },
+            { $project: { company: 0, sizeDoc: 0, colorDoc: 0 } },
             { $addFields: { qty: { $ifNull: ['$qty', 0] } } },
           ],
           as: 'variants',
@@ -114,8 +138,10 @@ export async function GET(req) {
                     as: 'v',
                     in: {
                       _id: '$$v._id',
-                      size: '$$v.size',
-                      color: '$$v.color',
+                      sizeId: '$$v.sizeId',
+                      colorId: '$$v.colorId',
+                      sizeName: '$$v.sizeName',
+                      colorName: '$$v.colorName',
                       company: { _id: '$$v.companyObj._id', name: '$$v.companyName' },
                       qty: '$$v.qty',
                     },
@@ -132,7 +158,14 @@ export async function GET(req) {
 
     const agg = await Product.aggregate(pipeline).allowDiskUse(true);
     const total = agg?.[0]?.total || 0;
-    const items = agg?.[0]?.items || [];
+    const items = (agg?.[0]?.items || []).map((p) => ({
+      ...p,
+      variants: (p.variants || []).map((v) => ({
+        ...v,
+        size: pickLocalizedName(v.sizeName, locale),
+        color: pickLocalizedName(v.colorName, locale),
+      })),
+    }));
 
     return NextResponse.json({
       ok: true,

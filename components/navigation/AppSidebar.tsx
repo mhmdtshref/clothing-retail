@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from '@mui/material/styles';
 import {
   Drawer,
@@ -22,6 +22,7 @@ import {
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 import HomeIcon from '@mui/icons-material/Home';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import StoreIcon from '@mui/icons-material/Store';
@@ -32,9 +33,11 @@ import PaymentsIcon from '@mui/icons-material/Payments';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import HistoryIcon from '@mui/icons-material/History';
+import SettingsIcon from '@mui/icons-material/Settings';
 
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { useI18n } from '@/components/i18n/useI18n';
+import TauriWindowControls from '@/components/tauri/TauriWindowControls';
+import { authClient } from '@/lib/auth-client';
 
 type NavItem = {
   href: string;
@@ -71,16 +74,20 @@ export default function AppSidebar({
 }: AppSidebarProps) {
   const theme = useTheme();
   const { locale, setLocale, t } = useI18n();
+  const router = useRouter();
   const pathname = usePathname() || '';
   const anchor: 'left' | 'right' = theme.direction === 'rtl' ? 'right' : 'left';
   const width = collapsed ? collapsedWidth : expandedWidth;
   const langValue = (locale || 'en').split('-')[0];
+  const { data: session } = authClient.useSession();
+  const signedIn = Boolean(session?.user);
 
   const items: NavItem[] = [
     { href: '/', icon: <HomeIcon />, label: t('nav.home') },
     { href: '/dashboard', icon: <DashboardIcon />, label: t('nav.dashboard') },
     { href: '/products', icon: <Inventory2Icon />, label: t('nav.products') },
     { href: '/companies', icon: <BusinessIcon />, label: t('nav.companies') },
+    { href: '/settings', icon: <SettingsIcon />, label: t('nav.settings') },
     { href: '/expenses', icon: <PaymentsIcon />, label: t('nav.expenses') },
     { href: '/receipts', icon: <ReceiptLongIcon />, label: t('nav.purchases') },
     { href: '/receipts/sales', icon: <HistoryIcon />, label: t('nav.salesReceipts') },
@@ -98,6 +105,15 @@ export default function AppSidebar({
   const handleItemClick = React.useCallback(() => {
     if (variant === 'temporary' && closeOnNavigate) onClose?.();
   }, [variant, closeOnNavigate, onClose]);
+
+  const handleSignOut = React.useCallback(async () => {
+    try {
+      await authClient.signOut();
+    } finally {
+      router.push('/sign-in');
+      router.refresh();
+    }
+  }, [router]);
 
   const handleLang = React.useCallback(
     (_e: unknown, next: string | null) => {
@@ -141,19 +157,22 @@ export default function AppSidebar({
             {process.env.NEXT_PUBLIC_SHOP_NAME || t('nav.appTitle')}
           </Typography>
         )}
-        {showCollapseToggle && (
-          <IconButton
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggleCollapsed?.();
-            }}
-            size="small"
-          >
-            {chevron}
-          </IconButton>
-        )}
+        <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: collapsed ? 'column' : 'row', gap: collapsed ? 0.5 : 0.75 }}>
+          <TauriWindowControls collapsed={collapsed} />
+          {showCollapseToggle && (
+            <IconButton
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onToggleCollapsed?.();
+              }}
+              size="small"
+            >
+              {chevron}
+            </IconButton>
+          )}
+        </Box>
       </Box>
       <Box
         sx={{
@@ -216,15 +235,43 @@ export default function AppSidebar({
           pt: 1,
         }}
       >
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-        <SignedOut>
-          {collapsed ? (
+        {signedIn ? (
+          collapsed ? (
+            <Tooltip title={t('nav.signOut')} placement={tooltipSide}>
+              <ListItemButton
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleSignOut();
+                }}
+                sx={{ justifyContent: 'center', px: 1 }}
+                aria-label={t('nav.signOut')}
+              >
+                <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
+                  <LogoutIcon />
+                </ListItemIcon>
+              </ListItemButton>
+            </Tooltip>
+          ) : (
+            <ListItemButton
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSignOut();
+              }}
+            >
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary={t('nav.signOut')} />
+            </ListItemButton>
+          )
+        ) : (
+          (collapsed ? (
             <Tooltip title={t('nav.signIn')} placement={tooltipSide}>
               <ListItemButton
                 component={Link}
-                href="/sign-in"
+                href={`/sign-in?redirect_url=${encodeURIComponent(pathname || '/')}`}
                 onClick={handleItemClick}
                 sx={{ justifyContent: 'center', px: 1 }}
                 aria-label={t('nav.signIn')}
@@ -235,14 +282,14 @@ export default function AppSidebar({
               </ListItemButton>
             </Tooltip>
           ) : (
-            <ListItemButton component={Link} href="/sign-in" onClick={handleItemClick}>
+            <ListItemButton component={Link} href={`/sign-in?redirect_url=${encodeURIComponent(pathname || '/')}`} onClick={handleItemClick}>
               <ListItemIcon>
                 <LoginIcon />
               </ListItemIcon>
               <ListItemText primary={t('nav.signIn')} />
             </ListItemButton>
-          )}
-        </SignedOut>
+          ))
+        )}
       </Box>
     </Box>
   );

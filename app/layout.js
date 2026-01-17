@@ -1,4 +1,3 @@
-import { ClerkProvider } from '@clerk/nextjs';
 import ThemeRegistry from '@/components/ThemeRegistry';
 import LayoutShell from '@/components/LayoutShell';
 import './globals.scss';
@@ -28,14 +27,12 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" href="/icons/apple-icon-180.png" />
       </head>
       <body>
-        <ClerkProvider>
-          <I18nProvider locale={locale}>
-            <ThemeRegistry>
-              <LayoutShell>{children}</LayoutShell>
-              <RegisterSW />
-            </ThemeRegistry>
-          </I18nProvider>
-        </ClerkProvider>
+        <I18nProvider locale={locale}>
+          <ThemeRegistry>
+            <LayoutShell>{children}</LayoutShell>
+            <RegisterSW />
+          </ThemeRegistry>
+        </I18nProvider>
       </body>
     </html>
   );

@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import mongoose from 'mongoose';
 import { connectToDB } from '@/lib/mongoose';
 import CashboxSession from '@/models/cashboxSession';
@@ -25,8 +26,8 @@ function summarize(rows = []) {
 }
 
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   await connectToDB();
 
   const session = await CashboxSession.findOne({ status: 'open' }).sort({ openedAt: -1 }).lean();

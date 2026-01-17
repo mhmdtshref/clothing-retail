@@ -1,12 +1,13 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import crypto from 'node:crypto';
 import { getS3, getBucket, publicUrlForKey } from '@/lib/aws/s3';
 
-const MAX_BYTES = Number(process.env.S3_MAX_IMAGE_BYTES || 5 * 1024 * 1024); // 5MB default
+const MAX_BYTES = Number(process.env.S3_MAX_IMAGE_BYTES || 40960); // 40KB default
 
 const EXT_FROM_MIME = {
   'image/jpeg': 'jpg',
@@ -22,8 +23,8 @@ function pickExt(contentType, explicitExt) {
 }
 
 export async function POST(req) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   let body;
   try {
