@@ -6,7 +6,7 @@ import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import crypto from 'node:crypto';
 import { getS3, getBucket, publicUrlForKey } from '@/lib/aws/s3';
 
-const MAX_BYTES = Number(process.env.S3_MAX_IMAGE_BYTES || 5 * 1024 * 1024); // 5MB default
+const MAX_BYTES = Number(process.env.S3_MAX_IMAGE_BYTES || 40960); // 40KB default
 
 const EXT_FROM_MIME = {
   'image/jpeg': 'jpg',

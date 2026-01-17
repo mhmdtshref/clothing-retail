@@ -9,7 +9,7 @@ import { getS3, getBucket, publicUrlForKey } from '@/lib/aws/s3';
 // Parse MAX_BYTES safely (avoid BigInt / invalid values in env)
 const MAX_BYTES = (() => {
   const raw = process.env.S3_MAX_IMAGE_BYTES;
-  if (!raw) return 5 * 1024 * 1024; // default 5MB
+  if (!raw) return 40960; // default 40KB
   const normalized = String(raw).trim().replace(/_/g, '').replace(/n$/i, '');
   const parsed = Number(normalized);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 5 * 1024 * 1024;
