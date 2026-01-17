@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import mongoose from 'mongoose';
 import { connectToDB } from '@/lib/mongoose';
 import Variant from '@/models/variant';
@@ -12,8 +13,8 @@ import { pickLocalizedName } from '@/lib/i18n/name';
 import { normalizeLocale } from '@/lib/i18n/config';
 
 export async function GET(req, context) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     await connectToDB();

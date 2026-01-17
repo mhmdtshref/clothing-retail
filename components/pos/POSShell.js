@@ -5,7 +5,7 @@ import { AppBar, Toolbar, Typography, Box, Paper, Stack, IconButton, Chip, Butto
 import Link from 'next/link';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import WifiIcon from '@mui/icons-material/Wifi';
-import { useUser } from '@clerk/nextjs';
+import { authClient } from '@/lib/auth-client';
 import POSCatalog from '@/components/pos/POSCatalog';
 import CartView from '@/components/pos/CartView';
 import { useCart } from '@/components/pos/useCart';
@@ -52,7 +52,7 @@ function useOnline() {
 
 export default function POSShell() {
   const { t, formatDate, formatNumber } = useI18n();
-  const { user } = useUser();
+  const { data: session } = authClient.useSession();
   const now = useClock();
   const online = useOnline();
   const cart = useCart();
@@ -266,7 +266,7 @@ export default function POSShell() {
             {mounted ? formatDate(now) : ''}
           </Typography>
           <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'inline' } }} suppressHydrationWarning>
-            {mounted ? (user?.fullName || user?.primaryEmailAddress?.emailAddress || 'User') : ''}
+            {mounted ? (session?.user?.name || session?.user?.email || 'User') : ''}
           </Typography>
           {!cashbox.open ? (
             <Button color="inherit" variant="outlined" onClick={() => setOpenDialog(true)}>

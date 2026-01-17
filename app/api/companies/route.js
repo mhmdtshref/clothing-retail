@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
 import Company from '@/models/company';
@@ -9,8 +10,8 @@ import { CompanyCreateSchema } from '@/lib/validators/company';
 import { normalizeCompanyName } from '@/lib/company-name';
 
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     await connectToDB();
@@ -38,8 +39,8 @@ export async function GET() {
 
 export async function POST(req) {
   try {
-    const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
     const parsed = CompanyCreateSchema.safeParse(body);

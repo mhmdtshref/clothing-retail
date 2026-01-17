@@ -1,15 +1,16 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import mongoose from 'mongoose';
 import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
 import Product from '@/models/product';
 
 export async function GET(_req, context) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const params = await context.params;
   const { productId } = params || {};
   if (!productId || !mongoose.isValidObjectId(productId)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
@@ -42,8 +43,8 @@ const PatchSchema = z.object({
 });
 
 export async function PATCH(req, context) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const params = await context.params;
   const { productId } = params || {};
   if (!productId || !mongoose.isValidObjectId(productId)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 });

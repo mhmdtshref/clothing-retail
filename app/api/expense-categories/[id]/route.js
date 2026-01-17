@@ -2,7 +2,8 @@ export const runtime = 'nodejs';
 
 import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import mongoose from 'mongoose';
 import { connectToDB } from '@/lib/mongoose';
 import ExpenseCategory from '@/models/expense-category';
@@ -31,8 +32,8 @@ async function ensureUniqueSlugForUpdate({ name, excludeId }) {
 }
 
 export async function PATCH(req, context) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await context.params;
   if (!id || !mongoose.isValidObjectId(id)) {
@@ -100,8 +101,8 @@ export async function PATCH(req, context) {
 }
 
 export async function DELETE(_req, context) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await context.params;
   if (!id || !mongoose.isValidObjectId(id)) {

@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import { z } from 'zod';
 import mongoose from 'mongoose';
 import { connectToDB } from '@/lib/mongoose';
@@ -18,8 +19,8 @@ import { pickLocalizedName } from '@/lib/i18n/name';
 import { normalizeLocale } from '@/lib/i18n/config';
 
 export async function GET(_req, context) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await context.params;
   if (!id || !mongoose.isValidObjectId(id)) {
@@ -82,8 +83,8 @@ const PatchSchema = z
   .passthrough();
 
 export async function PATCH(req, context) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const locale = normalizeLocale(req?.cookies?.get?.('lang')?.value);
 
   const { id } = await context.params;

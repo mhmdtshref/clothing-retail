@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
 import Product from '@/models/product';
@@ -40,8 +41,8 @@ async function generateLocalCode() {
 export async function POST(req) {
   try {
     // AuthN guard
-    const { userId } = await auth();
-    if (!userId) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -133,8 +134,8 @@ const QuerySchema = z.object({
 
 export async function GET(req) {
   // Require authentication
-  const { userId } = await auth();
-  if (!userId) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -46,6 +46,7 @@
   "nav.pos": "نقطة البيع",
   "nav.settings": "الإعدادات",
   "nav.signIn": "تسجيل الدخول",
+  "nav.signOut": "تسجيل الخروج",
   "pos.items": "العناصر",
   "cart.title": "السلة",
   "cart.returnCart": "سلة المرتجعات",
@@ -54,8 +55,7 @@
   "delivery.company.optimus": "Optimus",
   "delivery.company.sabeq_laheq": "Sabeq Laheq",
   "delivery.normalShipment": "شحنة عادية",
-  "delivery.exchangeShipment": "شحنة استبدال (مع مرتجعات)"
-  ,
+  "delivery.exchangeShipment": "شحنة استبدال (مع مرتجعات)",
   "pos.selectCustomer": "اختيار الزبون",
   "pos.searchByNameOrPhone": "ابحث بالاسم أو الهاتف",
   "pos.changeCustomer": "تغيير الزبون",
@@ -153,8 +153,7 @@
   "common.more": "أخرى",
   "products.creating": "جارٍ الإنشاء…",
   "products.createWithVariants": "إنشاء المنتج والأنماط",
-  "products.noImage": "لا توجد صورة"
-  ,
+  "products.noImage": "لا توجد صورة",
   "companies.title": "الشركات",
   "companies.add": "إضافة شركة",
   "companies.none": "لا توجد شركات.",
@@ -169,8 +168,7 @@
   "errors.sizeNameExists": "المقاس موجود بالفعل.",
   "common.retry": "إعادة المحاولة",
   "common.cancel": "إلغاء",
-  "common.create": "إنشاء"
-  ,
+  "common.create": "إنشاء",
   "settings.title": "الإعدادات",
   "settings.searchPlaceholder": "بحث…",
   "variantColors.title": "الألوان",
@@ -182,8 +180,7 @@
   "variantSizes.add": "إضافة مقاس",
   "variantSizes.none": "لا توجد مقاسات.",
   "variantSizes.edit": "تعديل مقاس",
-  "variantSizes.new": "مقاس جديد"
-  ,
+  "variantSizes.new": "مقاس جديد",
   "errors.loadCategories": "فشل في تحميل التصنيفات",
   "errors.loadExpenses": "فشل في تحميل المصروفات",
   "expenses.searchPlaceholder": "ابحث عن المورّد أو الملاحظة",
@@ -202,8 +199,7 @@
   "expenses.edit": "تعديل مصروف",
   "expenses.new": "مصروف جديد",
   "expenses.editCategory": "تعديل التصنيف",
-  "expenses.sortOrder": "ترتيب العرض"
-  ,
+  "expenses.sortOrder": "ترتيب العرض",
   "purchase.title": "إيصال جديد (شراء)",
   "purchase.company": "الشركة",
   "purchase.searchProduct": "بحث عن منتج",
@@ -312,8 +308,7 @@
   "cashbox.zreport.session": "الجلسة",
   "cashbox.zreport.openedAt": "وقت الفتح",
   "cashbox.zreport.closedAt": "وقت الإغلاق",
-  "cashbox.zreport.totals": "الإجماليات"
-  ,
+  "cashbox.zreport.totals": "الإجماليات",
   "cashbox.viewTitle": "الصندوق",
   "cashbox.expectedNow": "المبلغ المتوقع الآن",
   "tauri.minimize": "تصغير",

@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import { z } from 'zod';
 import mongoose from 'mongoose';
 import { connectToDB } from '@/lib/mongoose';
@@ -38,8 +39,8 @@ const QuerySchema = z.object({
 });
 
 export async function GET(req) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(req.url);
   const params = Object.fromEntries(url.searchParams.entries());
@@ -287,8 +288,8 @@ const BodySchema = z
   .passthrough();
 
 export async function POST(req) {
-  const { userId } = await auth();
-  if (!userId) {
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const locale = normalizeLocale(req?.cookies?.get?.('lang')?.value);

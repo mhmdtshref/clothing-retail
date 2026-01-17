@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
 import VariantSize from '@/models/variantSize';
@@ -9,8 +10,8 @@ import { VariantSizeCreateSchema } from '@/lib/validators/variant-size';
 import { normalizeCompanyName } from '@/lib/company-name';
 
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authSession = await auth.api.getSession({ headers: await headers() });
+  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     await connectToDB();
@@ -38,8 +39,8 @@ export async function GET() {
 
 export async function POST(req) {
   try {
-    const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authSession = await auth.api.getSession({ headers: await headers() });
+    if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
     const parsed = VariantSizeCreateSchema.safeParse(body);

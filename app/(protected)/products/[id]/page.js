@@ -1,6 +1,7 @@
 export const runtime = 'nodejs';
 
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { connectToDB } from '@/lib/mongoose';
 import Company from '@/models/company';
@@ -9,9 +10,9 @@ import VariantColor from '@/models/variantColor';
 import ProductDetailsPage from '@/components/products/ProductDetailsPage';
 
 export default async function ProductDetails({ params }) {
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
   const { id } = await params;
-  if (!userId) redirect(`/sign-in?redirect_url=/products/${id}`);
+  if (!session) redirect(`/sign-in?redirect_url=/products/${id}`);
 
   await connectToDB();
   const companies = await Company.find({}, { name: 1 }).sort({ name: 1 }).lean();

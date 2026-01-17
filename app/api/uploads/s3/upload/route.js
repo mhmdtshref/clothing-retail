@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 import crypto from 'node:crypto';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getS3, getBucket, publicUrlForKey } from '@/lib/aws/s3';
@@ -38,8 +39,8 @@ export async function POST(req) {
     }
 
     // Perform auth AFTER accessing formData to avoid potential body locking
-    const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const productId = form.get('productId') ? String(form.get('productId')) : '';
     const givenExt = form.get('ext') ? String(form.get('ext')) : '';
