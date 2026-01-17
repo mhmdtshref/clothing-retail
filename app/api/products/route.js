@@ -18,7 +18,7 @@ const ImageSchema = z
   .optional();
 
 const ProductCreateSchema = z.object({
-  code: z.string().min(1, 'code is required').max(120).trim(),
+  code: z.union([z.string().max(120).trim(), z.null()]).optional(),
   basePrice: z.number().nonnegative().default(0),
   status: z.enum(['active', 'archived']).optional().default('active'),
   image: ImageSchema,
@@ -31,7 +31,7 @@ async function generateLocalCode() {
     n += 1;
     const candidate = `${yy}-${String(n).padStart(6, '0')}`;
     // eslint-disable-next-line no-await-in-loop
-    const exists = await Product.exists({ localCode: candidate });
+    const exists = await Product.exists({ $or: [{ localCode: candidate }, { code: candidate }] });
     if (!exists) return candidate;
   }
   return `${yy}-${String(n + 1).padStart(6, '0')}`;
@@ -54,21 +54,26 @@ export async function POST(req) {
       );
     }
 
-    const { code, basePrice, status, image } = parsed.data;
+    const rawCode = parsed.data.code;
+    const userCode = typeof rawCode === 'string' ? rawCode.trim() : '';
+    const { basePrice, status, image } = parsed.data;
 
     await connectToDB();
 
-    // Optional: pre-check to provide cleaner 409 without stack trace
-    const exists = await Product.findOne({ code }).lean().exec();
-    if (exists) {
-      return NextResponse.json(
-        { error: 'Conflict', message: `Product with code "${code}" already exists.` },
-        { status: 409 },
-      );
-    }
-
     // Generate localCode (YY-XXXXXX) and create product
     let localCode = await generateLocalCode();
+    const code = userCode || localCode;
+
+    // Optional: pre-check to provide cleaner 409 without stack trace (only for user-provided codes)
+    if (userCode) {
+      const exists = await Product.findOne({ code: userCode }).lean().exec();
+      if (exists) {
+        return NextResponse.json(
+          { error: 'Conflict', message: `Product with code "${userCode}" already exists.` },
+          { status: 409 },
+        );
+      }
+    }
     let doc;
     try {
       doc = await Product.create({ code, localCode, basePrice, status, image: image || undefined });

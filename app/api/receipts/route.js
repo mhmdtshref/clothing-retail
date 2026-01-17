@@ -10,11 +10,15 @@ import Variant from '@/models/variant';
 import Company from '@/models/company';
 import Customer from '@/models/customer';
 import Receipt from '@/models/receipt';
+import VariantSize from '@/models/variantSize';
+import VariantColor from '@/models/variantColor';
 import CashboxSession from '@/models/cashboxSession';
 import CashMovement from '@/models/cashMovement';
 import { computeReceiptTotals } from '@/lib/pricing';
 import { createDeliveryOrder } from '@/lib/deliveries';
 import { normalizeAndValidatePhone, buildNotes } from '@/lib/deliveries/policies/optimus';
+import { pickLocalizedName } from '@/lib/i18n/name';
+import { normalizeLocale } from '@/lib/i18n/config';
 
 // GET: list receipts
 const QuerySchema = z.object({
@@ -287,6 +291,7 @@ export async function POST(req) {
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+  const locale = normalizeLocale(req?.cookies?.get?.('lang')?.value);
 
   let parsed;
   try {
@@ -372,9 +377,25 @@ export async function POST(req) {
     const productMap = new Map(products.map((p) => [String(p._id), p]));
     const variantMap = new Map(variants.map((v) => [String(v._id), v]));
 
+    const sizeIdSet = new Set(variants.map((v) => String(v?.sizeId || '')).filter(Boolean));
+    const colorIdSet = new Set(variants.map((v) => String(v?.colorId || '')).filter(Boolean));
+    const sizeIds = [...sizeIdSet].map((id) => new mongoose.Types.ObjectId(id));
+    const colorIds = [...colorIdSet].map((id) => new mongoose.Types.ObjectId(id));
+
+    const sizes = sizeIds.length
+      ? await VariantSize.find({ _id: { $in: sizeIds } }, { name: 1 }).lean().exec()
+      : [];
+    const colors = colorIds.length
+      ? await VariantColor.find({ _id: { $in: colorIds } }, { name: 1 }).lean().exec()
+      : [];
+    const sizeNameById = new Map(sizes.map((s) => [String(s._id), s.name]));
+    const colorNameById = new Map(colors.map((c) => [String(c._id), c.name]));
+
     const receiptItems = items.map((i) => {
       const v = variantMap.get(i.variantId);
       const p = v ? productMap.get(String(v.productId)) : null;
+      const sizeName = pickLocalizedName(sizeNameById.get(String(v?.sizeId || '')), locale);
+      const colorName = pickLocalizedName(colorNameById.get(String(v?.colorId || '')), locale);
 
       return {
         variantId: v._id,
@@ -387,8 +408,8 @@ export async function POST(req) {
         snapshot: {
           productCode: p?.code || '',
           productName: p?.localCode || '',
-          size: v.size,
-          color: v.color,
+          size: sizeName,
+          color: colorName,
         },
       };
     });

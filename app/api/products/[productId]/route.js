@@ -35,7 +35,7 @@ const ImageSchema = z
   .optional();
 
 const PatchSchema = z.object({
-  code: z.string().min(1).max(120).trim().optional(),
+  code: z.union([z.string().max(120).trim(), z.null()]).optional(),
   basePrice: z.number().nonnegative().optional(),
   status: z.enum(['active', 'archived']).optional(),
   image: ImageSchema,
@@ -59,14 +59,30 @@ export async function PATCH(req, context) {
   try {
     await connectToDB();
 
+    let desiredCode;
+    if (typeof input.code !== 'undefined') {
+      if (input.code === null || String(input.code).trim() === '') {
+        const cur = await Product.findById(productId, { localCode: 1 }).lean();
+        if (!cur) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+        desiredCode = String(cur.localCode || '').trim();
+      } else {
+        desiredCode = String(input.code).trim();
+      }
+    }
+
     // If code will change, ensure uniqueness
-    if (input.code) {
-      const exists = await Product.findOne({ _id: { $ne: productId }, code: input.code }).lean();
-      if (exists) return NextResponse.json({ error: 'Conflict', message: 'Product code must be unique.' }, { status: 409 });
+    if (typeof desiredCode !== 'undefined') {
+      const exists = await Product.findOne({ _id: { $ne: productId }, code: desiredCode }).lean();
+      if (exists) {
+        return NextResponse.json(
+          { error: 'Conflict', message: 'Product code must be unique.' },
+          { status: 409 },
+        );
+      }
     }
 
     const update = {};
-    if (typeof input.code !== 'undefined') update.code = input.code;
+    if (typeof desiredCode !== 'undefined') update.code = desiredCode;
     if (typeof input.basePrice !== 'undefined') update.basePrice = input.basePrice;
     if (typeof input.status !== 'undefined') update.status = input.status;
     if (typeof input.image !== 'undefined') {

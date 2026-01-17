@@ -32,6 +32,7 @@ import PaymentsIcon from '@mui/icons-material/Payments';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import HistoryIcon from '@mui/icons-material/History';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { useI18n } from '@/components/i18n/useI18n';
@@ -81,6 +82,7 @@ export default function AppSidebar({
     { href: '/dashboard', icon: <DashboardIcon />, label: t('nav.dashboard') },
     { href: '/products', icon: <Inventory2Icon />, label: t('nav.products') },
     { href: '/companies', icon: <BusinessIcon />, label: t('nav.companies') },
+    { href: '/settings', icon: <SettingsIcon />, label: t('nav.settings') },
     { href: '/expenses', icon: <PaymentsIcon />, label: t('nav.expenses') },
     { href: '/receipts', icon: <ReceiptLongIcon />, label: t('nav.purchases') },
     { href: '/receipts/sales', icon: <HistoryIcon />, label: t('nav.salesReceipts') },

@@ -6,8 +6,8 @@ import { z } from 'zod';
 import { generateVariantsForProduct } from '@/lib/variant-gen';
 
 const Schema = z.object({
-  sizes: z.array(z.string().min(1).trim()).min(1),
-  colors: z.array(z.string().min(1).trim()).min(1),
+  sizeIds: z.array(z.string().min(1)).min(1),
+  colorIds: z.array(z.string().min(1)).min(1),
   companyIds: z.array(z.string().min(1)).min(1),
 });
 
@@ -30,8 +30,8 @@ export async function POST(req, context) {
 
     const result = await generateVariantsForProduct({
       productId,
-      sizes: parsed.data.sizes,
-      colors: parsed.data.colors,
+      sizeIds: parsed.data.sizeIds,
+      colorIds: parsed.data.colorIds,
       companyIds: parsed.data.companyIds,
     });
 
