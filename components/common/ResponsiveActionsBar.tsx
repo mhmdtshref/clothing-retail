@@ -1,11 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Box, Paper, BoxProps } from '@mui/material';
+import { Box, Paper, PaperProps } from '@mui/material';
 
-export type ResponsiveActionsBarProps = BoxProps & {
-  elevation?: number;
-};
+export type ResponsiveActionsBarProps = Omit<PaperProps, 'elevation'> & { elevation?: number };
 
 export default function ResponsiveActionsBar({ children, elevation = 0, sx, ...rest }: ResponsiveActionsBarProps) {
   return (
