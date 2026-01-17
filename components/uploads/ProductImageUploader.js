@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import {
-  Box, Stack, Button, Typography, LinearProgress, Avatar, IconButton, Tooltip, Alert,
+  Box, Stack, Button, Typography, LinearProgress, Avatar, IconButton, Tooltip, Alert, CircularProgress,
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -21,13 +21,18 @@ export default function ProductImageUploader({ productId, value, onChange, disab
   const [preview, setPreview] = React.useState(value?.url || '');
   const [progress, setProgress] = React.useState(0);
   const [uploading, setUploading] = React.useState(false);
+  const [processing, setProcessing] = React.useState(false);
   const [error, setError] = React.useState('');
+
+  const busy = processing || uploading;
 
   React.useEffect(() => {
     setPreview(value?.url || '');
   }, [value?.url]);
 
   function resetAll() {
+    // best-effort cleanup for local previews
+    try { if (typeof preview === 'string' && preview.startsWith('blob:')) URL.revokeObjectURL(preview); } catch {}
     setFile(null);
     setPreview('');
     setProgress(0);
@@ -44,41 +49,55 @@ export default function ProductImageUploader({ productId, value, onChange, disab
       setError('Please select an image file.');
       return;
     }
-    setFile(f);
-    const objURL = URL.createObjectURL(f);
-    setPreview(objURL);
+
+    let objURL = '';
     try {
+      setProcessing(true);
+      const minimized = await compressImageToMaxBytes(f, { maxBytes: 40 * 1024 });
+      setFile(minimized);
+      // cleanup previous local preview to avoid leaks when replacing an image
+      try { if (typeof preview === 'string' && preview.startsWith('blob:')) URL.revokeObjectURL(preview); } catch {}
+
+      objURL = URL.createObjectURL(minimized);
+      setPreview(objURL);
       const dims = await getImageDimensions(objURL);
-      await uploadToS3(f, dims);
+      await uploadToS3(minimized, dims);
     } catch (err) {
       setError(err?.message || String(err));
-      try { URL.revokeObjectURL(objURL); } catch {}
+      // best-effort cleanup for this attempt
+      try { if (objURL) URL.revokeObjectURL(objURL); } catch {}
       setPreview('');
       setFile(null);
+    } finally {
+      setProcessing(false);
+      // allow selecting the same file again to re-trigger onChange
+      try { e.target.value = ''; } catch {}
     }
   }
 
   async function uploadToS3(f, dims) {
     setUploading(true); setProgress(0); setError('');
+    try {
+      // Upload to our Next API; it will forward to S3 server-side
+      const form = new FormData();
+      form.append('file', f);
+      if (productId) form.append('productId', productId);
+      form.append('ext', mimeToExt(f.type));
 
-    // Upload to our Next API; it will forward to S3 server-side
-    const form = new FormData();
-    form.append('file', f);
-    if (productId) form.append('productId', productId);
-    form.append('ext', mimeToExt(f.type));
+      const result = await xhrFormUploadJSON({ url: '/api/uploads/s3/upload', form, onProgress: setProgress });
+      if (!result?.ok) throw new Error(result?.error || 'Upload failed');
 
-    const result = await xhrFormUploadJSON({ url: '/api/uploads/s3/upload', form, onProgress: setProgress });
-    if (!result?.ok) throw new Error(result?.error || 'Upload failed');
-
-    const image = {
-      url: result.publicUrl,
-      key: result.key,
-      width: dims.width,
-      height: dims.height,
-      contentType: f.type,
-    };
-    onChange && onChange(image);
-    setUploading(false);
+      const image = {
+        url: result.publicUrl,
+        key: result.key,
+        width: dims.width,
+        height: dims.height,
+        contentType: f.type,
+      };
+      onChange && onChange(image);
+    } finally {
+      setUploading(false);
+    }
   }
 
   return (
@@ -94,14 +113,33 @@ export default function ProductImageUploader({ productId, value, onChange, disab
           )}
         </Box>
         <Stack direction="row" spacing={1}>
-          <Button component="label" variant="contained" startIcon={<CloudUploadIcon />} disabled={disabled || uploading}>
-            {preview ? 'Replace Image' : 'Upload Image'}
-            <input type="file" accept="image/*" hidden onChange={pickFile} />
-          </Button>
+          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <Button variant="contained" startIcon={busy ? <CircularProgress size={16} color="inherit" /> : <CloudUploadIcon />} disabled={disabled || busy}>
+              {uploading ? `Uploading… ${Math.round(progress || 0)}%` : processing ? 'Processing…' : (preview ? 'Replace Image' : 'Upload Image')}
+            </Button>
+            {/*
+              Use an *actual user click* on the file input (overlay, opacity 0).
+              This is more reliable than programmatic `input.click()` in some WebViews (Tauri/Capacitor/etc).
+            */}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={pickFile}
+              disabled={disabled || busy}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                opacity: 0,
+                cursor: disabled || busy ? 'default' : 'pointer',
+              }}
+            />
+          </Box>
           {preview && (
             <Tooltip title="Remove image">
               <span>
-                <IconButton color="error" onClick={resetAll} disabled={disabled || uploading}>
+                <IconButton color="error" onClick={resetAll} disabled={disabled || busy}>
                   <DeleteIcon />
                 </IconButton>
               </span>
@@ -135,6 +173,84 @@ function getImageDimensions(src) {
     img.onerror = () => reject(new Error('Failed to read image dimensions'));
     img.src = src;
   });
+}
+
+/**
+ * Compress/resize an image to <= maxBytes before upload.
+ * - Converts to WebP (as per decision) for best compression.
+ * - Strict: throws if it cannot reach the target size.
+ * - Note: canvas-based encoding will flatten animated GIFs, so we reject GIF inputs.
+ */
+async function compressImageToMaxBytes(file, {
+  maxBytes = 40 * 1024, // 40KB
+  mimeType = 'image/webp',
+  startQuality = 0.82,
+  minQuality = 0.35,
+  downscaleStep = 0.85,
+  minWidth = 160,
+  minHeight = 160,
+} = {}) {
+  if (!file?.type?.startsWith('image/')) throw new Error('Please select an image file.');
+  if (String(file.type).toLowerCase() === 'image/gif') {
+    throw new Error('GIF compression is not supported. Please upload PNG/JPG/WebP.');
+  }
+
+  const bitmap = await createImageBitmap(file);
+  try {
+    let width = bitmap.width;
+    let height = bitmap.height;
+
+    const makeCanvas = (w, h) => {
+      if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(w, h);
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      return c;
+    };
+
+    const canvasToBlob = (canvas, type, quality) => {
+      if (typeof canvas.convertToBlob === 'function') {
+        return canvas.convertToBlob({ type, quality });
+      }
+      return new Promise((resolve, reject) => {
+        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Failed to encode image'))), type, quality);
+      });
+    };
+
+    const makeFileName = (oldName, type) => {
+      const ext = type === 'image/webp' ? 'webp' : type === 'image/jpeg' ? 'jpg' : 'png';
+      const base = String(oldName || 'image').replace(/\.[^.]+$/, '');
+      return `${base}.${ext}`;
+    };
+
+    // Draw at current size; try lowering quality first, then downscale and retry.
+    for (let downscaleAttempts = 0; downscaleAttempts < 10; downscaleAttempts++) {
+      const canvas = makeCanvas(width, height);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0, width, height);
+
+      let quality = startQuality;
+      for (let qAttempts = 0; qAttempts < 12; qAttempts++) {
+        const blob = await canvasToBlob(canvas, mimeType, quality);
+        if (blob.size <= maxBytes) {
+          return new File([blob], makeFileName(file.name, mimeType), { type: mimeType });
+        }
+        const nextQuality = Math.max(minQuality, quality - 0.08);
+        if (nextQuality === quality) break;
+        quality = nextQuality;
+      }
+
+      const nextW = Math.floor(width * downscaleStep);
+      const nextH = Math.floor(height * downscaleStep);
+      if (nextW < minWidth || nextH < minHeight) break;
+      width = nextW;
+      height = nextH;
+    }
+
+    throw new Error('Could not compress image to 40KB. Try a smaller/cropped image.');
+  } finally {
+    try { bitmap.close && bitmap.close(); } catch {}
+  }
 }
 
 async function xhrFormUpload({ url, fields, file, onProgress }) {
