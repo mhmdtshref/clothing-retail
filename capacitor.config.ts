@@ -6,7 +6,6 @@ const config: CapacitorConfig = {
   appId: '[APP_ID_HERE-ex: com.example.app]',
   appName: 'APP_NAME_HERE',
   webDir: 'out',
-  bundledWebRuntime: false,
   server: {
     url: PROD_URL,
     cleartext: true,

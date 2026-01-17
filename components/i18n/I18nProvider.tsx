@@ -19,6 +19,20 @@ const I18nContext = React.createContext<I18nContextType>({
   locale: DEFAULT_LOCALE,
   dir: 'ltr',
   t: (k) => k,
+  formatDate: (d) => {
+    try {
+      return d instanceof Date ? d.toISOString() : String(d);
+    } catch {
+      return '';
+    }
+  },
+  formatNumber: (n) => {
+    try {
+      return String(Number(n || 0));
+    } catch {
+      return '0';
+    }
+  },
 });
 
 function buildMessages(locale: string): Messages {
