@@ -36,6 +36,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { useI18n } from '@/components/i18n/useI18n';
+import TauriWindowControls from '@/components/tauri/TauriWindowControls';
 
 type NavItem = {
   href: string;
@@ -143,19 +144,22 @@ export default function AppSidebar({
             {process.env.NEXT_PUBLIC_SHOP_NAME || t('nav.appTitle')}
           </Typography>
         )}
-        {showCollapseToggle && (
-          <IconButton
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggleCollapsed?.();
-            }}
-            size="small"
-          >
-            {chevron}
-          </IconButton>
-        )}
+        <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: collapsed ? 'column' : 'row', gap: collapsed ? 0.5 : 0.75 }}>
+          <TauriWindowControls collapsed={collapsed} />
+          {showCollapseToggle && (
+            <IconButton
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onToggleCollapsed?.();
+              }}
+              size="small"
+            >
+              {chevron}
+            </IconButton>
+          )}
+        </Box>
       </Box>
       <Box
         sx={{

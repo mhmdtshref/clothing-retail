@@ -315,7 +315,12 @@
   "cashbox.zreport.totals": "Totals"
   ,
   "cashbox.viewTitle": "Cashbox",
-  "cashbox.expectedNow": "Expected cash (now)"
+  "cashbox.expectedNow": "Expected cash (now)",
+  "tauri.minimize": "Minimize",
+  "tauri.closeApp": "Close app",
+  "tauri.closeConfirmTitle": "Close the app?",
+  "tauri.closeConfirmBody": "Are you sure you want to close the app?",
+  "tauri.closeConfirmAction": "Close"
 }
 
 

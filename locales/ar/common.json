@@ -315,7 +315,12 @@
   "cashbox.zreport.totals": "الإجماليات"
   ,
   "cashbox.viewTitle": "الصندوق",
-  "cashbox.expectedNow": "المبلغ المتوقع الآن"
+  "cashbox.expectedNow": "المبلغ المتوقع الآن",
+  "tauri.minimize": "تصغير",
+  "tauri.closeApp": "إغلاق التطبيق",
+  "tauri.closeConfirmTitle": "إغلاق التطبيق؟",
+  "tauri.closeConfirmBody": "هل أنت متأكد أنك تريد إغلاق التطبيق؟",
+  "tauri.closeConfirmAction": "إغلاق"
 }
 
 
