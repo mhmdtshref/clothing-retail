@@ -107,18 +107,59 @@ export default function TauriWindowControls({ collapsed = false }: { collapsed?:
     try {
       const { getCurrentWindow } = await import('@tauri-apps/api/window');
       const win = getCurrentWindow();
+
+      let exitedFullscreen = false;
       try {
         await win.close();
         return;
       } catch (closeErr) {
+        // If we are fullscreen and close fails, exit fullscreen and retry.
+        try {
+          const isFs = await win.isFullscreen();
+          if (isFs) {
+            try {
+              await win.setFullscreen(false);
+              exitedFullscreen = true;
+            } catch (fsErr) {
+              console.error('Failed to exit fullscreen before closing', fsErr);
+            }
+
+            try {
+              await win.close();
+              return;
+            } catch (retryCloseErr) {
+              closeErr = retryCloseErr;
+            }
+          }
+        } catch (fsCheckErr) {
+          console.error('Failed to check fullscreen state before closing', fsCheckErr);
+        }
+
         // `close()` emits a closeRequested event and can be blocked; also can fail due to missing permissions.
         // `destroy()` forces the window close.
         try {
           await win.destroy();
           return;
         } catch (destroyErr) {
-          console.error('Failed to close app window', { closeErr, destroyErr });
-          setErrorMessage(t('tauri.closeFailed'));
+          // If we couldn't close and we're still fullscreen, exit fullscreen so native controls become accessible.
+          if (!exitedFullscreen) {
+            try {
+              const isFs = await win.isFullscreen();
+              if (isFs) {
+                try {
+                  await win.setFullscreen(false);
+                  exitedFullscreen = true;
+                } catch (fsErr) {
+                  console.error('Failed to exit fullscreen after close failure', fsErr);
+                }
+              }
+            } catch {}
+          }
+
+          console.error('Failed to close app window', { closeErr, destroyErr, exitedFullscreen });
+          setErrorMessage(
+            exitedFullscreen ? t('tauri.closeFailedFullscreenHint') : t('tauri.closeFailed'),
+          );
           setErrorOpen(true);
         }
       }
