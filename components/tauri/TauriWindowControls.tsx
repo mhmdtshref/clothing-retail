@@ -11,6 +11,8 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CloseIcon from '@mui/icons-material/Close';
@@ -40,6 +42,8 @@ export default function TauriWindowControls({ collapsed = false }: { collapsed?:
   const [enabled, setEnabled] = React.useState(false);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
+  const [errorOpen, setErrorOpen] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<string>('');
 
   React.useEffect(() => {
     setEnabled(isWindowsPlatform() && isTauriRuntime());
@@ -50,26 +54,79 @@ export default function TauriWindowControls({ collapsed = false }: { collapsed?:
     setBusy(true);
     try {
       const { getCurrentWindow } = await import('@tauri-apps/api/window');
-      await getCurrentWindow().minimize();
-    } catch {
-      // ignore (e.g., running in web browser / permissions missing)
+      const win = getCurrentWindow();
+
+      try {
+        await win.minimize();
+        return;
+      } catch (minimizeErr) {
+        // On Windows, minimizing a fullscreen window can be unreliable depending on current state.
+        // Fallback: exit fullscreen, minimize, then restore fullscreen once the window is focused again.
+        try {
+          const isFs = await win.isFullscreen();
+          if (!isFs) throw minimizeErr;
+
+          await win.setFullscreen(false);
+
+          const unlisten = await win.onFocusChanged(async ({ payload: focused }) => {
+            if (!focused) return;
+            try {
+              await win.setFullscreen(true);
+            } catch (err) {
+              console.error('Failed to restore fullscreen after unminimize', err);
+            } finally {
+              try {
+                unlisten();
+              } catch {}
+            }
+          });
+
+          await win.minimize();
+          return;
+        } catch (fallbackErr) {
+          console.error('Failed to minimize app window', { minimizeErr, fallbackErr });
+          setErrorMessage(t('tauri.minimizeFailed'));
+          setErrorOpen(true);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load Tauri window API', err);
+      setErrorMessage(t('tauri.minimizeFailed'));
+      setErrorOpen(true);
     } finally {
       setBusy(false);
     }
-  }, [busy]);
+  }, [busy, t]);
 
   const confirmClose = React.useCallback(async () => {
     if (busy) return;
     setBusy(true);
     try {
       const { getCurrentWindow } = await import('@tauri-apps/api/window');
-      await getCurrentWindow().close();
-    } catch {
-      // ignore (e.g., running in web browser / permissions missing)
+      const win = getCurrentWindow();
+      try {
+        await win.close();
+        return;
+      } catch (closeErr) {
+        // `close()` emits a closeRequested event and can be blocked; also can fail due to missing permissions.
+        // `destroy()` forces the window close.
+        try {
+          await win.destroy();
+          return;
+        } catch (destroyErr) {
+          console.error('Failed to close app window', { closeErr, destroyErr });
+          setErrorMessage(t('tauri.closeFailed'));
+          setErrorOpen(true);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load Tauri window API', err);
+      setErrorMessage(t('tauri.closeFailed'));
+      setErrorOpen(true);
     } finally {
       setBusy(false);
     }
-  }, [busy]);
+  }, [busy, t]);
 
   if (!enabled) return null;
 
@@ -133,6 +190,17 @@ export default function TauriWindowControls({ collapsed = false }: { collapsed?:
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={errorOpen}
+        onClose={() => setErrorOpen(false)}
+        autoHideDuration={5000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setErrorOpen(false)} severity="error" variant="filled">
+          {errorMessage || t('tauri.closeFailed')}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
