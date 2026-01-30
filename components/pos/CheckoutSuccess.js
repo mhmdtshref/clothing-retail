@@ -1,7 +1,18 @@
 'use client';
 
 import * as React from 'react';
-import { Box, Stack, Typography, Button, Divider, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import {
+  Box,
+  Stack,
+  Typography,
+  Button,
+  Divider,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
 import { printUrlInIframe } from '@/lib/print/printUrlInIframe';
 
@@ -10,7 +21,9 @@ export default function CheckoutSuccess({ receipt, totals, paidTotal, dueTotal, 
   const printRef = React.useRef(null);
   const onPrint = () => {
     if (!receipt?._id) return;
-    printUrlInIframe(`/pos/print/${encodeURIComponent(String(receipt._id))}?autoprint=0`).catch(() => {});
+    printUrlInIframe(`/pos/print/${encodeURIComponent(String(receipt._id))}?autoprint=0`).catch(
+      () => {},
+    );
   };
   const isReturn = receipt?.type === 'sale_return';
   const isPending = receipt?.status === 'pending';
@@ -29,16 +42,31 @@ export default function CheckoutSuccess({ receipt, totals, paidTotal, dueTotal, 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-        <Typography variant="h6">{isReturn ? t('pos.returnCompleted') : (isPending ? t('pos.salePending') : t('pos.saleCompleted'))}</Typography>
+        <Typography variant="h6">
+          {isReturn
+            ? t('pos.returnCompleted')
+            : isPending
+              ? t('pos.salePending')
+              : t('pos.saleCompleted')}
+        </Typography>
         <Stack direction="row" spacing={1}>
-          <Button variant="outlined" onClick={onPrint}>{t('common.print')}</Button>
-          <Button variant="contained" onClick={onNewSale}>{t('pos.newSale')}</Button>
+          <Button variant="outlined" onClick={onPrint}>
+            {t('common.print')}
+          </Button>
+          <Button variant="contained" onClick={onNewSale}>
+            {t('pos.newSale')}
+          </Button>
         </Stack>
       </Stack>
       <Divider sx={{ mb: 2 }} />
       <Box ref={printRef} sx={{ bgColor: 'white' }}>
-        <Typography variant="subtitle2" color="text.secondary">{isReturn ? t('receipt.return') : t('pos.receipt')} #{String(receipt?._id || '').slice(-6)}</Typography>
-        <Typography variant="body2">{t('common.date')}: {receipt?.date ? formatDate(new Date(receipt.date)) : '-'}</Typography>
+        <Typography variant="subtitle2" color="text.secondary">
+          {isReturn ? t('receipt.return') : t('pos.receipt')} #
+          {String(receipt?._id || '').slice(-6)}
+        </Typography>
+        <Typography variant="body2">
+          {t('common.date')}: {receipt?.date ? formatDate(new Date(receipt.date)) : '-'}
+        </Typography>
         <Divider sx={{ my: 1 }} />
         <Table size="small">
           <TableHead>
@@ -57,17 +85,36 @@ export default function CheckoutSuccess({ receipt, totals, paidTotal, dueTotal, 
               const unit = Number(it.unitPrice || 0);
               const q = Number(it.qty || 0);
               const line = unit * q;
-              const d = it.discount ? (it.discount.mode === 'percent' ? `${it.discount.value}%` : it.discount.value) : 0;
-              const discAmt = it.discount ? (it.discount.mode === 'percent' ? (line * Number(it.discount.value || 0) / 100) : Number(it.discount.value || 0)) : 0;
+              const d = it.discount
+                ? it.discount.mode === 'percent'
+                  ? `${it.discount.value}%`
+                  : it.discount.value
+                : 0;
+              const discAmt = it.discount
+                ? it.discount.mode === 'percent'
+                  ? (line * Number(it.discount.value || 0)) / 100
+                  : Number(it.discount.value || 0)
+                : 0;
               const net = Math.max(0, line - discAmt);
               return (
                 <TableRow key={idx}>
                   <TableCell>{s.productCode || '-'}</TableCell>
                   <TableCell>{`${s.size || ''} / ${s.color || ''}`}</TableCell>
                   <TableCell align="right">{formatNumber(q)}</TableCell>
-                  <TableCell align="right">{formatNumber(unit, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
-                  <TableCell align="right">{typeof d === 'string' ? d : formatNumber(Number(d), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
-                  <TableCell align="right">{formatNumber(net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                  <TableCell align="right">
+                    {formatNumber(unit, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </TableCell>
+                  <TableCell align="right">
+                    {typeof d === 'string'
+                      ? d
+                      : formatNumber(Number(d), {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                  </TableCell>
+                  <TableCell align="right">
+                    {formatNumber(net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </TableCell>
                 </TableRow>
               );
             })}
@@ -75,15 +122,57 @@ export default function CheckoutSuccess({ receipt, totals, paidTotal, dueTotal, 
         </Table>
         <Divider sx={{ my: 1 }} />
         <Stack alignItems="flex-end" spacing={0.5}>
-          <Typography>{t('receipt.subtotal')}: {formatNumber(Number(totals?.itemSubtotal || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-          <Typography>{t('receipt.itemDiscounts')}: -{formatNumber(Number(totals?.itemDiscountTotal || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-          <Typography>{t('receipt.billDiscount')}: -{formatNumber(Number(totals?.billDiscountTotal || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-          <Typography>{t('receipt.tax')} ({formatNumber(Number(totals?.taxPercent || 0))}%): {formatNumber(Number(totals?.taxTotal || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-          <Typography variant="h6">{t('receipt.grandTotal')}: {formatNumber(Number(totals?.grandTotal || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+          <Typography>
+            {t('receipt.subtotal')}:{' '}
+            {formatNumber(Number(totals?.itemSubtotal || 0), {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Typography>
+          <Typography>
+            {t('receipt.itemDiscounts')}: -
+            {formatNumber(Number(totals?.itemDiscountTotal || 0), {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Typography>
+          <Typography>
+            {t('receipt.billDiscount')}: -
+            {formatNumber(Number(totals?.billDiscountTotal || 0), {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Typography>
+          <Typography>
+            {t('receipt.tax')} ({formatNumber(Number(totals?.taxPercent || 0))}%):{' '}
+            {formatNumber(Number(totals?.taxTotal || 0), {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Typography>
+          <Typography variant="h6">
+            {t('receipt.grandTotal')}:{' '}
+            {formatNumber(Number(totals?.grandTotal || 0), {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Typography>
           {(isPending || computedPaid > 0) && (
             <>
-              <Typography>{t('receipt.paid')}: {formatNumber(Number(computedPaid || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-              <Typography>{t('receipt.balance')}: {formatNumber(Number(computedDue || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+              <Typography>
+                {t('receipt.paid')}:{' '}
+                {formatNumber(Number(computedPaid || 0), {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </Typography>
+              <Typography>
+                {t('receipt.balance')}:{' '}
+                {formatNumber(Number(computedDue || 0), {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </Typography>
             </>
           )}
         </Stack>
@@ -93,5 +182,3 @@ export default function CheckoutSuccess({ receipt, totals, paidTotal, dueTotal, 
     </Box>
   );
 }
-
-

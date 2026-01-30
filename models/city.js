@@ -14,5 +14,3 @@ CitySchema.index({ provider: 1, providerCityId: 1 }, { unique: true });
 CitySchema.index({ provider: 1, name: 1 });
 
 export default mongoose.models.City || mongoose.model('City', CitySchema);
-
-

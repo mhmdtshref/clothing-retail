@@ -9,7 +9,14 @@ import Receipt from '@/models/receipt';
 import { ensureReceiptEditable, assertStatusTransition } from '@/lib/receipt-guards';
 
 const BodySchema = z.object({
-  status: z.enum(['ordered', 'on_delivery', 'payment_collected', 'ready_to_receive', 'completed', 'pending']),
+  status: z.enum([
+    'ordered',
+    'on_delivery',
+    'payment_collected',
+    'ready_to_receive',
+    'completed',
+    'pending',
+  ]),
 });
 
 export async function PATCH(req, context) {

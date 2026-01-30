@@ -9,7 +9,11 @@ import CashboxSession from '@/models/cashboxSession';
 import CashMovement from '@/models/cashMovement';
 
 function summarize(rows = []) {
-  const sum = { in: 0, out: 0, bySource: { sale: 0, payment: 0, return: 0, adjustmentIn: 0, adjustmentOut: 0 } };
+  const sum = {
+    in: 0,
+    out: 0,
+    bySource: { sale: 0, payment: 0, return: 0, adjustmentIn: 0, adjustmentOut: 0 },
+  };
   for (const r of rows) {
     const direction = r._id?.direction;
     const source = r._id?.source;
@@ -41,7 +45,8 @@ export async function GET() {
   ]);
   const sums = summarize(rows);
 
-  const expectedCash = Number(session.openingAmount || 0) + Number(sums.in || 0) - Number(sums.out || 0);
+  const expectedCash =
+    Number(session.openingAmount || 0) + Number(sums.in || 0) - Number(sums.out || 0);
 
   return NextResponse.json({
     ok: true,
@@ -56,5 +61,3 @@ export async function GET() {
     },
   });
 }
-
-

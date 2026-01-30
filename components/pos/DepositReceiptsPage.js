@@ -219,9 +219,15 @@ export default function DepositReceiptsPage() {
             </TableBody>
           </Table>
 
-          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: 2, py: 2 }}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ px: 2, py: 2 }}
+          >
             <Typography variant="body2" color="text.secondary">
-              {t('common.total')}: {meta.total} • {t('common.page')} {page} {t('common.of')} {meta.pages || 1}
+              {t('common.total')}: {meta.total} • {t('common.page')} {page} {t('common.of')}{' '}
+              {meta.pages || 1}
             </Typography>
             <Pagination
               page={page}
@@ -235,7 +241,11 @@ export default function DepositReceiptsPage() {
         </>
       )}
 
-      <ReceiptDetailsDialog id={detailsId} open={Boolean(detailsId)} onClose={() => setDetailsId(null)} />
+      <ReceiptDetailsDialog
+        id={detailsId}
+        open={Boolean(detailsId)}
+        onClose={() => setDetailsId(null)}
+      />
       <CollectPaymentDialog
         open={collectOpen}
         onClose={() => setCollectOpen(false)}
@@ -249,4 +259,3 @@ export default function DepositReceiptsPage() {
     </Paper>
   );
 }
-

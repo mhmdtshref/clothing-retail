@@ -7,7 +7,12 @@ const CashMovementSchema = new Schema(
     at: { type: Date, default: () => new Date(), index: true },
     amount: { type: Number, required: true, min: 0 },
     direction: { type: String, enum: ['in', 'out'], required: true, index: true },
-    source: { type: String, enum: ['sale', 'return', 'payment', 'adjustment'], required: true, index: true },
+    source: {
+      type: String,
+      enum: ['sale', 'return', 'payment', 'adjustment'],
+      required: true,
+      index: true,
+    },
     method: { type: String, default: 'cash' },
     receiptId: { type: Types.ObjectId, ref: 'Receipt' },
     note: { type: String },
@@ -19,5 +24,3 @@ const CashMovementSchema = new Schema(
 CashMovementSchema.index({ sessionId: 1, at: 1 });
 
 export default mongoose.models.CashMovement || mongoose.model('CashMovement', CashMovementSchema);
-
-

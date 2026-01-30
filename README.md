@@ -36,20 +36,24 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 ## PWA (Installable App)
+
 - Manifest in `public/manifest.json` and Service Worker in `public/sw.js`.
 - Install banner via `components/pwa/InstallPrompt.tsx`.
 - SW registered globally in `app/layout.js` through `components/pwa/RegisterSW`.
 - Offline fallback page: `public/offline.html`.
 
 ### Offline Outbox
+
 - IndexedDB wrapper `lib/db/dexie.ts`.
 - Outbox and sync logic `lib/offline/sync.ts` (auto-flush on online/visibility).
 - POS queues sales/payments when offline.
 
 ### Lighthouse
+
 - Audit in Chrome DevTools → Lighthouse (PWA). Ensure HTTPS and icons.
 
 ## Mobile (Capacitor)
+
 1. Install packages:
    - npm i -D @capacitor/cli
    - npm i @capacitor/core @capacitor/android @capacitor/ios
@@ -61,9 +65,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 4. Open projects:
    - npx cap open android
    - npx cap open ios
-See `mobile/README.md`.
+     See `mobile/README.md`.
 
 ## Desktop (Tauri)
+
 1. Install Tauri prerequisites and CLI https://tauri.app
 2. Set app URL and replace in config:
    - export TAURI_APP_URL="https://your-domain.example.com"

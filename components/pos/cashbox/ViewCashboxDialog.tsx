@@ -1,7 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
 
 export default function ViewCashboxDialog({
@@ -19,7 +26,8 @@ export default function ViewCashboxDialog({
       <DialogTitle>{t('cashbox.viewTitle')}</DialogTitle>
       <DialogContent>
         <Typography variant="body1" sx={{ mt: 1 }}>
-          {t('cashbox.expectedNow')}: {formatNumber(expected, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          {t('cashbox.expectedNow')}:{' '}
+          {formatNumber(expected, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </Typography>
       </DialogContent>
       <DialogActions>
@@ -28,5 +36,3 @@ export default function ViewCashboxDialog({
     </Dialog>
   );
 }
-
-

@@ -2,7 +2,16 @@
 
 import * as React from 'react';
 import {
-  Box, Stack, Button, Typography, LinearProgress, Avatar, IconButton, Tooltip, Alert, CircularProgress,
+  Box,
+  Stack,
+  Button,
+  Typography,
+  LinearProgress,
+  Avatar,
+  IconButton,
+  Tooltip,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -16,7 +25,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
  *  - disabled?: boolean
  *  - maxBytesHint?: number  // optional UI hint; server enforces real limit
  */
-export default function ProductImageUploader({ productId, value, onChange, disabled, maxBytesHint }) {
+export default function ProductImageUploader({
+  productId,
+  value,
+  onChange,
+  disabled,
+  maxBytesHint,
+}) {
   const [file, setFile] = React.useState(null);
   const [preview, setPreview] = React.useState(value?.url || '');
   const [progress, setProgress] = React.useState(0);
@@ -32,7 +47,9 @@ export default function ProductImageUploader({ productId, value, onChange, disab
 
   function resetAll() {
     // best-effort cleanup for local previews
-    try { if (typeof preview === 'string' && preview.startsWith('blob:')) URL.revokeObjectURL(preview); } catch {}
+    try {
+      if (typeof preview === 'string' && preview.startsWith('blob:')) URL.revokeObjectURL(preview);
+    } catch {}
     setFile(null);
     setPreview('');
     setProgress(0);
@@ -56,7 +73,10 @@ export default function ProductImageUploader({ productId, value, onChange, disab
       const minimized = await compressImageToMaxBytes(f, { maxBytes: 40 * 1024 });
       setFile(minimized);
       // cleanup previous local preview to avoid leaks when replacing an image
-      try { if (typeof preview === 'string' && preview.startsWith('blob:')) URL.revokeObjectURL(preview); } catch {}
+      try {
+        if (typeof preview === 'string' && preview.startsWith('blob:'))
+          URL.revokeObjectURL(preview);
+      } catch {}
 
       objURL = URL.createObjectURL(minimized);
       setPreview(objURL);
@@ -65,18 +85,24 @@ export default function ProductImageUploader({ productId, value, onChange, disab
     } catch (err) {
       setError(err?.message || String(err));
       // best-effort cleanup for this attempt
-      try { if (objURL) URL.revokeObjectURL(objURL); } catch {}
+      try {
+        if (objURL) URL.revokeObjectURL(objURL);
+      } catch {}
       setPreview('');
       setFile(null);
     } finally {
       setProcessing(false);
       // allow selecting the same file again to re-trigger onChange
-      try { e.target.value = ''; } catch {}
+      try {
+        e.target.value = '';
+      } catch {}
     }
   }
 
   async function uploadToS3(f, dims) {
-    setUploading(true); setProgress(0); setError('');
+    setUploading(true);
+    setProgress(0);
+    setError('');
     try {
       // Upload to our Next API; it will forward to S3 server-side
       const form = new FormData();
@@ -84,7 +110,11 @@ export default function ProductImageUploader({ productId, value, onChange, disab
       if (productId) form.append('productId', productId);
       form.append('ext', mimeToExt(f.type));
 
-      const result = await xhrFormUploadJSON({ url: '/api/uploads/s3/upload', form, onProgress: setProgress });
+      const result = await xhrFormUploadJSON({
+        url: '/api/uploads/s3/upload',
+        form,
+        onProgress: setProgress,
+      });
       if (!result?.ok) throw new Error(result?.error || 'Upload failed');
 
       const image = {
@@ -104,18 +134,47 @@ export default function ProductImageUploader({ productId, value, onChange, disab
     <Stack spacing={1.5}>
       {error && <Alert severity="error">{error}</Alert>}
       <Stack direction="row" alignItems="center" spacing={2}>
-        <Box sx={{ width: 84, height: 84, borderRadius: 2, overflow: 'hidden', bgcolor: 'background.default', border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box
+          sx={{
+            width: 84,
+            height: 84,
+            borderRadius: 2,
+            overflow: 'hidden',
+            bgcolor: 'background.default',
+            border: '1px solid',
+            borderColor: 'divider',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={preview} alt="preview" style={{ maxWidth: '100%', maxHeight: '100%', display: 'block' }} />
+            <img
+              src={preview}
+              alt="preview"
+              style={{ maxWidth: '100%', maxHeight: '100%', display: 'block' }}
+            />
           ) : (
             <Avatar variant="rounded" sx={{ width: 64, height: 64 }} />
           )}
         </Box>
         <Stack direction="row" spacing={1}>
           <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-            <Button variant="contained" startIcon={busy ? <CircularProgress size={16} color="inherit" /> : <CloudUploadIcon />} disabled={disabled || busy}>
-              {uploading ? `Uploading… ${Math.round(progress || 0)}%` : processing ? 'Processing…' : (preview ? 'Replace Image' : 'Upload Image')}
+            <Button
+              variant="contained"
+              startIcon={
+                busy ? <CircularProgress size={16} color="inherit" /> : <CloudUploadIcon />
+              }
+              disabled={disabled || busy}
+            >
+              {uploading
+                ? `Uploading… ${Math.round(progress || 0)}%`
+                : processing
+                  ? 'Processing…'
+                  : preview
+                    ? 'Replace Image'
+                    : 'Upload Image'}
             </Button>
             {/*
               Use an *actual user click* on the file input (overlay, opacity 0).
@@ -148,12 +207,16 @@ export default function ProductImageUploader({ productId, value, onChange, disab
         </Stack>
       </Stack>
       {typeof maxBytesHint === 'number' && (
-        <Typography variant="caption" color="text.secondary">Max size ~{Math.round(maxBytesHint/1024/1024)} MB</Typography>
+        <Typography variant="caption" color="text.secondary">
+          Max size ~{Math.round(maxBytesHint / 1024 / 1024)} MB
+        </Typography>
       )}
       {uploading && (
         <Box>
           <LinearProgress variant="determinate" value={Math.max(0, Math.min(100, progress))} />
-          <Typography variant="caption" color="text.secondary">Uploading… {Math.round(progress)}%</Typography>
+          <Typography variant="caption" color="text.secondary">
+            Uploading… {Math.round(progress)}%
+          </Typography>
         </Box>
       )}
     </Stack>
@@ -162,14 +225,24 @@ export default function ProductImageUploader({ productId, value, onChange, disab
 
 function mimeToExt(m) {
   if (!m) return 'jpg';
-  const map = { 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+  const map = {
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+  };
   return map[m] || 'jpg';
 }
 
 function getImageDimensions(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.onload = () => resolve({ width: img.naturalWidth || img.width || 0, height: img.naturalHeight || img.height || 0 });
+    img.onload = () =>
+      resolve({
+        width: img.naturalWidth || img.width || 0,
+        height: img.naturalHeight || img.height || 0,
+      });
     img.onerror = () => reject(new Error('Failed to read image dimensions'));
     img.src = src;
   });
@@ -181,15 +254,18 @@ function getImageDimensions(src) {
  * - Strict: throws if it cannot reach the target size.
  * - Note: canvas-based encoding will flatten animated GIFs, so we reject GIF inputs.
  */
-async function compressImageToMaxBytes(file, {
-  maxBytes = 40 * 1024, // 40KB
-  mimeType = 'image/webp',
-  startQuality = 0.82,
-  minQuality = 0.35,
-  downscaleStep = 0.85,
-  minWidth = 160,
-  minHeight = 160,
-} = {}) {
+async function compressImageToMaxBytes(
+  file,
+  {
+    maxBytes = 40 * 1024, // 40KB
+    mimeType = 'image/webp',
+    startQuality = 0.82,
+    minQuality = 0.35,
+    downscaleStep = 0.85,
+    minWidth = 160,
+    minHeight = 160,
+  } = {},
+) {
   if (!file?.type?.startsWith('image/')) throw new Error('Please select an image file.');
   if (String(file.type).toLowerCase() === 'image/gif') {
     throw new Error('GIF compression is not supported. Please upload PNG/JPG/WebP.');
@@ -213,7 +289,11 @@ async function compressImageToMaxBytes(file, {
         return canvas.convertToBlob({ type, quality });
       }
       return new Promise((resolve, reject) => {
-        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Failed to encode image'))), type, quality);
+        canvas.toBlob(
+          (b) => (b ? resolve(b) : reject(new Error('Failed to encode image'))),
+          type,
+          quality,
+        );
       });
     };
 
@@ -249,7 +329,9 @@ async function compressImageToMaxBytes(file, {
 
     throw new Error('Could not compress image to 40KB. Try a smaller/cropped image.');
   } finally {
-    try { bitmap.close && bitmap.close(); } catch {}
+    try {
+      bitmap.close && bitmap.close();
+    } catch {}
   }
 }
 
@@ -304,5 +386,3 @@ async function xhrFormUploadJSON({ url, form, onProgress }) {
     xhr.send(form);
   });
 }
-
-

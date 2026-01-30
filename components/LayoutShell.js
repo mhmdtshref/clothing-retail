@@ -116,7 +116,14 @@ export default function LayoutShell({ children }) {
         </Box>
 
         {mounted && !online && (
-          <Box sx={{ bgcolor: 'warning.light', color: 'warning.contrastText', textAlign: 'center', py: 0.5 }}>
+          <Box
+            sx={{
+              bgcolor: 'warning.light',
+              color: 'warning.contrastText',
+              textAlign: 'center',
+              py: 0.5,
+            }}
+          >
             {t('status.offline')}
           </Box>
         )}

@@ -3,9 +3,24 @@
 import * as React from 'react';
 import {
   Autocomplete,
-  Box, Stack, TextField, InputAdornment, IconButton, Typography,
-  Chip, CircularProgress, Button, Tooltip,
-  DialogTitle, DialogContent, DialogActions, Table, TableHead, TableRow, TableCell, TableBody,
+  Box,
+  Stack,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Typography,
+  Chip,
+  CircularProgress,
+  Button,
+  Tooltip,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -34,34 +49,40 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
   const searchInputRef = React.useRef(null);
   const fetchSeq = React.useRef(0);
 
-  const fetchList = React.useCallback(async (search) => {
-    const trimmed = (search ?? '').trim();
-    const seq = ++fetchSeq.current;
-    if (trimmed.length < 1) {
-      setLoading(false);
+  const fetchList = React.useCallback(
+    async (search) => {
+      const trimmed = (search ?? '').trim();
+      const seq = ++fetchSeq.current;
+      if (trimmed.length < 1) {
+        setLoading(false);
+        setError('');
+        setItems([]);
+        return;
+      }
+      setLoading(true);
       setError('');
-      setItems([]);
-      return;
-    }
-    setLoading(true); setError('');
-    try {
-      const params = new URLSearchParams({ q: trimmed, page: '1', limit: String(limit) });
-      const res = await fetch(`/api/pos/search?${params.toString()}`, { cache: 'no-store' });
-      const json = await res.json();
-      if (!res.ok) throw new Error('Failed to load POS catalog');
-      if (seq !== fetchSeq.current) return; // stale response
-      setItems(json.items || []);
-    } catch (e) {
-      if (seq !== fetchSeq.current) return; // stale response
-      setError(e?.message || String(e));
-      setItems([]);
-    } finally {
-      if (seq !== fetchSeq.current) return;
-      setLoading(false);
-    }
-  }, [limit]);
+      try {
+        const params = new URLSearchParams({ q: trimmed, page: '1', limit: String(limit) });
+        const res = await fetch(`/api/pos/search?${params.toString()}`, { cache: 'no-store' });
+        const json = await res.json();
+        if (!res.ok) throw new Error('Failed to load POS catalog');
+        if (seq !== fetchSeq.current) return; // stale response
+        setItems(json.items || []);
+      } catch (e) {
+        if (seq !== fetchSeq.current) return; // stale response
+        setError(e?.message || String(e));
+        setItems([]);
+      } finally {
+        if (seq !== fetchSeq.current) return;
+        setLoading(false);
+      }
+    },
+    [limit],
+  );
 
-  React.useEffect(() => { fetchList(q); }, [fetchList, q]);
+  React.useEffect(() => {
+    fetchList(q);
+  }, [fetchList, q]);
 
   return (
     <Stack spacing={compact ? 0 : 2}>
@@ -69,7 +90,9 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
         <Autocomplete
           id="pos-catalog-search"
           open={open && query.trim().length >= 1}
-          onOpen={() => { if (query.trim().length >= 1) setOpen(true); }}
+          onOpen={() => {
+            if (query.trim().length >= 1) setOpen(true);
+          }}
           onClose={() => setOpen(false)}
           options={items}
           loading={loading}
@@ -109,11 +132,18 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
           }}
           isOptionEqualToValue={(opt, val) => opt?._id === val?._id}
           filterOptions={(x) => x}
-          noOptionsText={query.trim().length >= 1 ? t('products.none') : t('posCatalog.searchPlaceholder')}
+          noOptionsText={
+            query.trim().length >= 1 ? t('products.none') : t('posCatalog.searchPlaceholder')
+          }
           getOptionLabel={(option) => option?.code || ''}
           renderOption={(props, option) => (
             <Box component="li" {...props} key={option._id} sx={{ py: 1 }}>
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%', minWidth: 0 }}>
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                sx={{ width: '100%', minWidth: 0 }}
+              >
                 <Box
                   sx={{
                     width: 36,
@@ -128,14 +158,29 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
                   }}
                 >
                   {option.image?.url ? (
-                    <Box sx={{ position: 'absolute', inset: 0, backgroundImage: `url(${option.image.url})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        backgroundImage: `url(${option.image.url})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                      }}
+                    />
                   ) : null}
                 </Box>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
-                  <Typography variant="body2" fontWeight={700} noWrap>{option.code}</Typography>
-                  <Typography variant="caption" color="text.secondary" noWrap>{option.localCode || '-'}</Typography>
+                  <Typography variant="body2" fontWeight={700} noWrap>
+                    {option.code}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" noWrap>
+                    {option.localCode || '-'}
+                  </Typography>
                 </Box>
-                <Chip size="small" label={`${formatNumber(option.variants?.length || 0)} ${t('products.variants')}`} />
+                <Chip
+                  size="small"
+                  label={`${formatNumber(option.variants?.length || 0)} ${t('products.variants')}`}
+                />
               </Stack>
             </Box>
           )}
@@ -167,7 +212,10 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
           sx={{ flex: 1, minWidth: 0 }}
         />
         <IconButton
-          onClick={() => { fetchList(query); setOpen(true); }}
+          onClick={() => {
+            fetchList(query);
+            setOpen(true);
+          }}
           title={t('common.refresh')}
           disabled={query.trim().length < 1}
         >
@@ -175,23 +223,67 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
         </IconButton>
       </Stack>
       {/* Variant picker dialog */}
-      <FullScreenDialog open={Boolean(selected)} onClose={() => setSelected(null)} maxWidth="md" fullWidth>
+      <FullScreenDialog
+        open={Boolean(selected)}
+        onClose={() => setSelected(null)}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>{t('posCatalog.pickVariant')}</DialogTitle>
         <DialogContent dividers>
           {selected && (
             <>
               <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-                <Box sx={{ width: 96, height: 96, position: 'relative', bgcolor: 'background.default', border: '1px solid', borderColor: 'divider', overflow: 'hidden', borderRadius: 1 }}>
+                <Box
+                  sx={{
+                    width: 96,
+                    height: 96,
+                    position: 'relative',
+                    bgcolor: 'background.default',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    overflow: 'hidden',
+                    borderRadius: 1,
+                  }}
+                >
                   {selected.image?.url ? (
-                    <Box sx={{ position: 'absolute', inset: 0, backgroundImage: `url(${selected.image.url})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        backgroundImage: `url(${selected.image.url})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                      }}
+                    />
                   ) : (
-                    <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>{t('products.noImage')}</Box>
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'text.secondary',
+                      }}
+                    >
+                      {t('products.noImage')}
+                    </Box>
                   )}
                 </Box>
                 <Stack>
-                  <Typography variant="subtitle1" fontWeight={700}>{selected.code}</Typography>
-                  <Typography variant="body2" color="text.secondary">{selected.localCode || '-'}</Typography>
-                  <Chip size="small" label={`${formatNumber(selected.variants?.length || 0)} ${t('products.variants')}`} sx={{ alignSelf: 'flex-start' }} />
+                  <Typography variant="subtitle1" fontWeight={700}>
+                    {selected.code}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {selected.localCode || '-'}
+                  </Typography>
+                  <Chip
+                    size="small"
+                    label={`${formatNumber(selected.variants?.length || 0)} ${t('products.variants')}`}
+                    sx={{ alignSelf: 'flex-start' }}
+                  />
                 </Stack>
               </Stack>
 
@@ -213,9 +305,19 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
                         <TableCell>{v.company?.name || '-'}</TableCell>
                         <TableCell>{v.size}</TableCell>
                         <TableCell>{v.color}</TableCell>
-                        <TableCell align="right"><Chip size="small" color={out ? 'error' : 'success'} label={formatNumber(v.qty)} /></TableCell>
                         <TableCell align="right">
-                          <Tooltip title={out ? t('posCatalog.outOfStockAllowed') : t('posCatalog.addToCart')}>
+                          <Chip
+                            size="small"
+                            color={out ? 'error' : 'success'}
+                            label={formatNumber(v.qty)}
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Tooltip
+                            title={
+                              out ? t('posCatalog.outOfStockAllowed') : t('posCatalog.addToCart')
+                            }
+                          >
                             <span>
                               <Button
                                 size="small"
@@ -254,5 +356,3 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
     </Stack>
   );
 }
-
-

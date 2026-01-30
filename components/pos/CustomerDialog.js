@@ -99,14 +99,21 @@ export default function CustomerDialog({ open, onClose, onSelect, initialValue }
 
           {loading && <Typography variant="body2">{t('common.searching')}</Typography>}
           {!loading && error && (
-            <Typography color="error" variant="body2">{error}</Typography>
+            <Typography color="error" variant="body2">
+              {error}
+            </Typography>
           )}
 
           {!loading && !error && results.length > 0 && (
             <List dense sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
               {results.map((c) => (
                 <ListItem key={c._id} disablePadding>
-                  <ListItemButton onClick={() => { if (onSelect) onSelect(c); if (onClose) onClose(); }}>
+                  <ListItemButton
+                    onClick={() => {
+                      if (onSelect) onSelect(c);
+                      if (onClose) onClose();
+                    }}
+                  >
                     <ListItemText primary={c.name || t('common.noName')} secondary={c.phone} />
                   </ListItemButton>
                 </ListItem>
@@ -144,5 +151,3 @@ export default function CustomerDialog({ open, onClose, onSelect, initialValue }
     </FullScreenDialog>
   );
 }
-
-

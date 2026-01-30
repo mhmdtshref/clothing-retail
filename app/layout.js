@@ -23,7 +23,10 @@ export default function RootLayout({ children }) {
         {/* iOS PWA / Home Screen icon & meta */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content={process.env.NEXT_PUBLIC_SHOP_NAME || 'Clothing Shop POS'} />
+        <meta
+          name="apple-mobile-web-app-title"
+          content={process.env.NEXT_PUBLIC_SHOP_NAME || 'Clothing Shop POS'}
+        />
         <link rel="apple-touch-icon" href="/icons/apple-icon-180.png" />
       </head>
       <body>

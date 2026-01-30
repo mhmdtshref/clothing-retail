@@ -20,7 +20,9 @@ export default function CashboxZReport({ report }: { report: any }) {
         `}
       </style>
       <Box sx={{ maxWidth: 480, margin: '0 auto', p: 2 }}>
-        <Typography variant="h6" align="center">{t('cashbox.zreport.title')}</Typography>
+        <Typography variant="h6" align="center">
+          {t('cashbox.zreport.title')}
+        </Typography>
         <Typography variant="body2" align="center" sx={{ mb: 1 }}>
           {t('cashbox.zreport.session')} #{String(report?.sessionId || '').slice(-6)}
         </Typography>
@@ -33,40 +35,71 @@ export default function CashboxZReport({ report }: { report: any }) {
             {t('cashbox.zreport.closedAt')}: {formatDate(report.closedAt)}
           </Typography>
           <Typography variant="body2">
-            {t('cashbox.openingAmount')}: {formatNumber(report.openingAmount, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {t('cashbox.openingAmount')}:{' '}
+            {formatNumber(report.openingAmount, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Typography>
           <Typography variant="body2">
-            {t('cashbox.expected')}: {formatNumber(report.expectedCash, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {t('cashbox.expected')}:{' '}
+            {formatNumber(report.expectedCash, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Typography>
           <Typography variant="body2">
-            {t('cashbox.countedAmount')}: {formatNumber(report.countedAmount, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {t('cashbox.countedAmount')}:{' '}
+            {formatNumber(report.countedAmount, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Typography>
           <Typography variant="body2">
-            {t('cashbox.variance')}: {formatNumber(report.variance, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {t('cashbox.variance')}:{' '}
+            {formatNumber(report.variance, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </Typography>
         </Stack>
         <Divider sx={{ my: 1 }} />
         <Typography variant="subtitle2">{t('cashbox.zreport.totals')}</Typography>
         <Stack spacing={0.25} sx={{ mt: 0.5 }}>
           <Typography variant="body2">
-            {t('cashbox.salesCashIn')}: {formatNumber(report?.totals?.bySource?.sale || 0, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {t('cashbox.salesCashIn')}:{' '}
+            {formatNumber(report?.totals?.bySource?.sale || 0, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Typography>
           <Typography variant="body2">
-            {t('cashbox.paymentsCashIn')}: {formatNumber(report?.totals?.bySource?.payment || 0, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {t('cashbox.paymentsCashIn')}:{' '}
+            {formatNumber(report?.totals?.bySource?.payment || 0, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Typography>
           <Typography variant="body2">
-            {t('cashbox.returnsCashOut')}: {formatNumber(report?.totals?.bySource?.return || 0, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {t('cashbox.returnsCashOut')}:{' '}
+            {formatNumber(report?.totals?.bySource?.return || 0, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Typography>
           <Typography variant="body2">
-            {t('cashbox.adjustmentsIn')}: {formatNumber(report?.totals?.bySource?.adjustmentIn || 0, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {t('cashbox.adjustmentsIn')}:{' '}
+            {formatNumber(report?.totals?.bySource?.adjustmentIn || 0, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Typography>
           <Typography variant="body2">
-            {t('cashbox.adjustmentsOut')}: {formatNumber(report?.totals?.bySource?.adjustmentOut || 0, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {t('cashbox.adjustmentsOut')}:{' '}
+            {formatNumber(report?.totals?.bySource?.adjustmentOut || 0, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Typography>
         </Stack>
       </Box>
     </Box>
   );
 }
-
-

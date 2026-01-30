@@ -8,5 +8,3 @@ const POS_RECEIPT = {
 };
 
 export default POS_RECEIPT;
-
-

@@ -35,6 +35,5 @@ const CashboxSessionSchema = new Schema(
 
 CashboxSessionSchema.index({ status: 1, openedAt: -1 });
 
-export default mongoose.models.CashboxSession || mongoose.model('CashboxSession', CashboxSessionSchema);
-
-
+export default mongoose.models.CashboxSession ||
+  mongoose.model('CashboxSession', CashboxSessionSchema);

@@ -315,7 +315,7 @@
   "tauri.closeApp": "Close app",
   "tauri.closeConfirmTitle": "Close the app?",
   "tauri.closeConfirmBody": "Are you sure you want to close the app?",
-  "tauri.closeConfirmAction": "Close"
+  "tauri.closeConfirmAction": "Close",
+  "tauri.closeFailed": "Failed to close the app. Please close it from the window controls.",
+  "tauri.minimizeFailed": "Failed to minimize the app."
 }
-
-

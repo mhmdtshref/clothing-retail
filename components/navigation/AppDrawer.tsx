@@ -11,5 +11,3 @@ type AppDrawerProps = {
 export default function AppDrawer({ open, onClose }: AppDrawerProps) {
   return <AppSidebar variant="temporary" open={open} onClose={onClose} closeOnNavigate />;
 }
-
-

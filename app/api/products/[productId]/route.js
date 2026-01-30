@@ -13,14 +13,26 @@ export async function GET(_req, context) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const params = await context.params;
   const { productId } = params || {};
-  if (!productId || !mongoose.isValidObjectId(productId)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
+  if (!productId || !mongoose.isValidObjectId(productId))
+    return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
   try {
     await connectToDB();
-    const doc = await Product.findById(productId, { code: 1, localCode: 1, basePrice: 1, status: 1, image: 1, createdAt: 1, updatedAt: 1 }).lean();
+    const doc = await Product.findById(productId, {
+      code: 1,
+      localCode: 1,
+      basePrice: 1,
+      status: 1,
+      image: 1,
+      createdAt: 1,
+      updatedAt: 1,
+    }).lean();
     if (!doc) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
     return NextResponse.json({ ok: true, product: { ...doc, _id: String(doc._id) } });
   } catch (e) {
-    return NextResponse.json({ error: 'InternalServerError', message: e?.message || String(e) }, { status: 500 });
+    return NextResponse.json(
+      { error: 'InternalServerError', message: e?.message || String(e) },
+      { status: 500 },
+    );
   }
 }
 
@@ -47,14 +59,18 @@ export async function PATCH(req, context) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const params = await context.params;
   const { productId } = params || {};
-  if (!productId || !mongoose.isValidObjectId(productId)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
+  if (!productId || !mongoose.isValidObjectId(productId))
+    return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
 
   let input;
   try {
     const json = await req.json();
     input = PatchSchema.parse(json);
   } catch (e) {
-    return NextResponse.json({ error: 'ValidationError', message: e?.message || 'Invalid body' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'ValidationError', message: e?.message || 'Invalid body' },
+      { status: 400 },
+    );
   }
 
   try {
@@ -91,12 +107,24 @@ export async function PATCH(req, context) {
       else update.image = input.image;
     }
 
-    const doc = await Product.findByIdAndUpdate(productId, update, { new: true, projection: { code: 1, localCode: 1, basePrice: 1, status: 1, image: 1, createdAt: 1, updatedAt: 1 } }).lean();
+    const doc = await Product.findByIdAndUpdate(productId, update, {
+      new: true,
+      projection: {
+        code: 1,
+        localCode: 1,
+        basePrice: 1,
+        status: 1,
+        image: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    }).lean();
     if (!doc) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
     return NextResponse.json({ ok: true, product: { ...doc, _id: String(doc._id) } });
   } catch (e) {
-    return NextResponse.json({ error: 'InternalServerError', message: e?.message || String(e) }, { status: 500 });
+    return NextResponse.json(
+      { error: 'InternalServerError', message: e?.message || String(e) },
+      { status: 500 },
+    );
   }
 }
-
-

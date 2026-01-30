@@ -61,32 +61,38 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
   const sp = useSearchParams();
   const { t } = useI18n();
 
-  const state = {
-    query: sp.get('query') ?? DEFAULTS.query,
-    status: sp.get('status') ?? DEFAULTS.status,
-    companyId: sp.get('companyId') ?? DEFAULTS.companyId,
-    sort: sp.get('sort') ?? DEFAULTS.sort,
-    order: sp.get('order') ?? DEFAULTS.order,
-    page: Number(sp.get('page') ?? DEFAULTS.page),
-    limit: Number(sp.get('limit') ?? DEFAULTS.limit),
-    dateFrom: sp.get('dateFrom') ?? DEFAULTS.dateFrom,
-    dateTo: sp.get('dateTo') ?? DEFAULTS.dateTo,
-  };
+  const state = React.useMemo(
+    () => ({
+      query: sp.get('query') ?? DEFAULTS.query,
+      status: sp.get('status') ?? DEFAULTS.status,
+      companyId: sp.get('companyId') ?? DEFAULTS.companyId,
+      sort: sp.get('sort') ?? DEFAULTS.sort,
+      order: sp.get('order') ?? DEFAULTS.order,
+      page: Number(sp.get('page') ?? DEFAULTS.page),
+      limit: Number(sp.get('limit') ?? DEFAULTS.limit),
+      dateFrom: sp.get('dateFrom') ?? DEFAULTS.dateFrom,
+      dateTo: sp.get('dateTo') ?? DEFAULTS.dateTo,
+    }),
+    [sp],
+  );
 
-  const setState = (patch) => {
-    const next = { ...state, ...(typeof patch === 'function' ? patch(state) : patch) };
-    const qs = new URLSearchParams();
-    if (next.query) qs.set('query', next.query);
-    if (next.status) qs.set('status', next.status);
-    if (next.companyId) qs.set('companyId', next.companyId);
-    if (next.dateFrom) qs.set('dateFrom', next.dateFrom);
-    if (next.dateTo) qs.set('dateTo', next.dateTo);
-    qs.set('sort', next.sort);
-    qs.set('order', next.order);
-    qs.set('page', String(next.page));
-    qs.set('limit', String(next.limit));
-    router.push(`/receipts?${qs.toString()}`);
-  };
+  const setState = React.useCallback(
+    (patch) => {
+      const next = { ...state, ...(typeof patch === 'function' ? patch(state) : patch) };
+      const qs = new URLSearchParams();
+      if (next.query) qs.set('query', next.query);
+      if (next.status) qs.set('status', next.status);
+      if (next.companyId) qs.set('companyId', next.companyId);
+      if (next.dateFrom) qs.set('dateFrom', next.dateFrom);
+      if (next.dateTo) qs.set('dateTo', next.dateTo);
+      qs.set('sort', next.sort);
+      qs.set('order', next.order);
+      qs.set('page', String(next.page));
+      qs.set('limit', String(next.limit));
+      router.push(`/receipts?${qs.toString()}`);
+    },
+    [router, state],
+  );
 
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -184,7 +190,12 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
       return (purchaseNext[current] || []).map((value) => ({
         value,
         label: t(`status.${value}`),
-        icon: value === 'on_delivery' ? <LocalShippingIcon fontSize="small" /> : <DoneIcon fontSize="small" />,
+        icon:
+          value === 'on_delivery' ? (
+            <LocalShippingIcon fontSize="small" />
+          ) : (
+            <DoneIcon fontSize="small" />
+          ),
       }));
     }
 
@@ -192,7 +203,11 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
     return [
       { value: 'ordered', label: 'ordered', icon: <PendingActionsIcon fontSize="small" /> },
       { value: 'on_delivery', label: 'on_delivery', icon: <LocalShippingIcon fontSize="small" /> },
-      { value: 'payment_collected', label: 'payment_collected', icon: <DoneIcon fontSize="small" /> },
+      {
+        value: 'payment_collected',
+        label: 'payment_collected',
+        icon: <DoneIcon fontSize="small" />,
+      },
       { value: 'ready_to_receive', label: 'ready_to_receive', icon: <DoneIcon fontSize="small" /> },
       { value: 'completed', label: 'completed', icon: <DoneIcon fontSize="small" /> },
     ].filter((o) => o.value !== current);
@@ -240,7 +255,11 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
           sx={{ minWidth: 260 }}
         />
 
-        <IconButton sx={{ display: { xs: 'inline-flex', sm: 'none' } }} onClick={() => setFiltersOpen(true)} title="Filters">
+        <IconButton
+          sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+          onClick={() => setFiltersOpen(true)}
+          title="Filters"
+        >
           <FilterListIcon />
         </IconButton>
 
@@ -316,7 +335,12 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
           </Select>
         </FormControl>
 
-        <IconButton size="small" onClick={() => switchOrder()} aria-label="toggle order" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+        <IconButton
+          size="small"
+          onClick={() => switchOrder()}
+          aria-label="toggle order"
+          sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
+        >
           {state.order === 'asc' ? (
             <ArrowUpwardIcon fontSize="small" />
           ) : (
@@ -324,7 +348,10 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
           )}
         </IconButton>
 
-        <FormControl size="small" sx={{ minWidth: 120, ml: 'auto', display: { xs: 'none', sm: 'flex' } }}>
+        <FormControl
+          size="small"
+          sx={{ minWidth: 120, ml: 'auto', display: { xs: 'none', sm: 'flex' } }}
+        >
           <InputLabel id="limit-label">Per page</InputLabel>
           <Select
             labelId="limit-label"
@@ -339,7 +366,13 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
           </Select>
         </FormControl>
 
-        <Button component={Link} href="/receipts/new" startIcon={<AddIcon />} variant="contained" sx={{ ml: { xs: 'auto', sm: 0 } }}>
+        <Button
+          component={Link}
+          href="/receipts/new"
+          startIcon={<AddIcon />}
+          variant="contained"
+          sx={{ ml: { xs: 'auto', sm: 0 } }}
+        >
           {t('nav.newPurchase')}
         </Button>
         <IconButton onClick={fetchList} title="Refresh">
@@ -350,7 +383,9 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
       {/* Filters Drawer (mobile) */}
       <Drawer anchor="left" open={filtersOpen} onClose={() => setFiltersOpen(false)}>
         <Box sx={{ width: 320, maxWidth: '90vw', p: 2 }} role="presentation">
-          <Typography variant="h6" sx={{ mb: 1 }}>Filters</Typography>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            Filters
+          </Typography>
           <Stack spacing={2}>
             <FormControl size="small" fullWidth>
               <InputLabel id="status-label-m">Status</InputLabel>
@@ -386,8 +421,22 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
               </Select>
             </FormControl>
 
-            <TextField size="small" label="From" type="date" value={state.dateFrom} onChange={onDateFrom} InputLabelProps={{ shrink: true }} />
-            <TextField size="small" label="To" type="date" value={state.dateTo} onChange={onDateTo} InputLabelProps={{ shrink: true }} />
+            <TextField
+              size="small"
+              label="From"
+              type="date"
+              value={state.dateFrom}
+              onChange={onDateFrom}
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              size="small"
+              label="To"
+              type="date"
+              value={state.dateTo}
+              onChange={onDateTo}
+              InputLabelProps={{ shrink: true }}
+            />
 
             <FormControl size="small" fullWidth>
               <InputLabel id="sort-label-m">Sort by</InputLabel>
@@ -396,7 +445,11 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
                 label="Sort by"
                 value={state.sort}
                 onChange={onSortChange}
-                startAdornment={<InputAdornment position="start"><SortIcon fontSize="small" /></InputAdornment>}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <SortIcon fontSize="small" />
+                  </InputAdornment>
+                }
               >
                 <MenuItem value="date">date</MenuItem>
                 <MenuItem value="createdAt">createdAt</MenuItem>
@@ -407,7 +460,11 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
             <Stack direction="row" spacing={1} alignItems="center">
               <Typography variant="body2">Order</Typography>
               <IconButton size="small" onClick={() => switchOrder()} aria-label="toggle order">
-                {state.order === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />}
+                {state.order === 'asc' ? (
+                  <ArrowUpwardIcon fontSize="small" />
+                ) : (
+                  <ArrowDownwardIcon fontSize="small" />
+                )}
               </IconButton>
             </Stack>
 
@@ -473,7 +530,8 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
 
                 {data.items.map((r) => {
                   const disabledEdit = r.status === 'completed';
-                  const disabledStatus = r.status === 'completed' || (r.type === 'purchase' && r.status === 'completed');
+                  const disabledStatus =
+                    r.status === 'completed' || (r.type === 'purchase' && r.status === 'completed');
 
                   return (
                     <TableRow key={r._id} hover>
@@ -484,11 +542,7 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
                       <TableCell align="right">{Number(r.grandTotal || 0).toFixed(2)}</TableCell>
                       <TableCell align="right">
                         <Tooltip
-                          title={
-                            disabledEdit
-                              ? 'View (completed is read-only)'
-                              : 'View / Edit'
-                          }
+                          title={disabledEdit ? 'View (completed is read-only)' : 'View / Edit'}
                         >
                           <IconButton
                             size="small"
@@ -528,7 +582,9 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
             {/* Cards on xs */}
             <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
               {data.items.length === 0 && (
-                <Typography color="text.secondary" sx={{ py: 2 }}>No receipts found.</Typography>
+                <Typography color="text.secondary" sx={{ py: 2 }}>
+                  No receipts found.
+                </Typography>
               )}
               {data.items.map((r) => {
                 const disabledStatus = r.status === 'completed';
@@ -540,7 +596,7 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
                     title={r.company?.name || '-'}
                     subtitle={`${r.status} • ${date}`}
                     metaEnd={`${total}`}
-                    actions={(
+                    actions={
                       <Stack direction="row" spacing={1} sx={{ ml: 'auto' }}>
                         <Tooltip title="View / Edit">
                           <IconButton
@@ -552,7 +608,13 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
                             <EditIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title={disabledStatus ? 'Completed receipts cannot change status' : 'Change Status'}>
+                        <Tooltip
+                          title={
+                            disabledStatus
+                              ? 'Completed receipts cannot change status'
+                              : 'Change Status'
+                          }
+                        >
                           <span>
                             <IconButton
                               size="small"
@@ -565,9 +627,11 @@ export default function ReceiptsListPage({ companies, receiptType = 'all' }) {
                           </span>
                         </Tooltip>
                       </Stack>
-                    )}
+                    }
                   >
-                    <Typography variant="body2" color="text.secondary">Items: {r.itemCount}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Items: {r.itemCount}
+                    </Typography>
                   </ResponsiveListItem>
                 );
               })}

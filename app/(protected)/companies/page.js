@@ -10,5 +10,3 @@ export default async function Companies() {
   if (!session) redirect('/sign-in?redirect_url=/companies');
   return <CompaniesPage />;
 }
-
-

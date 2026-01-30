@@ -65,7 +65,12 @@ export async function GET(req) {
             const dueBefore = Math.max(0, Number(totals?.grandTotal || 0) - paidSoFar);
             if (dueBefore > 0) {
               doc.payments = Array.isArray(doc.payments) ? doc.payments : [];
-              doc.payments.push({ amount: dueBefore, method: 'cod', note: 'COD auto-sync', at: now });
+              doc.payments.push({
+                amount: dueBefore,
+                method: 'cod',
+                note: 'COD auto-sync',
+                at: now,
+              });
             }
           }
 
@@ -92,5 +97,3 @@ export async function GET(req) {
     );
   }
 }
-
-

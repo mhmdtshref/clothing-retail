@@ -1,7 +1,17 @@
 'use client';
 
 import * as React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Stack, TextField, MenuItem, Typography } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Stack,
+  TextField,
+  MenuItem,
+  Typography,
+} from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
 import { enqueuePayment } from '@/lib/offline/sync';
 
@@ -12,11 +22,14 @@ export default function CollectPaymentDialog({ open, onClose, receiptId, dueTota
   const [note, setNote] = React.useState('');
   const [submitting, setSubmitting] = React.useState(false);
 
-  const METHODS = React.useMemo(() => ([
-    { value: 'cash', label: t('payment.cash') },
-    { value: 'external_card', label: t('payment.externalCard') },
-    { value: 'other', label: t('payment.other') },
-  ]), [t]);
+  const METHODS = React.useMemo(
+    () => [
+      { value: 'cash', label: t('payment.cash') },
+      { value: 'external_card', label: t('payment.externalCard') },
+      { value: 'other', label: t('payment.other') },
+    ],
+    [t],
+  );
 
   React.useEffect(() => {
     if (open) {
@@ -29,7 +42,9 @@ export default function CollectPaymentDialog({ open, onClose, receiptId, dueTota
   const submit = async () => {
     // Prevent cash collection when cashbox is closed
     try {
-      const sess = await fetch('/api/cashbox/session', { cache: 'no-store' }).then((r) => r.json()).catch(() => null);
+      const sess = await fetch('/api/cashbox/session', { cache: 'no-store' })
+        .then((r) => r.json())
+        .catch(() => null);
       if (!sess?.ok || !sess?.open) {
         alert(t('cashbox.openCashbox'));
         return;
@@ -70,22 +85,44 @@ export default function CollectPaymentDialog({ open, onClose, receiptId, dueTota
       <DialogTitle>{t('pos.collectPayment')}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <Typography color="text.secondary">{t('collectPayment.due')}: {formatNumber(dueTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-          <TextField select label={t('checkout.paymentMethod')} value={method} onChange={(e) => setMethod(e.target.value)}>
+          <Typography color="text.secondary">
+            {t('collectPayment.due')}:{' '}
+            {formatNumber(dueTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </Typography>
+          <TextField
+            select
+            label={t('checkout.paymentMethod')}
+            value={method}
+            onChange={(e) => setMethod(e.target.value)}
+          >
             {METHODS.map((m) => (
-              <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
+              <MenuItem key={m.value} value={m.value}>
+                {m.label}
+              </MenuItem>
             ))}
           </TextField>
-          <TextField label={t('collectPayment.amount')} type="number" inputProps={{ min: 0, step: '0.01' }} value={amount} onChange={(e) => setAmount(e.target.value)} />
-          <TextField label={t('common.note')} value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
+          <TextField
+            label={t('collectPayment.amount')}
+            type="number"
+            inputProps={{ min: 0, step: '0.01' }}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <TextField
+            label={t('common.note')}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            multiline
+            minRows={2}
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{t('common.cancel')}</Button>
-        <Button disabled={submitting} variant="contained" onClick={submit}>{t('collectPayment.collect')}</Button>
+        <Button disabled={submitting} variant="contained" onClick={submit}>
+          {t('collectPayment.collect')}
+        </Button>
       </DialogActions>
     </Dialog>
   );
 }
-
-

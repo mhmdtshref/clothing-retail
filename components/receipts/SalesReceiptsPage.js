@@ -176,21 +176,36 @@ export default function SalesReceiptsPage() {
                   <TableCell>{formatDate(r.date)}</TableCell>
                   <TableCell>{r.type}</TableCell>
                   <TableCell>
-                    <Chip size="small" label={r.status} color={r.status === 'completed' ? 'success' : 'default'} />
+                    <Chip
+                      size="small"
+                      label={r.status}
+                      color={r.status === 'completed' ? 'success' : 'default'}
+                    />
                   </TableCell>
                   <TableCell align="right">{r.itemCount}</TableCell>
                   <TableCell align="right">
-                    {formatNumber(Number(r.grandTotal || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {formatNumber(Number(r.grandTotal || 0), {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </TableCell>
                   <TableCell align="right">
                     <Stack direction="row" spacing={0.5} justifyContent="flex-end">
                       <Tooltip title={t('common.view')}>
-                        <IconButton size="small" onClick={() => setDetailsId(String(r._id))} aria-label="View receipt">
+                        <IconButton
+                          size="small"
+                          onClick={() => setDetailsId(String(r._id))}
+                          aria-label="View receipt"
+                        >
                           <VisibilityIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title={t('common.print')}>
-                        <IconButton size="small" onClick={() => onPrint(String(r._id))} aria-label="Print receipt">
+                        <IconButton
+                          size="small"
+                          onClick={() => onPrint(String(r._id))}
+                          aria-label="Print receipt"
+                        >
                           <PrintIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
@@ -214,8 +229,11 @@ export default function SalesReceiptsPage() {
         </>
       )}
 
-      <ReceiptDetailsDialog id={detailsId} open={Boolean(detailsId)} onClose={() => setDetailsId(null)} />
+      <ReceiptDetailsDialog
+        id={detailsId}
+        open={Boolean(detailsId)}
+        onClose={() => setDetailsId(null)}
+      />
     </Paper>
   );
 }
-

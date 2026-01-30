@@ -14,5 +14,3 @@ export function normalizeLocale(input?: string | null): string {
 }
 
 export type Messages = Record<string, string>;
-
-

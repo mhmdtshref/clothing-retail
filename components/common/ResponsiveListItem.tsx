@@ -11,25 +11,40 @@ export type ResponsiveListItemProps = CardProps & {
   actions?: React.ReactNode;
 };
 
-export default function ResponsiveListItem({ title, subtitle, metaStart, metaEnd, actions, children, sx, ...rest }: ResponsiveListItemProps) {
+export default function ResponsiveListItem({
+  title,
+  subtitle,
+  metaStart,
+  metaEnd,
+  actions,
+  children,
+  sx,
+  ...rest
+}: ResponsiveListItemProps) {
   return (
     <Card variant="outlined" sx={{ borderRadius: 2, ...sx }} {...rest}>
       <CardContent sx={{ pb: actions ? 1 : 2 }}>
         <Stack direction="row" spacing={1} alignItems="flex-start" justifyContent="space-between">
           <Stack spacing={0.25} sx={{ minWidth: 0 }}>
-            <Typography variant="subtitle1" fontWeight={600} noWrap title={typeof title === 'string' ? title : undefined}>
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              noWrap
+              title={typeof title === 'string' ? title : undefined}
+            >
               {title}
             </Typography>
             {subtitle && (
-              <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'block', sm: 'none' } }} noWrap>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ display: { xs: 'block', sm: 'none' } }}
+                noWrap
+              >
                 {subtitle}
               </Typography>
             )}
-            {children && (
-              <Box sx={{ mt: 1 }}>
-                {children}
-              </Box>
-            )}
+            {children && <Box sx={{ mt: 1 }}>{children}</Box>}
           </Stack>
           <Stack spacing={0.5} alignItems="flex-end" sx={{ textAlign: 'end', minWidth: 0 }}>
             {metaStart}
@@ -41,13 +56,7 @@ export default function ResponsiveListItem({ title, subtitle, metaStart, metaEnd
           </Stack>
         </Stack>
       </CardContent>
-      {actions && (
-        <CardActions sx={{ pt: 0, justifyContent: 'flex-end' }}>
-          {actions}
-        </CardActions>
-      )}
+      {actions && <CardActions sx={{ pt: 0, justifyContent: 'flex-end' }}>{actions}</CardActions>}
     </Card>
   );
 }
-
-

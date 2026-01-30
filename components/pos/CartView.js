@@ -2,9 +2,23 @@
 
 import * as React from 'react';
 import {
-  Box, Stack, Table, TableHead, TableRow, TableCell, TableBody,
-  IconButton, TextField, Select, MenuItem, Button, Typography,
-  Dialog, DialogTitle, DialogContent, DialogActions,
+  Box,
+  Stack,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  IconButton,
+  TextField,
+  Select,
+  MenuItem,
+  Button,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
@@ -45,10 +59,13 @@ export default function CartView({
     }
   }, [items, selectedLineId, onSelectLineId]);
 
-  const handleRemoveLine = React.useCallback((id) => {
-    removeLine(id);
-    if (id === selectedLineId) onSelectLineId(null);
-  }, [removeLine, selectedLineId, onSelectLineId]);
+  const handleRemoveLine = React.useCallback(
+    (id) => {
+      removeLine(id);
+      if (id === selectedLineId) onSelectLineId(null);
+    },
+    [removeLine, selectedLineId, onSelectLineId],
+  );
 
   const selectedLine = React.useMemo(
     () => items.find((l) => l.id === selectedLineId) || null,
@@ -87,16 +104,19 @@ export default function CartView({
     setPriceDialogOpen(false);
   }, [selectedLine, priceDraft, setUnitPrice]);
 
-  const pricingPayload = React.useMemo(() => ({
-    type: 'sale',
-    items: items.map((l) => ({
-      qty: Number(l.qty) || 0,
-      unitPrice: Number(l.unitPrice) || 0,
-      discount: l.discount && Number(l.discount.value) > 0 ? l.discount : undefined,
-    })),
-    billDiscount: billDiscount && Number(billDiscount.value) > 0 ? billDiscount : undefined,
-    taxPercent: Number(taxPercent) || 0,
-  }), [items, billDiscount, taxPercent]);
+  const pricingPayload = React.useMemo(
+    () => ({
+      type: 'sale',
+      items: items.map((l) => ({
+        qty: Number(l.qty) || 0,
+        unitPrice: Number(l.unitPrice) || 0,
+        discount: l.discount && Number(l.discount.value) > 0 ? l.discount : undefined,
+      })),
+      billDiscount: billDiscount && Number(billDiscount.value) > 0 ? billDiscount : undefined,
+      taxPercent: Number(taxPercent) || 0,
+    }),
+    [items, billDiscount, taxPercent],
+  );
 
   const { totals } = computeReceiptTotals(pricingPayload);
 
@@ -132,10 +152,20 @@ export default function CartView({
             }}
           >
             <Stack spacing={1}>
-              <Button fullWidth variant="contained" onClick={openQtyDialog} disabled={!selectedLine}>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={openQtyDialog}
+                disabled={!selectedLine}
+              >
                 {t('common.qty')}
               </Button>
-              <Button fullWidth variant="outlined" onClick={openPriceDialog} disabled={!selectedLine}>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={openPriceDialog}
+                disabled={!selectedLine}
+              >
                 {t('pos.unitPrice')}
               </Button>
             </Stack>
@@ -143,74 +173,106 @@ export default function CartView({
 
           {/* Cart table */}
           <Box sx={{ width: '100%', overflowX: 'hidden', gridArea: 'table' }}>
-          <Table
-            size="small"
-            stickyHeader
-            sx={{
-              width: '100%',
-              tableLayout: 'fixed',
-            }}
-          >
-            <TableHead>
-              <TableRow>
-                <TableCell>{t('common.product')}</TableCell>
-                <TableCell align="right" sx={{ width: 72 }}>{t('common.qty')}</TableCell>
-                <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('pos.unitPrice')}</TableCell>
-                <TableCell align="right" sx={{ width: 96 }}>{t('cart.lineTotal')}</TableCell>
-                <TableCell align="right" sx={{ width: 64 }}>{t('common.actions')}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {items.length === 0 && (
+            <Table
+              size="small"
+              stickyHeader
+              sx={{
+                width: '100%',
+                tableLayout: 'fixed',
+              }}
+            >
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={5}>
-                    <Typography color="text.secondary" sx={{ py: 2 }}>{t('cart.empty')}</Typography>
+                  <TableCell>{t('common.product')}</TableCell>
+                  <TableCell align="right" sx={{ width: 72 }}>
+                    {t('common.qty')}
+                  </TableCell>
+                  <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
+                    {t('pos.unitPrice')}
+                  </TableCell>
+                  <TableCell align="right" sx={{ width: 96 }}>
+                    {t('cart.lineTotal')}
+                  </TableCell>
+                  <TableCell align="right" sx={{ width: 64 }}>
+                    {t('common.actions')}
                   </TableCell>
                 </TableRow>
-              )}
-              {items.map((l) => {
-                const { net } = computeLine({ qty: l.qty, unit: l.unitPrice, discount: l.discount });
-                return (
-                  <TableRow
-                    key={l.id}
-                    hover
-                    selected={selectedLineId === l.id}
-                    onClick={() => onSelectLineId(l.id)}
-                    sx={{
-                      cursor: 'pointer',
-                      '&.Mui-selected': { bgcolor: 'action.selected' },
-                      '&.Mui-selected:hover': { bgcolor: 'action.selected' },
-                    }}
-                  >
-                    <TableCell sx={{ overflow: 'hidden' }}>
-                      <Typography fontWeight={600} noWrap title={l.code}>{l.code}</Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{l.localCode || '\u00A0'}</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                        {l.size} / {l.color} • {l.companyName}
+              </TableHead>
+              <TableBody>
+                {items.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5}>
+                      <Typography color="text.secondary" sx={{ py: 2 }}>
+                        {t('cart.empty')}
                       </Typography>
                     </TableCell>
-                    <TableCell align="right" sx={{ width: 72 }}>
-                      <Typography fontWeight={600}>{formatNumber(l.qty)}</Typography>
-                    </TableCell>
-                    <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                      {formatNumber(l.unitPrice, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell align="right">
-                      {formatNumber(net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        color="error"
-                        onClick={(e) => { e.stopPropagation(); handleRemoveLine(l.id); }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                )}
+                {items.map((l) => {
+                  const { net } = computeLine({
+                    qty: l.qty,
+                    unit: l.unitPrice,
+                    discount: l.discount,
+                  });
+                  return (
+                    <TableRow
+                      key={l.id}
+                      hover
+                      selected={selectedLineId === l.id}
+                      onClick={() => onSelectLineId(l.id)}
+                      sx={{
+                        cursor: 'pointer',
+                        '&.Mui-selected': { bgcolor: 'action.selected' },
+                        '&.Mui-selected:hover': { bgcolor: 'action.selected' },
+                      }}
+                    >
+                      <TableCell sx={{ overflow: 'hidden' }}>
+                        <Typography fontWeight={600} noWrap title={l.code}>
+                          {l.code}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
+                        >
+                          {l.localCode || '\u00A0'}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block' }}
+                        >
+                          {l.size} / {l.color} • {l.companyName}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right" sx={{ width: 72 }}>
+                        <Typography fontWeight={600}>{formatNumber(l.qty)}</Typography>
+                      </TableCell>
+                      <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
+                        {formatNumber(l.unitPrice, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </TableCell>
+                      <TableCell align="right">
+                        {formatNumber(net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          color="error"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveLine(l.id);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </Box>
         </Box>
       ) : (
@@ -232,22 +294,36 @@ export default function CartView({
             <TableHead>
               <TableRow>
                 <TableCell>{t('common.product')}</TableCell>
-                <TableCell align="right" sx={{ width: 72 }}>{t('common.qty')}</TableCell>
-                <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{t('pos.unitPrice')}</TableCell>
-                <TableCell align="right" sx={{ width: 96 }}>{t('cart.lineTotal')}</TableCell>
-                <TableCell align="right" sx={{ width: 64 }}>{t('common.actions')}</TableCell>
+                <TableCell align="right" sx={{ width: 72 }}>
+                  {t('common.qty')}
+                </TableCell>
+                <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
+                  {t('pos.unitPrice')}
+                </TableCell>
+                <TableCell align="right" sx={{ width: 96 }}>
+                  {t('cart.lineTotal')}
+                </TableCell>
+                <TableCell align="right" sx={{ width: 64 }}>
+                  {t('common.actions')}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {items.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5}>
-                    <Typography color="text.secondary" sx={{ py: 2 }}>{t('cart.empty')}</Typography>
+                    <Typography color="text.secondary" sx={{ py: 2 }}>
+                      {t('cart.empty')}
+                    </Typography>
                   </TableCell>
                 </TableRow>
               )}
               {items.map((l) => {
-                const { net } = computeLine({ qty: l.qty, unit: l.unitPrice, discount: l.discount });
+                const { net } = computeLine({
+                  qty: l.qty,
+                  unit: l.unitPrice,
+                  discount: l.discount,
+                });
                 return (
                   <TableRow
                     key={l.id}
@@ -261,9 +337,21 @@ export default function CartView({
                     }}
                   >
                     <TableCell sx={{ overflow: 'hidden' }}>
-                      <Typography fontWeight={600} noWrap title={l.code}>{l.code}</Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{l.localCode || '\u00A0'}</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                      <Typography fontWeight={600} noWrap title={l.code}>
+                        {l.code}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
+                      >
+                        {l.localCode || '\u00A0'}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ display: 'block' }}
+                      >
                         {l.size} / {l.color} • {l.companyName}
                       </Typography>
                     </TableCell>
@@ -271,7 +359,10 @@ export default function CartView({
                       <Typography fontWeight={600}>{formatNumber(l.qty)}</Typography>
                     </TableCell>
                     <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                      {formatNumber(l.unitPrice, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {formatNumber(l.unitPrice, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </TableCell>
                     <TableCell align="right">
                       {formatNumber(net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -279,7 +370,10 @@ export default function CartView({
                     <TableCell align="right">
                       <IconButton
                         color="error"
-                        onClick={(e) => { e.stopPropagation(); handleRemoveLine(l.id); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveLine(l.id);
+                        }}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -292,9 +386,18 @@ export default function CartView({
         </Box>
       )}
       {/* Bill-level modifiers */}
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ xs: 'stretch', sm: 'center' }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={2}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+      >
         {(showBillDiscountControls || showTaxPercent) && (
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center" sx={{ flexGrow: 1 }}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1}
+            alignItems="center"
+            sx={{ flexGrow: 1 }}
+          >
             {showBillDiscountControls && (
               <Select
                 size="small"
@@ -313,7 +416,12 @@ export default function CartView({
                 label={t('checkout.billDiscount')}
                 type="number"
                 value={billDiscount.value}
-                onChange={(e) => setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value) || 0) }))}
+                onChange={(e) =>
+                  setBillDiscount((d) => ({
+                    ...d,
+                    value: Math.max(0, Number(e.target.value) || 0),
+                  }))
+                }
                 inputProps={{ min: 0, step: '0.01' }}
                 sx={{ width: { xs: '100%', sm: 160 } }}
                 fullWidth
@@ -325,7 +433,9 @@ export default function CartView({
                 label={t('checkout.taxPercent')}
                 type="number"
                 value={taxPercent}
-                onChange={(e) => setTaxPercent(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
+                onChange={(e) =>
+                  setTaxPercent(Math.max(0, Math.min(100, Number(e.target.value) || 0)))
+                }
                 inputProps={{ min: 0, max: 100, step: '0.01' }}
                 sx={{ width: { xs: '100%', sm: 160 } }}
                 fullWidth
@@ -333,16 +443,45 @@ export default function CartView({
             )}
           </Stack>
         )}
-        <Button startIcon={<ClearAllIcon />} variant="outlined" color="warning" onClick={clear} disabled={items.length === 0}>{t('cart.clearCart')}</Button>
+        <Button
+          startIcon={<ClearAllIcon />}
+          variant="outlined"
+          color="warning"
+          onClick={clear}
+          disabled={items.length === 0}
+        >
+          {t('cart.clearCart')}
+        </Button>
       </Stack>
 
       {/* Totals */}
       {showTotals && (
         <Stack spacing={0.5} alignItems="flex-end">
-          <Typography>{t('receipt.subtotal')}: {formatNumber(totals.itemSubtotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-          <Typography>{t('receipt.billDiscount')}: −{formatNumber(totals.billDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-          <Typography>{t('receipt.tax')} ({formatNumber(totals.taxPercent)}%): {formatNumber(totals.taxTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
-          <Typography variant="h6">{t('receipt.grandTotal')}: {formatNumber(totals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+          <Typography>
+            {t('receipt.subtotal')}:{' '}
+            {formatNumber(totals.itemSubtotal, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Typography>
+          <Typography>
+            {t('receipt.billDiscount')}: −
+            {formatNumber(totals.billDiscountTotal, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Typography>
+          <Typography>
+            {t('receipt.tax')} ({formatNumber(totals.taxPercent)}%):{' '}
+            {formatNumber(totals.taxTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </Typography>
+          <Typography variant="h6">
+            {t('receipt.grandTotal')}:{' '}
+            {formatNumber(totals.grandTotal, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Typography>
         </Stack>
       )}
 
@@ -363,7 +502,9 @@ export default function CartView({
         </DialogContent>
         <DialogActions>
           <Button onClick={closeQtyDialog}>{t('common.cancel')}</Button>
-          <Button variant="contained" onClick={saveQty} disabled={!selectedLine}>{t('common.save')}</Button>
+          <Button variant="contained" onClick={saveQty} disabled={!selectedLine}>
+            {t('common.save')}
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -383,11 +524,11 @@ export default function CartView({
         </DialogContent>
         <DialogActions>
           <Button onClick={closePriceDialog}>{t('common.cancel')}</Button>
-          <Button variant="contained" onClick={savePrice} disabled={!selectedLine}>{t('common.save')}</Button>
+          <Button variant="contained" onClick={savePrice} disabled={!selectedLine}>
+            {t('common.save')}
+          </Button>
         </DialogActions>
       </Dialog>
     </Stack>
   );
 }
-
-

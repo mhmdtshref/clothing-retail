@@ -83,16 +83,14 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
   const [submitting, setSubmitting] = React.useState(false);
   const [snack, setSnack] = React.useState({ open: false, message: '', severity: 'success' });
 
-  const sizeIdSet = new Set((values.sizeIds || []).map((x) => String(x)));
-  const colorIdSet = new Set((values.colorIds || []).map((x) => String(x)));
-  const selectedSizes = React.useMemo(
-    () => (variantSizes || []).filter((s) => sizeIdSet.has(String(s?._id))),
-    [variantSizes, values.sizeIds],
-  );
-  const selectedColors = React.useMemo(
-    () => (variantColors || []).filter((c) => colorIdSet.has(String(c?._id))),
-    [variantColors, values.colorIds],
-  );
+  const selectedSizes = React.useMemo(() => {
+    const sizeIdSet = new Set((values.sizeIds || []).map((x) => String(x)));
+    return (variantSizes || []).filter((s) => sizeIdSet.has(String(s?._id)));
+  }, [variantSizes, values.sizeIds]);
+  const selectedColors = React.useMemo(() => {
+    const colorIdSet = new Set((values.colorIds || []).map((x) => String(x)));
+    return (variantColors || []).filter((c) => colorIdSet.has(String(c?._id)));
+  }, [variantColors, values.colorIds]);
   const selectedCompanies = React.useMemo(
     () => companies.filter((c) => values.companyIds.includes(c._id)),
     [companies, values.companyIds],
@@ -158,8 +156,7 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
       });
       const data2 = await res2.json();
       if (!res2.ok) {
-        const msg =
-          data2?.message || data2?.error || t('errors.variantGenerationFailed');
+        const msg = data2?.message || data2?.error || t('errors.variantGenerationFailed');
         throw new Error(msg);
       }
 
@@ -188,7 +185,9 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
         <Stack spacing={2}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <Box sx={{ width: '100%' }}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>{t('products.imageOptional')}</Typography>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                {t('products.imageOptional')}
+              </Typography>
               <ProductImageUploader value={image} onChange={setImage} />
             </Box>
           </Stack>
@@ -232,11 +231,18 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
               options={variantSizes}
               getOptionLabel={(o) => pickLocalizedName(o?.name, locale)}
               value={selectedSizes}
-              onChange={(_, newVal) => setValues((v) => ({ ...v, sizeIds: newVal.map((x) => x._id) }))}
+              onChange={(_, newVal) =>
+                setValues((v) => ({ ...v, sizeIds: newVal.map((x) => x._id) }))
+              }
               fullWidth
               sx={{ flex: 1, minWidth: 0 }}
               renderInput={(params) => (
-                <TextField {...params} label={t('products.sizes')} placeholder={t('products.selectOneOrMore')} fullWidth />
+                <TextField
+                  {...params}
+                  label={t('products.sizes')}
+                  placeholder={t('products.selectOneOrMore')}
+                  fullWidth
+                />
               )}
             />
             <Autocomplete
@@ -244,7 +250,9 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
               options={variantColors}
               getOptionLabel={(o) => pickLocalizedName(o?.name, locale)}
               value={selectedColors}
-              onChange={(_, newVal) => setValues((v) => ({ ...v, colorIds: newVal.map((x) => x._id) }))}
+              onChange={(_, newVal) =>
+                setValues((v) => ({ ...v, colorIds: newVal.map((x) => x._id) }))
+              }
               fullWidth
               sx={{ flex: 1, minWidth: 0 }}
               renderInput={(params) => (
@@ -280,31 +288,31 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
               {t('products.variantPreview')} ({preview.total} {t('common.total')})
             </Typography>
             <Box sx={{ overflowX: 'auto' }}>
-            <Table size="small" sx={{ minWidth: 480 }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t('products.size')}</TableCell>
-                  <TableCell>{t('products.color')}</TableCell>
-                  <TableCell>{t('products.company')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {preview.rows.map((r, i) => (
-                  <TableRow key={i}>
-                    <TableCell>{pickLocalizedName(r.size?.name, locale)}</TableCell>
-                    <TableCell>{pickLocalizedName(r.color?.name, locale)}</TableCell>
-                    <TableCell>{r.companyName}</TableCell>
-                  </TableRow>
-                ))}
-                {preview.total > preview.rows.length && (
+              <Table size="small" sx={{ minWidth: 480 }}>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={3}>
-                      …{t('common.and')} {preview.total - preview.rows.length} {t('common.more')}
-                    </TableCell>
+                    <TableCell>{t('products.size')}</TableCell>
+                    <TableCell>{t('products.color')}</TableCell>
+                    <TableCell>{t('products.company')}</TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {preview.rows.map((r, i) => (
+                    <TableRow key={i}>
+                      <TableCell>{pickLocalizedName(r.size?.name, locale)}</TableCell>
+                      <TableCell>{pickLocalizedName(r.color?.name, locale)}</TableCell>
+                      <TableCell>{r.companyName}</TableCell>
+                    </TableRow>
+                  ))}
+                  {preview.total > preview.rows.length && (
+                    <TableRow>
+                      <TableCell colSpan={3}>
+                        …{t('common.and')} {preview.total - preview.rows.length} {t('common.more')}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </Box>
           </Box>
 

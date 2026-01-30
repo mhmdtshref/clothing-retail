@@ -150,7 +150,11 @@ export default function ProductsListPage() {
           sx={{ minWidth: 260 }}
         />
 
-        <IconButton sx={{ display: { xs: 'inline-flex', sm: 'none' } }} onClick={() => setFiltersOpen(true)} title={t('common.filters') || 'Filters'}>
+        <IconButton
+          sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+          onClick={() => setFiltersOpen(true)}
+          title={t('common.filters') || 'Filters'}
+        >
           <FilterListIcon />
         </IconButton>
 
@@ -187,7 +191,12 @@ export default function ProductsListPage() {
           </Select>
         </FormControl>
 
-        <IconButton size="small" onClick={switchOrder} aria-label="toggle order" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+        <IconButton
+          size="small"
+          onClick={switchOrder}
+          aria-label="toggle order"
+          sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
+        >
           {state.order === 'asc' ? (
             <ArrowUpwardIcon fontSize="small" />
           ) : (
@@ -195,7 +204,10 @@ export default function ProductsListPage() {
           )}
         </IconButton>
 
-        <FormControl size="small" sx={{ minWidth: 120, ml: 'auto', display: { xs: 'none', sm: 'flex' } }}>
+        <FormControl
+          size="small"
+          sx={{ minWidth: 120, ml: 'auto', display: { xs: 'none', sm: 'flex' } }}
+        >
           <InputLabel id="limit-label">{t('common.perPage')}</InputLabel>
           <Select
             labelId="limit-label"
@@ -222,7 +234,9 @@ export default function ProductsListPage() {
       {/* Filters Drawer (mobile) */}
       <Drawer anchor="left" open={filtersOpen} onClose={() => setFiltersOpen(false)}>
         <Box sx={{ width: 320, maxWidth: '90vw', p: 2 }} role="presentation">
-          <Typography variant="h6" sx={{ mb: 1 }}>{t('common.filters') || 'Filters'}</Typography>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            {t('common.filters') || 'Filters'}
+          </Typography>
           <Stack spacing={2}>
             <FormControl size="small" fullWidth>
               <InputLabel id="status-label-m">{t('common.status')}</InputLabel>
@@ -245,7 +259,11 @@ export default function ProductsListPage() {
                 label={t('common.sortBy')}
                 value={state.sort}
                 onChange={onSortChange}
-                startAdornment={<InputAdornment position="start"><SortIcon fontSize="small" /></InputAdornment>}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <SortIcon fontSize="small" />
+                  </InputAdornment>
+                }
               >
                 <MenuItem value="createdAt">{t('products.createdAt')}</MenuItem>
                 <MenuItem value="code">{t('products.code')}</MenuItem>
@@ -256,7 +274,11 @@ export default function ProductsListPage() {
             <Stack direction="row" spacing={1} alignItems="center">
               <Typography variant="body2">{t('common.order') || 'Order'}</Typography>
               <IconButton size="small" onClick={switchOrder} aria-label="toggle order">
-                {state.order === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />}
+                {state.order === 'asc' ? (
+                  <ArrowUpwardIcon fontSize="small" />
+                ) : (
+                  <ArrowDownwardIcon fontSize="small" />
+                )}
               </IconButton>
             </Stack>
 
@@ -325,7 +347,12 @@ export default function ProductsListPage() {
                       <Typography fontWeight={600}>{p.code}</Typography>
                     </TableCell>
                     <TableCell>{p.localCode || '-'}</TableCell>
-                    <TableCell align="right">{formatNumber(Number(p.basePrice || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                    <TableCell align="right">
+                      {formatNumber(Number(p.basePrice || 0), {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </TableCell>
                     <TableCell>{p.status}</TableCell>
                     <TableCell align="right">{formatNumber(p.variantCount ?? 0)}</TableCell>
                     <TableCell>{formatDate(p.createdAt)}</TableCell>
@@ -337,7 +364,9 @@ export default function ProductsListPage() {
             {/* Cards on xs */}
             <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
               {data.items.length === 0 && (
-                <Typography color="text.secondary" sx={{ py: 2 }}>{t('products.none')}</Typography>
+                <Typography color="text.secondary" sx={{ py: 2 }}>
+                  {t('products.none')}
+                </Typography>
               )}
               {data.items.map((p) => (
                 <ResponsiveListItem
@@ -347,7 +376,8 @@ export default function ProductsListPage() {
                   metaEnd={`${formatNumber(Number(p.basePrice || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                 >
                   <Typography variant="body2" color="text.secondary">
-                    {t('products.variants')}: {formatNumber(p.variantCount ?? 0)} • {t('products.created')}: {formatDate(p.createdAt)}
+                    {t('products.variants')}: {formatNumber(p.variantCount ?? 0)} •{' '}
+                    {t('products.created')}: {formatDate(p.createdAt)}
                   </Typography>
                 </ResponsiveListItem>
               ))}
@@ -360,7 +390,8 @@ export default function ProductsListPage() {
               sx={{ px: 2, py: 2 }}
             >
               <Typography variant="body2" color="text.secondary">
-                {t('common.total')}: {formatNumber(data.meta.total)} • {t('common.page')} {state.page} {t('common.of')} {formatNumber(data.meta.pages)}
+                {t('common.total')}: {formatNumber(data.meta.total)} • {t('common.page')}{' '}
+                {state.page} {t('common.of')} {formatNumber(data.meta.pages)}
               </Typography>
               <Pagination
                 page={state.page}

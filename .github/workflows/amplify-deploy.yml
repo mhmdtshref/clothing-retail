@@ -2,7 +2,7 @@ name: Amplify Deploy (Wait + Logs)
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -266,7 +266,7 @@ jobs:
       - name: Generate Tauri icons
         run: |
           npx -y @tauri-apps/cli@latest icon ./icon.png
-      
+
       - name: Configure AWS credentials (for secrets)
         uses: aws-actions/configure-aws-credentials@v4
         with:

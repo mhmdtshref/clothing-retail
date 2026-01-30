@@ -93,13 +93,21 @@ export default function AppSidebar({
     { href: '/receipts/sales', icon: <HistoryIcon />, label: t('nav.salesReceipts') },
     { href: '/receipts/deposits', icon: <PendingActionsIcon />, label: t('nav.depositReceipts') },
     { href: '/delivery/new', icon: <LocalShippingIcon />, label: t('nav.delivery') },
-    { href: '/pos', icon: <StoreIcon />, label: t('nav.pos') }
+    { href: '/pos', icon: <StoreIcon />, label: t('nav.pos') },
   ];
 
   const showCollapseToggle = variant === 'permanent' && typeof onToggleCollapsed === 'function';
-  const chevron = collapsed
-    ? (anchor === 'left' ? <ChevronRightIcon /> : <ChevronLeftIcon />)
-    : (anchor === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />);
+  const chevron = collapsed ? (
+    anchor === 'left' ? (
+      <ChevronRightIcon />
+    ) : (
+      <ChevronLeftIcon />
+    )
+  ) : anchor === 'left' ? (
+    <ChevronLeftIcon />
+  ) : (
+    <ChevronRightIcon />
+  );
   const tooltipSide: 'left' | 'right' = anchor === 'left' ? 'right' : 'left';
 
   const handleItemClick = React.useCallback(() => {
@@ -152,12 +160,24 @@ export default function AppSidebar({
         {!collapsed && (
           <Typography
             variant="subtitle1"
-            sx={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+            sx={{
+              fontWeight: 700,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
           >
             {process.env.NEXT_PUBLIC_SHOP_NAME || t('nav.appTitle')}
           </Typography>
         )}
-        <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: collapsed ? 'column' : 'row', gap: collapsed ? 0.5 : 0.75 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: collapsed ? 'column' : 'row',
+            gap: collapsed ? 0.5 : 0.75,
+          }}
+        >
           <TauriWindowControls collapsed={collapsed} />
           {showCollapseToggle && (
             <IconButton
@@ -212,7 +232,9 @@ export default function AppSidebar({
                   px: collapsed ? 1 : 2,
                 }}
               >
-                <ListItemIcon sx={{ minWidth: collapsed ? 0 : 40, justifyContent: 'center' }}>{item.icon}</ListItemIcon>
+                <ListItemIcon sx={{ minWidth: collapsed ? 0 : 40, justifyContent: 'center' }}>
+                  {item.icon}
+                </ListItemIcon>
                 {!collapsed && <ListItemText primary={item.label} />}
               </ListItemButton>
             );
@@ -266,29 +288,31 @@ export default function AppSidebar({
               <ListItemText primary={t('nav.signOut')} />
             </ListItemButton>
           )
-        ) : (
-          (collapsed ? (
-            <Tooltip title={t('nav.signIn')} placement={tooltipSide}>
-              <ListItemButton
-                component={Link}
-                href={`/sign-in?redirect_url=${encodeURIComponent(pathname || '/')}`}
-                onClick={handleItemClick}
-                sx={{ justifyContent: 'center', px: 1 }}
-                aria-label={t('nav.signIn')}
-              >
-                <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
-                  <LoginIcon />
-                </ListItemIcon>
-              </ListItemButton>
-            </Tooltip>
-          ) : (
-            <ListItemButton component={Link} href={`/sign-in?redirect_url=${encodeURIComponent(pathname || '/')}`} onClick={handleItemClick}>
-              <ListItemIcon>
+        ) : collapsed ? (
+          <Tooltip title={t('nav.signIn')} placement={tooltipSide}>
+            <ListItemButton
+              component={Link}
+              href={`/sign-in?redirect_url=${encodeURIComponent(pathname || '/')}`}
+              onClick={handleItemClick}
+              sx={{ justifyContent: 'center', px: 1 }}
+              aria-label={t('nav.signIn')}
+            >
+              <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
                 <LoginIcon />
               </ListItemIcon>
-              <ListItemText primary={t('nav.signIn')} />
             </ListItemButton>
-          ))
+          </Tooltip>
+        ) : (
+          <ListItemButton
+            component={Link}
+            href={`/sign-in?redirect_url=${encodeURIComponent(pathname || '/')}`}
+            onClick={handleItemClick}
+          >
+            <ListItemIcon>
+              <LoginIcon />
+            </ListItemIcon>
+            <ListItemText primary={t('nav.signIn')} />
+          </ListItemButton>
         )}
       </Box>
     </Box>
@@ -319,4 +343,3 @@ export default function AppSidebar({
     </Drawer>
   );
 }
-

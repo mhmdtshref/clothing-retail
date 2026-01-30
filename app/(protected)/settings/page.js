@@ -10,4 +10,3 @@ export default async function SettingsPage() {
   if (!session) redirect('/sign-in?redirect_url=/settings');
   return <VariantOptionsSettingsPage />;
 }
-

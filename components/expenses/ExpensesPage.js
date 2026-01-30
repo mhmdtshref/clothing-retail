@@ -53,7 +53,10 @@ export default function ExpensesPage() {
   const [categories, setCategories] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
-  const [data, setData] = React.useState({ items: [], meta: { total: 0, totalAmount: 0, pages: 1 } });
+  const [data, setData] = React.useState({
+    items: [],
+    meta: { total: 0, totalAmount: 0, pages: 1 },
+  });
 
   const [showExpenseDialog, setShowExpenseDialog] = React.useState(false);
   const [editingExpense, setEditingExpense] = React.useState(null);
@@ -69,7 +72,7 @@ export default function ExpensesPage() {
     } catch (e) {
       // keep UI usable even if categories fail
     }
-  }, []);
+  }, [t]);
 
   const fetchExpenses = React.useCallback(async () => {
     setLoading(true);
@@ -86,13 +89,16 @@ export default function ExpensesPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(t('errors.loadExpenses'));
       const pages = Math.max(1, Math.ceil((json?.meta?.total || 0) / filters.limit));
-      setData({ items: json.items || [], meta: { total: json?.meta?.total || 0, totalAmount: json?.meta?.totalAmount || 0, pages } });
+      setData({
+        items: json.items || [],
+        meta: { total: json?.meta?.total || 0, totalAmount: json?.meta?.totalAmount || 0, pages },
+      });
     } catch (e) {
       setError(e?.message || String(e));
     } finally {
       setLoading(false);
     }
-  }, [filters.q, filters.categoryId, filters.start, filters.end, filters.page, filters.limit]);
+  }, [filters.q, filters.categoryId, filters.start, filters.end, filters.page, filters.limit, t]);
 
   React.useEffect(() => {
     fetchCategories();
@@ -246,12 +252,26 @@ export default function ExpensesPage() {
                     <TableCell>{e.categoryName || '-'}</TableCell>
                     <TableCell>{e.vendor || '-'}</TableCell>
                     <TableCell>{e.note || '-'}</TableCell>
-                    <TableCell align="right">{formatNumber(Number(e.amount || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                     <TableCell align="right">
-                      <IconButton size="small" onClick={() => onEditExpense(e)} title={t('common.edit')}>
+                      {formatNumber(Number(e.amount || 0), {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        size="small"
+                        onClick={() => onEditExpense(e)}
+                        title={t('common.edit')}
+                      >
                         <EditIcon fontSize="small" />
                       </IconButton>
-                      <IconButton size="small" color="error" onClick={() => onDeleteExpense(e._id)} title={t('common.delete')}>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => onDeleteExpense(e._id)}
+                        title={t('common.delete')}
+                      >
                         <DeleteForeverIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
@@ -262,31 +282,62 @@ export default function ExpensesPage() {
 
             <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
               {data.items.length === 0 && (
-                <Typography color="text.secondary" sx={{ py: 2 }}>{t('expenses.none')}</Typography>
+                <Typography color="text.secondary" sx={{ py: 2 }}>
+                  {t('expenses.none')}
+                </Typography>
               )}
               {data.items.map((e) => (
                 <ResponsiveListItem
                   key={e._id}
                   title={e.vendor || '-'}
                   subtitle={`${formatDate(e.date, { dateStyle: 'medium' })} • ${e.categoryName || '-'}`}
-                  metaEnd={formatNumber(Number(e.amount || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  actions={(
+                  metaEnd={formatNumber(Number(e.amount || 0), {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  actions={
                     <Stack direction="row" spacing={1}>
-                      <Button size="small" onClick={() => onEditExpense(e)}>{t('common.edit')}</Button>
-                      <Button size="small" color="error" onClick={() => onDeleteExpense(e._id)}>{t('common.delete')}</Button>
+                      <Button size="small" onClick={() => onEditExpense(e)}>
+                        {t('common.edit')}
+                      </Button>
+                      <Button size="small" color="error" onClick={() => onDeleteExpense(e._id)}>
+                        {t('common.delete')}
+                      </Button>
                     </Stack>
-                  )}
+                  }
                 >
-                  {e.note && <Typography variant="body2" color="text.secondary">{e.note}</Typography>}
+                  {e.note && (
+                    <Typography variant="body2" color="text.secondary">
+                      {e.note}
+                    </Typography>
+                  )}
                 </ResponsiveListItem>
               ))}
             </Stack>
 
-            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: 2, py: 2 }}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ px: 2, py: 2 }}
+            >
               <Typography variant="body2" color="text.secondary">
-                {t('common.total')}: {formatNumber(data.meta.total)} • {t('expenses.pages')}: {formatNumber(data.meta.pages)} • {t('expenses.sum')}: {formatNumber(Number(data.meta.totalAmount || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {t('common.total')}: {formatNumber(data.meta.total)} • {t('expenses.pages')}:{' '}
+                {formatNumber(data.meta.pages)} • {t('expenses.sum')}:{' '}
+                {formatNumber(Number(data.meta.totalAmount || 0), {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </Typography>
-              <Pagination page={filters.page} count={data.meta.pages || 1} onChange={onPageChange} color="primary" shape="rounded" showFirstButton showLastButton />
+              <Pagination
+                page={filters.page}
+                count={data.meta.pages || 1}
+                onChange={onPageChange}
+                color="primary"
+                shape="rounded"
+                showFirstButton
+                showLastButton
+              />
             </Stack>
           </>
         )}
@@ -303,21 +354,30 @@ export default function ExpensesPage() {
       )}
 
       {showCategoryDialog && (
-        <ExpenseCategoryDialog open={showCategoryDialog} onClose={() => setShowCategoryDialog(false)} onSaved={onCategorySaved} />
+        <ExpenseCategoryDialog
+          open={showCategoryDialog}
+          onClose={() => setShowCategoryDialog(false)}
+          onSaved={onCategorySaved}
+        />
       )}
 
-      <Dialog open={confirmDelete.open} onClose={() => setConfirmDelete({ open: false, expenseId: null })}>
+      <Dialog
+        open={confirmDelete.open}
+        onClose={() => setConfirmDelete({ open: false, expenseId: null })}
+      >
         <DialogTitle>{t('expenses.deleteTitle')}</DialogTitle>
         <DialogContent>
           <Typography>{t('expenses.deleteConfirm')}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmDelete({ open: false, expenseId: null })}>{t('common.cancel')}</Button>
-          <Button color="error" variant="contained" onClick={confirmDeleteNow}>{t('common.delete')}</Button>
+          <Button onClick={() => setConfirmDelete({ open: false, expenseId: null })}>
+            {t('common.cancel')}
+          </Button>
+          <Button color="error" variant="contained" onClick={confirmDeleteNow}>
+            {t('common.delete')}
+          </Button>
         </DialogActions>
       </Dialog>
     </Paper>
   );
 }
-
-

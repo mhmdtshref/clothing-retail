@@ -57,20 +57,39 @@ export function useCart() {
   }, []);
 
   const dec = React.useCallback((id) => {
-    setItems((prev) => prev.map((l) => (l.id === id ? { ...l, qty: Math.max(0, (l.qty || 0) - 1) } : l)));
+    setItems((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, qty: Math.max(0, (l.qty || 0) - 1) } : l)),
+    );
   }, []);
 
   const setUnitPrice = React.useCallback((id, price) => {
-    setItems((prev) => prev.map((l) => (l.id === id ? { ...l, unitPrice: Math.max(0, Number(price) || 0) } : l)));
+    setItems((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, unitPrice: Math.max(0, Number(price) || 0) } : l)),
+    );
   }, []);
 
   const setDiscount = React.useCallback((id, patch) => {
-    setItems((prev) => prev.map((l) => (l.id === id ? { ...l, discount: { ...l.discount, ...patch } } : l)));
+    setItems((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, discount: { ...l.discount, ...patch } } : l)),
+    );
   }, []);
 
   const clearCustomer = React.useCallback(() => setCustomer(null), []);
 
-  return { items, mode, setMode, customer, setCustomer, clearCustomer, addVariant, removeLine, clear, setQty, inc, dec, setUnitPrice, setDiscount };
+  return {
+    items,
+    mode,
+    setMode,
+    customer,
+    setCustomer,
+    clearCustomer,
+    addVariant,
+    removeLine,
+    clear,
+    setQty,
+    inc,
+    dec,
+    setUnitPrice,
+    setDiscount,
+  };
 }
-
-

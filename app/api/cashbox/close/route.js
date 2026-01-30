@@ -15,7 +15,11 @@ const BodySchema = z.object({
 });
 
 function summarize(rows = []) {
-  const sum = { in: 0, out: 0, bySource: { sale: 0, payment: 0, return: 0, adjustmentIn: 0, adjustmentOut: 0 } };
+  const sum = {
+    in: 0,
+    out: 0,
+    bySource: { sale: 0, payment: 0, return: 0, adjustmentIn: 0, adjustmentOut: 0 },
+  };
   for (const r of rows) {
     const direction = r._id?.direction;
     const source = r._id?.source;
@@ -39,13 +43,19 @@ export async function POST(req) {
   try {
     body = BodySchema.parse(await req.json());
   } catch (e) {
-    return NextResponse.json({ error: 'ValidationError', message: e?.message || 'Invalid payload' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'ValidationError', message: e?.message || 'Invalid payload' },
+      { status: 400 },
+    );
   }
 
   await connectToDB();
   const session = await CashboxSession.findOne({ status: 'open' });
   if (!session) {
-    return NextResponse.json({ error: 'NoOpenSession', message: 'No open cashbox session' }, { status: 409 });
+    return NextResponse.json(
+      { error: 'NoOpenSession', message: 'No open cashbox session' },
+      { status: 409 },
+    );
   }
 
   const rows = await CashMovement.aggregate([
@@ -53,7 +63,8 @@ export async function POST(req) {
     { $group: { _id: { direction: '$direction', source: '$source' }, total: { $sum: '$amount' } } },
   ]);
   const sums = summarize(rows);
-  const expectedCash = Number(session.openingAmount || 0) + Number(sums.in || 0) - Number(sums.out || 0);
+  const expectedCash =
+    Number(session.openingAmount || 0) + Number(sums.in || 0) - Number(sums.out || 0);
 
   session.status = 'closed';
   session.closedAt = new Date();
@@ -90,5 +101,3 @@ export async function POST(req) {
     },
   });
 }
-
-

@@ -25,7 +25,15 @@ import { normalizeLocale } from '@/lib/i18n/config';
 const QuerySchema = z.object({
   query: z.string().trim().optional().default(''),
   status: z
-    .enum(['ordered', 'on_delivery', 'payment_collected', 'ready_to_receive', 'completed', 'pending', 'all'])
+    .enum([
+      'ordered',
+      'on_delivery',
+      'payment_collected',
+      'ready_to_receive',
+      'completed',
+      'pending',
+      'all',
+    ])
     .optional()
     .default('all'),
   type: z.enum(['purchase', 'sale', 'sale_return', 'all']).optional().default('all'),
@@ -52,7 +60,18 @@ export async function GET(req) {
     );
   }
 
-  const { query: q, status, type, companyId, dateFrom, dateTo, page, limit, sort, order } = parsed.data;
+  const {
+    query: q,
+    status,
+    type,
+    companyId,
+    dateFrom,
+    dateTo,
+    page,
+    limit,
+    sort,
+    order,
+  } = parsed.data;
 
   const filter = {};
   if (status !== 'all') filter.status = status;
@@ -272,7 +291,16 @@ const BodySchema = z
   .object({
     type: z.enum(['purchase', 'sale', 'sale_return']).default('purchase'),
     date: z.coerce.date().optional(),
-    status: z.enum(['ordered', 'on_delivery', 'payment_collected', 'ready_to_receive', 'completed', 'pending']).optional(),
+    status: z
+      .enum([
+        'ordered',
+        'on_delivery',
+        'payment_collected',
+        'ready_to_receive',
+        'completed',
+        'pending',
+      ])
+      .optional(),
     companyId: z.string().min(1).optional(),
     vendorId: z.string().min(1).optional(),
     customerId: z.string().min(1).optional(),
@@ -384,10 +412,14 @@ export async function POST(req) {
     const colorIds = [...colorIdSet].map((id) => new mongoose.Types.ObjectId(id));
 
     const sizes = sizeIds.length
-      ? await VariantSize.find({ _id: { $in: sizeIds } }, { name: 1 }).lean().exec()
+      ? await VariantSize.find({ _id: { $in: sizeIds } }, { name: 1 })
+          .lean()
+          .exec()
       : [];
     const colors = colorIds.length
-      ? await VariantColor.find({ _id: { $in: colorIds } }, { name: 1 }).lean().exec()
+      ? await VariantColor.find({ _id: { $in: colorIds } }, { name: 1 })
+          .lean()
+          .exec()
       : [];
     const sizeNameById = new Map(sizes.map((s) => [String(s._id), s.name]));
     const colorNameById = new Map(colors.map((c) => [String(c._id), c.name]));
@@ -415,19 +447,20 @@ export async function POST(req) {
       };
     });
 
-  const hasSaleDelivery = type === 'sale' && parsed.delivery;
-  const hasReturnDelivery = type === 'sale_return' && parsed.delivery;
-  const computedStatus = hasSaleDelivery
-    ? 'on_delivery'
-    : hasReturnDelivery
-      ? 'ordered'
-      : (status || (type === 'purchase' ? 'ordered' : 'completed'));
+    const hasSaleDelivery = type === 'sale' && parsed.delivery;
+    const hasReturnDelivery = type === 'sale_return' && parsed.delivery;
+    const computedStatus = hasSaleDelivery
+      ? 'on_delivery'
+      : hasReturnDelivery
+        ? 'ordered'
+        : status || (type === 'purchase' ? 'ordered' : 'completed');
     const receiptPayload = {
       type,
       date: date || new Date(),
       status: computedStatus,
       companyId: type === 'purchase' ? supplierId : undefined,
-      customerId: type !== 'purchase' && customerId ? new mongoose.Types.ObjectId(customerId) : undefined,
+      customerId:
+        type !== 'purchase' && customerId ? new mongoose.Types.ObjectId(customerId) : undefined,
       items: receiptItems,
       billDiscount: billDiscount
         ? { mode: billDiscount.mode, value: Number(billDiscount.value || 0) }
@@ -492,13 +525,19 @@ export async function POST(req) {
         if (d.company === 'optimus') {
           const meta = parsed.deliveryProviderMeta;
           if (!meta) {
-            return NextResponse.json({ error: 'ValidationError', message: 'deliveryProviderMeta is required for Optimus' }, { status: 400 });
+            return NextResponse.json(
+              { error: 'ValidationError', message: 'deliveryProviderMeta is required for Optimus' },
+              { status: 400 },
+            );
           }
           let phone;
           try {
             phone = normalizeAndValidatePhone(meta.phone);
           } catch (e) {
-            return NextResponse.json({ error: 'ValidationError', message: e?.message || 'Invalid phone' }, { status: 400 });
+            return NextResponse.json(
+              { error: 'ValidationError', message: e?.message || 'Invalid phone' },
+              { status: 400 },
+            );
           }
 
           // Build company names map for notes
@@ -527,7 +566,8 @@ export async function POST(req) {
           const itemsDescription = contentLines.join('\n');
 
           // Respect explicit COD amount even if it's 0; otherwise fall back to sale grand total
-          const hasExplicitCod = typeof meta?.codAmount !== 'undefined' && !Number.isNaN(Number(meta.codAmount));
+          const hasExplicitCod =
+            typeof meta?.codAmount !== 'undefined' && !Number.isNaN(Number(meta.codAmount));
           const usedCodAmount = hasExplicitCod
             ? Math.max(0, Number(meta.codAmount))
             : Number((totals?.grandTotal || 0).toFixed(2));
@@ -558,10 +598,16 @@ export async function POST(req) {
             trackingUrl: provider.trackingUrl || undefined,
             status: provider.providerStatus || 'created',
             contact: { name: meta.name || '', phone },
-            providerMeta: { cityId: meta.cityId, cityName: meta.cityName || '', areaId: meta.areaId, areaName: meta.areaName || '', phone, codAmount: usedCodAmount, fees: providerFees },
-            history: [
-              { at: new Date(), code: 'created', raw: provider?.raw || provider },
-            ],
+            providerMeta: {
+              cityId: meta.cityId,
+              cityName: meta.cityName || '',
+              areaId: meta.areaId,
+              areaName: meta.areaName || '',
+              phone,
+              codAmount: usedCodAmount,
+              fees: providerFees,
+            },
+            history: [{ at: new Date(), code: 'created', raw: provider?.raw || provider }],
             lastSyncAt: new Date(),
             nextSyncAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
           };
@@ -574,7 +620,11 @@ export async function POST(req) {
               codAmount: Number((totals?.grandTotal || 0).toFixed(2)),
               contact: { name: d.contact?.name || '', phone: d.contact?.phone || '' },
               address: d.address,
-              items: receiptItems.map((it) => ({ code: it.snapshot?.productCode || '', name: it.snapshot?.productName || '', qty: Number(it.qty || 0) })),
+              items: receiptItems.map((it) => ({
+                code: it.snapshot?.productCode || '',
+                name: it.snapshot?.productName || '',
+                qty: Number(it.qty || 0),
+              })),
             },
           });
           receiptPayload.delivery = {
@@ -585,14 +635,17 @@ export async function POST(req) {
             status: provider.providerStatus || 'created',
             address: d.address,
             contact: d.contact,
-            history: [ { at: new Date(), code: 'created', raw: provider } ],
+            history: [{ at: new Date(), code: 'created', raw: provider }],
             lastSyncAt: new Date(),
             nextSyncAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
           };
         }
       } catch (e) {
         return NextResponse.json(
-          { error: 'DeliveryCreateFailed', message: e?.message || 'Failed to create delivery order' },
+          {
+            error: 'DeliveryCreateFailed',
+            message: e?.message || 'Failed to create delivery order',
+          },
           { status: 502 },
         );
       }
@@ -608,7 +661,7 @@ export async function POST(req) {
         status: 'created',
         address: d.address,
         contact: d.contact,
-        history: [ { at: new Date(), code: 'created', note: 'linked to sale shipment' } ],
+        history: [{ at: new Date(), code: 'created', note: 'linked to sale shipment' }],
         lastSyncAt: new Date(),
         nextSyncAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
       };
@@ -735,7 +788,12 @@ export async function POST(req) {
           note: doc.note || '',
           delivery: doc.delivery || null,
           payments: Array.isArray(doc.payments)
-            ? doc.payments.map((p) => ({ amount: p.amount, method: p.method || 'cash', note: p.note || '', at: p.at }))
+            ? doc.payments.map((p) => ({
+                amount: p.amount,
+                method: p.method || 'cash',
+                note: p.note || '',
+                at: p.at,
+              }))
             : [],
           createdAt: doc.createdAt,
           updatedAt: doc.updatedAt,

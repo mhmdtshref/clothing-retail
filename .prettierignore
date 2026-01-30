@@ -7,3 +7,6 @@ coverage
 build
 dist
 
+# Tauri build artifacts
+src-tauri/target
+

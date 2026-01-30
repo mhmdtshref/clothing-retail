@@ -1,7 +1,13 @@
 // A tiny IndexedDB helper without external deps (Dexie-like shape)
 export type OutboxItem =
   | { id?: number; type: 'receipt'; payload: any; createdAt: number; retries: number }
-  | { id?: number; type: 'payment'; payload: { receiptId: string; body: any }; createdAt: number; retries: number };
+  | {
+      id?: number;
+      type: 'payment';
+      payload: { receiptId: string; body: any };
+      createdAt: number;
+      retries: number;
+    };
 
 const DB_NAME = 'pos-db';
 const DB_VERSION = 1;
@@ -12,17 +18,24 @@ function openDB(): Promise<IDBDatabase> {
     const req = indexedDB.open(DB_NAME, DB_VERSION);
     req.onupgradeneeded = () => {
       const db = req.result;
-      if (!db.objectStoreNames.contains('products')) db.createObjectStore('products', { keyPath: 'id' });
-      if (!db.objectStoreNames.contains('variants')) db.createObjectStore('variants', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('products'))
+        db.createObjectStore('products', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('variants'))
+        db.createObjectStore('variants', { keyPath: 'id' });
       if (!db.objectStoreNames.contains('cart')) db.createObjectStore('cart', { keyPath: 'id' });
-      if (!db.objectStoreNames.contains('outbox')) db.createObjectStore('outbox', { keyPath: 'id', autoIncrement: true });
+      if (!db.objectStoreNames.contains('outbox'))
+        db.createObjectStore('outbox', { keyPath: 'id', autoIncrement: true });
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
 }
 
-async function tx<T = any>(store: typeof STORES[number], mode: IDBTransactionMode, fn: (store: IDBObjectStore) => Promise<T> | T): Promise<T> {
+async function tx<T = any>(
+  store: (typeof STORES)[number],
+  mode: IDBTransactionMode,
+  fn: (store: IDBObjectStore) => Promise<T> | T,
+): Promise<T> {
   const db = await openDB();
   return new Promise<T>((resolve, reject) => {
     const t = db.transaction([store], mode);
@@ -33,7 +46,9 @@ async function tx<T = any>(store: typeof STORES[number], mode: IDBTransactionMod
         t.commit?.();
       })
       .catch((err) => {
-        try { t.abort(); } catch {}
+        try {
+          t.abort();
+        } catch {}
         reject(err);
       });
     t.onerror = () => reject(t.error);
@@ -60,7 +75,11 @@ export const db = {
     });
   },
   async addOutbox(item: OutboxItem) {
-    const withMeta = { ...item, createdAt: item.createdAt || Date.now(), retries: item.retries ?? 0 };
+    const withMeta = {
+      ...item,
+      createdAt: item.createdAt || Date.now(),
+      retries: item.retries ?? 0,
+    };
     return tx('outbox', 'readwrite', (s) => {
       return new Promise<number>((resolve, reject) => {
         const req = s.add(withMeta);
@@ -97,5 +116,3 @@ export const db = {
     });
   },
 };
-
-

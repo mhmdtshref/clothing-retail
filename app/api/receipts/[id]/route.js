@@ -49,7 +49,13 @@ export async function GET(_req, context) {
       ? r.payments.reduce((acc, p) => acc + Number(p?.amount || 0), 0)
       : 0;
     const dueTotal = Math.max(0, Number(totals?.grandTotal || 0) - paidTotal);
-    return NextResponse.json({ ok: true, receipt: { ...r, companyName, customer }, totals, paidTotal, dueTotal });
+    return NextResponse.json({
+      ok: true,
+      receipt: { ...r, companyName, customer },
+      totals,
+      paidTotal,
+      dueTotal,
+    });
   } catch (err) {
     return NextResponse.json(
       { error: 'InternalServerError', message: err?.message || String(err) },
@@ -136,7 +142,9 @@ export async function PATCH(req, context) {
     }
 
     const variantIds = body.items.map((i) => new mongoose.Types.ObjectId(i.variantId));
-    const variants = await Variant.find({ _id: { $in: variantIds } }).lean().exec();
+    const variants = await Variant.find({ _id: { $in: variantIds } })
+      .lean()
+      .exec();
     if (variants.length !== variantIds.length) {
       return NextResponse.json(
         { error: 'ValidationError', message: 'One or more variantId not found' },
@@ -158,10 +166,14 @@ export async function PATCH(req, context) {
     const colorIds = [...colorIdSet].map((cid) => new mongoose.Types.ObjectId(cid));
 
     const sizes = sizeIds.length
-      ? await VariantSize.find({ _id: { $in: sizeIds } }, { name: 1 }).lean().exec()
+      ? await VariantSize.find({ _id: { $in: sizeIds } }, { name: 1 })
+          .lean()
+          .exec()
       : [];
     const colors = colorIds.length
-      ? await VariantColor.find({ _id: { $in: colorIds } }, { name: 1 }).lean().exec()
+      ? await VariantColor.find({ _id: { $in: colorIds } }, { name: 1 })
+          .lean()
+          .exec()
       : [];
     const sizeNameById = new Map(sizes.map((s) => [String(s._id), s.name]));
     const colorNameById = new Map(colors.map((c) => [String(c._id), c.name]));
@@ -176,7 +188,9 @@ export async function PATCH(req, context) {
         qty: i.qty,
         unitCost: Number(i.unitCost || 0),
         unitPrice: 0,
-        discount: i.discount ? { mode: i.discount.mode, value: Number(i.discount.value || 0) } : undefined,
+        discount: i.discount
+          ? { mode: i.discount.mode, value: Number(i.discount.value || 0) }
+          : undefined,
         snapshot: {
           productCode: p?.code || '',
           productName: p?.localCode || '',
@@ -248,7 +262,11 @@ export async function PATCH(req, context) {
           if (ops.length) await Variant.bulkWrite(ops, { session });
         });
       } catch (_txErr) {
-        updated = await Receipt.findByIdAndUpdate(id, { $set: receiptUpdate }, { new: true }).lean();
+        updated = await Receipt.findByIdAndUpdate(
+          id,
+          { $set: receiptUpdate },
+          { new: true },
+        ).lean();
         if (ops.length) await Variant.bulkWrite(ops);
       } finally {
         await session.endSession();
@@ -288,9 +306,12 @@ export async function PATCH(req, context) {
     });
   } catch (err) {
     const code = err?.code;
-    if (code === 'RECEIPT_NOT_FOUND') return NextResponse.json({ error: 'Not Found' }, { status: 404 });
-    if (code === 'RECEIPT_LOCKED') return NextResponse.json({ error: 'Locked: completed' }, { status: 409 });
-    if (code === 'INVALID_STATUS_TRANSITION') return NextResponse.json({ error: err.message }, { status: 400 });
+    if (code === 'RECEIPT_NOT_FOUND')
+      return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+    if (code === 'RECEIPT_LOCKED')
+      return NextResponse.json({ error: 'Locked: completed' }, { status: 409 });
+    if (code === 'INVALID_STATUS_TRANSITION')
+      return NextResponse.json({ error: err.message }, { status: 400 });
 
     return NextResponse.json(
       { error: 'InternalServerError', message: err?.message || String(err) },
@@ -298,5 +319,3 @@ export async function PATCH(req, context) {
     );
   }
 }
-
-

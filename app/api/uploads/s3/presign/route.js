@@ -33,7 +33,9 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const contentType = String(body?.contentType || '').toLowerCase().trim();
+  const contentType = String(body?.contentType || '')
+    .toLowerCase()
+    .trim();
   if (!contentType || !contentType.startsWith('image/')) {
     return NextResponse.json({ error: 'contentType must be image/*' }, { status: 400 });
   }
@@ -72,8 +74,9 @@ export async function POST(req) {
       maxBytes: MAX_BYTES,
     });
   } catch (e) {
-    return NextResponse.json({ error: e?.message || 'Failed to create presigned post' }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message || 'Failed to create presigned post' },
+      { status: 500 },
+    );
   }
 }
-
-

@@ -31,7 +31,7 @@ async function generateLocalCode() {
   for (let i = 0; i < 5; i++) {
     n += 1;
     const candidate = `${yy}-${String(n).padStart(6, '0')}`;
-    // eslint-disable-next-line no-await-in-loop
+
     const exists = await Product.exists({ $or: [{ localCode: candidate }, { code: candidate }] });
     if (!exists) return candidate;
   }
@@ -82,7 +82,13 @@ export async function POST(req) {
       // In rare case of duplicate localCode, retry once
       if (e?.code === 11000 && e?.keyPattern?.localCode) {
         localCode = await generateLocalCode();
-        doc = await Product.create({ code, localCode, basePrice, status, image: image || undefined });
+        doc = await Product.create({
+          code,
+          localCode,
+          basePrice,
+          status,
+          image: image || undefined,
+        });
       } else {
         throw e;
       }

@@ -31,7 +31,9 @@ export default function InstallPrompt() {
 
   // Hide on iOS/installed
   React.useEffect(() => {
-    const isStandalone = (window.navigator as any).standalone || window.matchMedia('(display-mode: standalone)').matches;
+    const isStandalone =
+      (window.navigator as any).standalone ||
+      window.matchMedia('(display-mode: standalone)').matches;
     if (isStandalone) setOpen(false);
   }, []);
 
@@ -40,10 +42,12 @@ export default function InstallPrompt() {
       open={open}
       onClose={() => setOpen(false)}
       message="Install this app for quicker access"
-      action={<Button color="secondary" size="small" onClick={install}>Install</Button>}
+      action={
+        <Button color="secondary" size="small" onClick={install}>
+          Install
+        </Button>
+      }
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
     />
   );
 }
-
-

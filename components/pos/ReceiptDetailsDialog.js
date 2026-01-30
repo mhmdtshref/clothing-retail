@@ -1,7 +1,20 @@
 'use client';
 
 import * as React from 'react';
-import { DialogTitle, DialogContent, DialogActions, Button, Stack, Typography, Divider, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import {
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Stack,
+  Typography,
+  Divider,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import FullScreenDialog from '@/components/common/FullScreenDialog';
 import { printUrlInIframe } from '@/lib/print/printUrlInIframe';
@@ -14,9 +27,12 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
   React.useEffect(() => {
     async function load() {
       if (!open || !id) return;
-      setLoading(true); setError('');
+      setLoading(true);
+      setError('');
       try {
-        const res = await fetch(`/api/receipts/${encodeURIComponent(String(id))}`, { cache: 'no-store' });
+        const res = await fetch(`/api/receipts/${encodeURIComponent(String(id))}`, {
+          cache: 'no-store',
+        });
         const json = await res.json();
         if (!res.ok) throw new Error('Failed to load receipt');
         setData(json);
@@ -35,7 +51,8 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
     printUrlInIframe(`/pos/print/${encodeURIComponent(String(id))}?autoprint=0`).catch(() => {});
   };
 
-  const r = data?.receipt || {}; const t = data?.totals || {};
+  const r = data?.receipt || {};
+  const t = data?.totals || {};
   const paidTotal = Number(
     Number.isFinite(Number(data?.paidTotal))
       ? Number(data?.paidTotal)
@@ -50,18 +67,28 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
       <DialogTitle>Receipt Details</DialogTitle>
       <DialogContent>
         {loading && <Typography sx={{ py: 2 }}>Loading…</Typography>}
-        {!loading && error && <Typography color="error" sx={{ py: 2 }}>{error}</Typography>}
+        {!loading && error && (
+          <Typography color="error" sx={{ py: 2 }}>
+            {error}
+          </Typography>
+        )}
         {!loading && !error && data && (
           <>
             <Typography variant="body2">ID: {String(r._id)}</Typography>
             <Typography variant="body2">Type: {r.type}</Typography>
             <Typography variant="body2">Status: {r.status}</Typography>
             <Typography variant="body2">Date: {new Date(r.date).toLocaleString()}</Typography>
-            {r.type === 'purchase' && <Typography variant="body2">Company: {r.companyName || '-'}</Typography>}
-            {r.type !== 'purchase' && r.customer && (
-              <Typography variant="body2">Customer: {(r.customer.name || '(No name)')} • {r.customer.phone}</Typography>
+            {r.type === 'purchase' && (
+              <Typography variant="body2">Company: {r.companyName || '-'}</Typography>
             )}
-            {r.returnReason && <Typography variant="body2">Return Reason: {r.returnReason}</Typography>}
+            {r.type !== 'purchase' && r.customer && (
+              <Typography variant="body2">
+                Customer: {r.customer.name || '(No name)'} • {r.customer.phone}
+              </Typography>
+            )}
+            {r.returnReason && (
+              <Typography variant="body2">Return Reason: {r.returnReason}</Typography>
+            )}
             {r.note && <Typography variant="body2">Note: {r.note}</Typography>}
             <Divider sx={{ my: 1 }} />
             <Table size="small">
@@ -77,9 +104,20 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
               </TableHead>
               <TableBody>
                 {(r.items || []).map((it, idx) => {
-                  const s = it.snapshot || {}; const q = Number(it.qty||0); const unit = Number(it.unitPrice || it.unitCost || 0);
-                  const line = unit * q; const d = it.discount ? (it.discount.mode === 'percent' ? `${it.discount.value}%` : it.discount.value) : 0;
-                  const discAmt = it.discount ? (it.discount.mode === 'percent' ? (line * Number(it.discount.value || 0) / 100) : Number(it.discount.value || 0)) : 0;
+                  const s = it.snapshot || {};
+                  const q = Number(it.qty || 0);
+                  const unit = Number(it.unitPrice || it.unitCost || 0);
+                  const line = unit * q;
+                  const d = it.discount
+                    ? it.discount.mode === 'percent'
+                      ? `${it.discount.value}%`
+                      : it.discount.value
+                    : 0;
+                  const discAmt = it.discount
+                    ? it.discount.mode === 'percent'
+                      ? (line * Number(it.discount.value || 0)) / 100
+                      : Number(it.discount.value || 0)
+                    : 0;
                   const net = Math.max(0, line - discAmt);
                   return (
                     <TableRow key={idx}>
@@ -87,7 +125,9 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
                       <TableCell>{`${s.size || ''} / ${s.color || ''}`}</TableCell>
                       <TableCell align="right">{q}</TableCell>
                       <TableCell align="right">{unit.toFixed(2)}</TableCell>
-                      <TableCell align="right">{typeof d==='string' ? d : Number(d).toFixed(2)}</TableCell>
+                      <TableCell align="right">
+                        {typeof d === 'string' ? d : Number(d).toFixed(2)}
+                      </TableCell>
                       <TableCell align="right">{net.toFixed(2)}</TableCell>
                     </TableRow>
                   );
@@ -96,15 +136,21 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
             </Table>
             <Divider sx={{ my: 1 }} />
             <Stack alignItems="flex-end" spacing={0.5}>
-              <Typography>Item Subtotal: {Number(t.itemSubtotal||0).toFixed(2)}</Typography>
-              <Typography>Item Discounts: -{Number(t.itemDiscountTotal||0).toFixed(2)}</Typography>
-              <Typography>Bill Discount: -{Number(t.billDiscountTotal||0).toFixed(2)}</Typography>
-              <Typography>Tax ({Number(t.taxPercent||0)}%): {Number(t.taxTotal||0).toFixed(2)}</Typography>
-              <Typography variant="h6">Grand Total: {Number(t.grandTotal||0).toFixed(2)}</Typography>
+              <Typography>Item Subtotal: {Number(t.itemSubtotal || 0).toFixed(2)}</Typography>
+              <Typography>
+                Item Discounts: -{Number(t.itemDiscountTotal || 0).toFixed(2)}
+              </Typography>
+              <Typography>Bill Discount: -{Number(t.billDiscountTotal || 0).toFixed(2)}</Typography>
+              <Typography>
+                Tax ({Number(t.taxPercent || 0)}%): {Number(t.taxTotal || 0).toFixed(2)}
+              </Typography>
+              <Typography variant="h6">
+                Grand Total: {Number(t.grandTotal || 0).toFixed(2)}
+              </Typography>
               {(r?.status === 'pending' || paidTotal > 0) && (
                 <>
-                  <Typography>Paid: {Number(paidTotal||0).toFixed(2)}</Typography>
-                  <Typography>Balance: {Number(dueTotal||0).toFixed(2)}</Typography>
+                  <Typography>Paid: {Number(paidTotal || 0).toFixed(2)}</Typography>
+                  <Typography>Balance: {Number(dueTotal || 0).toFixed(2)}</Typography>
                 </>
               )}
             </Stack>
@@ -139,10 +185,10 @@ export default function ReceiptDetailsDialog({ id, open, onClose }) {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
-        <Button variant="contained" startIcon={<PrintIcon />} onClick={onPrint}>Print</Button>
+        <Button variant="contained" startIcon={<PrintIcon />} onClick={onPrint}>
+          Print
+        </Button>
       </DialogActions>
     </FullScreenDialog>
   );
 }
-
-

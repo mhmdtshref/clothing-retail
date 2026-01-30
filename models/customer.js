@@ -44,5 +44,3 @@ const CustomerSchema = new Schema(
 // Unique index is already created via the path option `unique: true` on `phone`.
 
 export default mongoose.models.Customer || mongoose.model('Customer', CustomerSchema);
-
-

@@ -47,7 +47,13 @@ function buildMessages(locale: string): Messages {
   }
 }
 
-export function I18nProvider({ locale: initialLocale, children }: { locale?: string; children: React.ReactNode }) {
+export function I18nProvider({
+  locale: initialLocale,
+  children,
+}: {
+  locale?: string;
+  children: React.ReactNode;
+}) {
   const [locale, setLocale] = React.useState<string>(normalizeLocale(initialLocale));
   const dir: 'ltr' | 'rtl' = isRtl(locale) ? 'rtl' : 'ltr';
   const theme = React.useMemo(() => createTheme({ direction: dir }), [dir]);
@@ -65,7 +71,10 @@ export function I18nProvider({ locale: initialLocale, children }: { locale?: str
     (d: Date | string | number, opts?: Intl.DateTimeFormatOptions) => {
       try {
         const date = d instanceof Date ? d : new Date(d);
-        return new Intl.DateTimeFormat(locale, opts || { dateStyle: 'short', timeStyle: 'short' }).format(date);
+        return new Intl.DateTimeFormat(
+          locale,
+          opts || { dateStyle: 'short', timeStyle: 'short' },
+        ).format(date);
       } catch {
         try {
           return String(d);
@@ -88,7 +97,10 @@ export function I18nProvider({ locale: initialLocale, children }: { locale?: str
     [locale],
   );
 
-  const ctx: I18nContextType = React.useMemo(() => ({ locale, dir, t, setLocale, formatDate, formatNumber }), [locale, dir, t, formatDate, formatNumber]);
+  const ctx: I18nContextType = React.useMemo(
+    () => ({ locale, dir, t, setLocale, formatDate, formatNumber }),
+    [locale, dir, t, formatDate, formatNumber],
+  );
 
   // On mount, read the 'lang' cookie and adopt it if present
   React.useEffect(() => {
@@ -104,8 +116,8 @@ export function I18nProvider({ locale: initialLocale, children }: { locale?: str
         }
       }
     } catch {}
-  // run only on mount
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // run only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Keep cookie in sync when locale changes
@@ -126,9 +138,7 @@ export function I18nProvider({ locale: initialLocale, children }: { locale?: str
 
   return (
     <I18nContext.Provider value={ctx}>
-      <ThemeProvider theme={theme}>
-        {children}
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </I18nContext.Provider>
   );
 }
@@ -136,5 +146,3 @@ export function I18nProvider({ locale: initialLocale, children }: { locale?: str
 export function useI18nInternal() {
   return React.useContext(I18nContext);
 }
-
-

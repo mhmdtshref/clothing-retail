@@ -18,7 +18,11 @@ import { useI18n } from '@/components/i18n/useI18n';
 
 export default function ExpenseFormDialog({ open, onClose, onSaved, categories, initialValue }) {
   const { t } = useI18n();
-  const [date, setDate] = React.useState(initialValue ? new Date(initialValue.date).toISOString().substring(0, 10) : new Date().toISOString().substring(0, 10));
+  const [date, setDate] = React.useState(
+    initialValue
+      ? new Date(initialValue.date).toISOString().substring(0, 10)
+      : new Date().toISOString().substring(0, 10),
+  );
   const [categoryId, setCategoryId] = React.useState(initialValue?.categoryId || '');
   const [amount, setAmount] = React.useState(initialValue ? String(initialValue.amount ?? 0) : '0');
   const [vendor, setVendor] = React.useState(initialValue?.vendor || '');
@@ -60,11 +64,22 @@ export default function ExpenseFormDialog({ open, onClose, onSaved, categories, 
       <DialogTitle>{isEdit ? t('expenses.edit') : t('expenses.new')}</DialogTitle>
       <DialogContent dividers>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <TextField label={t('common.date')} type="date" value={date} onChange={(e) => setDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+          <TextField
+            label={t('common.date')}
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
 
           <FormControl>
             <InputLabel id="cat-label">{t('expenses.category')}</InputLabel>
-            <Select labelId="cat-label" label={t('expenses.category')} value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+            <Select
+              labelId="cat-label"
+              label={t('expenses.category')}
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+            >
               {categories.map((c) => (
                 <MenuItem key={c._id} value={c._id}>
                   {c.name}
@@ -73,9 +88,25 @@ export default function ExpenseFormDialog({ open, onClose, onSaved, categories, 
             </Select>
           </FormControl>
 
-          <TextField label={t('expenses.amount')} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} inputProps={{ min: 0, step: '0.01' }} />
-          <TextField label={t('expenses.vendor')} value={vendor} onChange={(e) => setVendor(e.target.value)} />
-          <TextField label={t('common.note')} value={note} onChange={(e) => setNote(e.target.value)} multiline minRows={2} />
+          <TextField
+            label={t('expenses.amount')}
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            inputProps={{ min: 0, step: '0.01' }}
+          />
+          <TextField
+            label={t('expenses.vendor')}
+            value={vendor}
+            onChange={(e) => setVendor(e.target.value)}
+          />
+          <TextField
+            label={t('common.note')}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            multiline
+            minRows={2}
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -89,5 +120,3 @@ export default function ExpenseFormDialog({ open, onClose, onSaved, categories, 
     </Dialog>
   );
 }
-
-
