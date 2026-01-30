@@ -59,10 +59,9 @@ export async function POST(req) {
     const existing = await Company.findOne({ nameKey }).lean().exec();
     const conflict =
       Boolean(existing) ||
-      (await Company.find({}, { name: 1 })
-        .lean()
-        .exec())
-        .some((c) => normalizeCompanyName(c?.name || '') === nameKey);
+      (await Company.find({}, { name: 1 }).lean().exec()).some(
+        (c) => normalizeCompanyName(c?.name || '') === nameKey,
+      );
 
     if (conflict) {
       return NextResponse.json(
@@ -97,5 +96,3 @@ export async function POST(req) {
     );
   }
 }
-
-

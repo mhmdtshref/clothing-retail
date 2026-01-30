@@ -5,7 +5,12 @@ import { Box, Paper, PaperProps } from '@mui/material';
 
 export type ResponsiveActionsBarProps = Omit<PaperProps, 'elevation'> & { elevation?: number };
 
-export default function ResponsiveActionsBar({ children, elevation = 0, sx, ...rest }: ResponsiveActionsBarProps) {
+export default function ResponsiveActionsBar({
+  children,
+  elevation = 0,
+  sx,
+  ...rest
+}: ResponsiveActionsBarProps) {
   return (
     <Box sx={{ px: 2 }}>
       <Paper
@@ -29,5 +34,3 @@ export default function ResponsiveActionsBar({ children, elevation = 0, sx, ...r
     </Box>
   );
 }
-
-

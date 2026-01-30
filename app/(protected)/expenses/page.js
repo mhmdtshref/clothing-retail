@@ -10,5 +10,3 @@ export default async function Expenses() {
   if (!session) redirect('/sign-in?redirect_url=/expenses');
   return <ExpensesPage />;
 }
-
-

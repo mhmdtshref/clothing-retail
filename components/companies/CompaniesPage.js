@@ -47,7 +47,7 @@ export default function CompaniesPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   React.useEffect(() => {
     fetchCompanies();
@@ -92,11 +92,15 @@ export default function CompaniesPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t('companies.searchPlaceholder')}
             InputProps={{
-              startAdornment: <SearchIcon fontSize="small" style={{ opacity: 0.7, marginRight: 8 }} />,
+              startAdornment: (
+                <SearchIcon fontSize="small" style={{ opacity: 0.7, marginRight: 8 }} />
+              ),
             }}
             sx={{ width: { xs: 180, sm: 260 } }}
           />
-          <Button onClick={onAdd} variant="contained" startIcon={<AddIcon />}>{t('companies.add')}</Button>
+          <Button onClick={onAdd} variant="contained" startIcon={<AddIcon />}>
+            {t('companies.add')}
+          </Button>
         </Stack>
       </Toolbar>
 
@@ -106,56 +110,70 @@ export default function CompaniesPage() {
         </Box>
       ) : error ? (
         <Box sx={{ py: 3 }}>
-          <Typography color="error" sx={{ mb: 1 }}>{error}</Typography>
-          <Button onClick={fetchCompanies} startIcon={<AddIcon />} variant="outlined">{t('common.retry')}</Button>
+          <Typography color="error" sx={{ mb: 1 }}>
+            {error}
+          </Typography>
+          <Button onClick={fetchCompanies} startIcon={<AddIcon />} variant="outlined">
+            {t('common.retry')}
+          </Button>
         </Box>
       ) : (
         <>
-        <Table size="small" sx={{ display: { xs: 'none', sm: 'table' } }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>{t('common.name')}</TableCell>
-              <TableCell width={120} align="right">{t('common.actions')}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredItems.length === 0 ? (
+          <Table size="small" sx={{ display: { xs: 'none', sm: 'table' } }}>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={2}>
-                  <Typography variant="body2" color="text.secondary">{t('companies.none')}</Typography>
+                <TableCell>{t('common.name')}</TableCell>
+                <TableCell width={120} align="right">
+                  {t('common.actions')}
                 </TableCell>
               </TableRow>
-            ) : (
-              filteredItems.map((row) => (
-                <TableRow key={String(row._id)} hover>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell align="right">
-                    <IconButton size="small" onClick={() => onEdit(row)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
+            </TableHead>
+            <TableBody>
+              {filteredItems.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={2}>
+                    <Typography variant="body2" color="text.secondary">
+                      {t('companies.none')}
+                    </Typography>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-
-        <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
-          {filteredItems.length === 0 && (
-            <Typography variant="body2" color="text.secondary">{t('companies.none')}</Typography>
-          )}
-          {filteredItems.map((row) => (
-            <ResponsiveListItem
-              key={String(row._id)}
-              title={row.name}
-              actions={(
-                <Button size="small" startIcon={<EditIcon fontSize="small" />} onClick={() => onEdit(row)}>
-                  {t('common.edit') || 'Edit'}
-                </Button>
+              ) : (
+                filteredItems.map((row) => (
+                  <TableRow key={String(row._id)} hover>
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell align="right">
+                      <IconButton size="small" onClick={() => onEdit(row)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
               )}
-            />
-          ))}
-        </Stack>
+            </TableBody>
+          </Table>
+
+          <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
+            {filteredItems.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                {t('companies.none')}
+              </Typography>
+            )}
+            {filteredItems.map((row) => (
+              <ResponsiveListItem
+                key={String(row._id)}
+                title={row.name}
+                actions={
+                  <Button
+                    size="small"
+                    startIcon={<EditIcon fontSize="small" />}
+                    onClick={() => onEdit(row)}
+                  >
+                    {t('common.edit') || 'Edit'}
+                  </Button>
+                }
+              />
+            ))}
+          </Stack>
         </>
       )}
 
@@ -169,5 +187,3 @@ export default function CompaniesPage() {
     </Paper>
   );
 }
-
-

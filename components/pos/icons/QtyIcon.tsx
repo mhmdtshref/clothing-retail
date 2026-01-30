@@ -15,4 +15,3 @@ import type { SvgIconProps } from '@mui/material/SvgIcon';
 export default function QtyIcon(props: SvgIconProps) {
   return <NumbersIcon {...props} />;
 }
-

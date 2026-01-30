@@ -59,7 +59,7 @@ export async function POST(req) {
     }
 
     const buf = Buffer.from(await file.arrayBuffer());
-    const ext = pickExt(contentType, givenExt || (file.name?.split('.').pop() || ''));
+    const ext = pickExt(contentType, givenExt || file.name?.split('.').pop() || '');
     const idPart = productId || crypto.randomUUID();
     const key = `products/${idPart}.${ext}`;
     const s3 = getS3();
@@ -68,10 +68,10 @@ export async function POST(req) {
     const publicUrl = publicUrlForKey(key);
     return NextResponse.json({ ok: true, key, publicUrl, contentType });
   } catch (e) {
-    console.log('s3 upload error', e);
-    console.log('s3 upload error string', String(e));
-    return NextResponse.json({ error: e?.message || 'Upload failed', errjson: String(e) }, { status: 500 });
+    console.error('s3 upload error', e);
+    return NextResponse.json(
+      { error: e?.message || 'Upload failed', errjson: String(e) },
+      { status: 500 },
+    );
   }
 }
-
-

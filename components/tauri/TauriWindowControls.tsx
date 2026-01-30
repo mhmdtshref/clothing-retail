@@ -31,7 +31,10 @@ function isTauriRuntime() {
   try {
     // `withGlobalTauri: true` exposes a global.
     // Some versions use `__TAURI__`, others rely on internals.
-    return typeof window !== 'undefined' && (Boolean((window as any).__TAURI__) || Boolean((window as any).__TAURI_INTERNALS__));
+    return (
+      typeof window !== 'undefined' &&
+      (Boolean((window as any).__TAURI__) || Boolean((window as any).__TAURI_INTERNALS__))
+    );
   } catch {
     return false;
   }
@@ -204,4 +207,3 @@ export default function TauriWindowControls({ collapsed = false }: { collapsed?:
     </>
   );
 }
-

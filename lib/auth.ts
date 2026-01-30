@@ -4,7 +4,6 @@ import { nextCookies } from 'better-auth/next-js';
 import { MongoClient } from 'mongodb';
 
 declare global {
-  // eslint-disable-next-line no-var
   var _betterAuthMongoClient: MongoClient | undefined;
 }
 
@@ -34,4 +33,3 @@ export const auth = betterAuth({
   // Make sure this is the last plugin in the array.
   plugins: [nextCookies()],
 });
-

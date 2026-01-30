@@ -10,4 +10,3 @@ export function pickLocalizedName(name: LocalizedName, locale?: string | null): 
   if (base === 'ar') return ar || en || '';
   return en || ar || '';
 }
-

@@ -45,17 +45,26 @@ export async function POST(req, context) {
     if ((body.method || 'cash') === 'cash') {
       const openSession = await CashboxSession.findOne({ status: 'open' }).lean();
       if (!openSession) {
-        return NextResponse.json({ error: 'CashboxClosed', message: 'Open cashbox before collecting cash payments' }, { status: 409 });
+        return NextResponse.json(
+          { error: 'CashboxClosed', message: 'Open cashbox before collecting cash payments' },
+          { status: 409 },
+        );
       }
     }
 
     const r = await Receipt.findById(id).lean();
     if (!r) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
     if (r.type !== 'sale') {
-      return NextResponse.json({ error: 'InvalidOperation', message: 'Payments supported for sale receipts only' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'InvalidOperation', message: 'Payments supported for sale receipts only' },
+        { status: 400 },
+      );
     }
     if (r.status === 'completed') {
-      return NextResponse.json({ error: 'Locked', message: 'Receipt already completed' }, { status: 409 });
+      return NextResponse.json(
+        { error: 'Locked', message: 'Receipt already completed' },
+        { status: 409 },
+      );
     }
 
     const { totals } = computeReceiptTotals(r);
@@ -65,10 +74,16 @@ export async function POST(req, context) {
     const dueBefore = Math.max(0, Number(totals?.grandTotal || 0) - paidSoFar);
     const amount = Number(body.amount || 0);
     if (!(amount > 0)) {
-      return NextResponse.json({ error: 'ValidationError', message: 'Amount must be > 0' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'ValidationError', message: 'Amount must be > 0' },
+        { status: 400 },
+      );
     }
     if (amount > dueBefore) {
-      return NextResponse.json({ error: 'ValidationError', message: 'Amount exceeds due total' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'ValidationError', message: 'Amount exceeds due total' },
+        { status: 400 },
+      );
     }
 
     const paymentDoc = {
@@ -132,8 +147,9 @@ export async function POST(req, context) {
       totals: tot2,
     });
   } catch (err) {
-    return NextResponse.json({ error: 'InternalServerError', message: err?.message || String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: 'InternalServerError', message: err?.message || String(err) },
+      { status: 500 },
+    );
   }
 }
-
-

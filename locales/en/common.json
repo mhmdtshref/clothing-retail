@@ -319,5 +319,3 @@
   "tauri.closeFailed": "Failed to close the app. Please close it from the window controls.",
   "tauri.minimizeFailed": "Failed to minimize the app."
 }
-
-

@@ -59,7 +59,7 @@ export default function PurchaseReceiptForm({
 
   const initialCompanyId = initialReceipt?.companyId
     ? String(initialReceipt.companyId)
-    : (companies[0]?._id || '');
+    : companies[0]?._id || '';
 
   const [companyId, setCompanyId] = React.useState(initialCompanyId);
   const [status, setStatus] = React.useState(initialReceipt?.status || 'ordered');
@@ -67,7 +67,10 @@ export default function PurchaseReceiptForm({
   const [taxPercent, setTaxPercent] = React.useState(Number(initialReceipt?.taxPercent || 0));
   const [billDiscount, setBillDiscount] = React.useState(
     initialReceipt?.billDiscount
-      ? { mode: initialReceipt.billDiscount.mode, value: Number(initialReceipt.billDiscount.value || 0) }
+      ? {
+          mode: initialReceipt.billDiscount.mode,
+          value: Number(initialReceipt.billDiscount.value || 0),
+        }
       : { mode: 'amount', value: 0 },
   );
 
@@ -90,7 +93,9 @@ export default function PurchaseReceiptForm({
       variantId: String(it?.variantId || ''),
       qty: Number(it?.qty || 0),
       unitCost: Number(it?.unitCost || 0),
-      discount: it?.discount ? { mode: it.discount.mode, value: Number(it.discount.value || 0) } : { mode: 'amount', value: 0 },
+      discount: it?.discount
+        ? { mode: it.discount.mode, value: Number(it.discount.value || 0) }
+        : { mode: 'amount', value: 0 },
       snapshot: it?.snapshot || null,
     }));
   });
@@ -405,7 +410,9 @@ export default function PurchaseReceiptForm({
               getOptionLabel={(o) => `${o.code}${o.localCode ? ' — ' + o.localCode : ''}`}
               onChange={(_, val) => setSelectedProduct(val)}
               value={selectedProduct}
-              renderInput={(params) => <TextField {...params} label={t('purchase.chooseProduct')} />}
+              renderInput={(params) => (
+                <TextField {...params} label={t('purchase.chooseProduct')} />
+              )}
               sx={{ minWidth: 320 }}
               disabled={readOnly}
             />
@@ -433,7 +440,9 @@ export default function PurchaseReceiptForm({
                   options={availableSizes}
                   value={selectedSizes}
                   onChange={(_, newVal) => setSelectedSizes(newVal)}
-                  disabled={readOnly || !selectedProduct || loadingVariants || availableSizes.length === 0}
+                  disabled={
+                    readOnly || !selectedProduct || loadingVariants || availableSizes.length === 0
+                  }
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -449,7 +458,9 @@ export default function PurchaseReceiptForm({
                   options={availableColors}
                   value={selectedColors}
                   onChange={(_, newVal) => setSelectedColors(newVal)}
-                  disabled={readOnly || !selectedProduct || loadingVariants || availableColors.length === 0}
+                  disabled={
+                    readOnly || !selectedProduct || loadingVariants || availableColors.length === 0
+                  }
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -490,7 +501,8 @@ export default function PurchaseReceiptForm({
                     {preview.total > preview.rows.length && (
                       <TableRow>
                         <TableCell colSpan={2}>
-                          …{t('common.and')} {preview.total - preview.rows.length} {t('common.more')}
+                          …{t('common.and')} {preview.total - preview.rows.length}{' '}
+                          {t('common.more')}
                         </TableCell>
                       </TableRow>
                     )}
@@ -536,7 +548,8 @@ export default function PurchaseReceiptForm({
                   const lineCalc = computeLine({
                     qty: Number(row.qty) || 0,
                     unit: Number(row.unitCost) || 0,
-                    discount: row.discount && Number(row.discount.value) > 0 ? row.discount : undefined,
+                    discount:
+                      row.discount && Number(row.discount.value) > 0 ? row.discount : undefined,
                   });
 
                   return (
@@ -545,14 +558,23 @@ export default function PurchaseReceiptForm({
                         <Autocomplete
                           loading={loadingVariants}
                           options={allVariantOptions}
-                          isOptionEqualToValue={(a, b) => String(a?._id || '') === String(b?._id || '')}
+                          isOptionEqualToValue={(a, b) =>
+                            String(a?._id || '') === String(b?._id || '')
+                          }
                           getOptionLabel={(o) => `${o.size} / ${o.color} — ${o.companyName || ''}`}
-                          value={allVariantOptions.find((v) => String(v._id) === String(row.variantId)) || null}
+                          value={
+                            allVariantOptions.find(
+                              (v) => String(v._id) === String(row.variantId),
+                            ) || null
+                          }
                           onOpen={() => {
-                            if (selectedProduct?._id && companyId) loadVariants(selectedProduct._id, companyId);
+                            if (selectedProduct?._id && companyId)
+                              loadVariants(selectedProduct._id, companyId);
                           }}
                           onChange={(_, val) => updateItem(row.id, { variantId: val?._id || '' })}
-                          renderInput={(params) => <TextField {...params} label={t('common.variant')} />}
+                          renderInput={(params) => (
+                            <TextField {...params} label={t('common.variant')} />
+                          )}
                           sx={{ minWidth: 240 }}
                           disabled={readOnly}
                         />
@@ -561,7 +583,9 @@ export default function PurchaseReceiptForm({
                         <TextField
                           type="number"
                           value={row.qty}
-                          onChange={(e) => updateItem(row.id, { qty: Math.max(0, Number(e.target.value)) })}
+                          onChange={(e) =>
+                            updateItem(row.id, { qty: Math.max(0, Number(e.target.value)) })
+                          }
                           inputProps={{ min: 0, step: 1 }}
                           size="small"
                           disabled={readOnly}
@@ -571,7 +595,9 @@ export default function PurchaseReceiptForm({
                         <TextField
                           type="number"
                           value={row.unitCost}
-                          onChange={(e) => updateItem(row.id, { unitCost: Math.max(0, Number(e.target.value)) })}
+                          onChange={(e) =>
+                            updateItem(row.id, { unitCost: Math.max(0, Number(e.target.value)) })
+                          }
                           inputProps={{ min: 0, step: '0.01' }}
                           size="small"
                           disabled={readOnly}
@@ -584,7 +610,10 @@ export default function PurchaseReceiptForm({
                             value={row.discount?.mode || 'amount'}
                             onChange={(e) =>
                               updateItem(row.id, {
-                                discount: { mode: e.target.value, value: Number(row.discount?.value || 0) },
+                                discount: {
+                                  mode: e.target.value,
+                                  value: Number(row.discount?.value || 0),
+                                },
                               })
                             }
                             sx={{ width: 120 }}
@@ -617,10 +646,17 @@ export default function PurchaseReceiptForm({
                         })}
                       </TableCell>
                       <TableCell align="right">
-                        {formatNumber(lineCalc.net, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {formatNumber(lineCalc.net, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </TableCell>
                       <TableCell align="center">
-                        <IconButton color="error" onClick={() => removeItem(row.id)} disabled={readOnly}>
+                        <IconButton
+                          color="error"
+                          onClick={() => removeItem(row.id)}
+                          disabled={readOnly}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>
@@ -651,7 +687,9 @@ export default function PurchaseReceiptForm({
               label={t('purchase.billDiscountValue')}
               type="number"
               value={billDiscount.value}
-              onChange={(e) => setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value)) }))}
+              onChange={(e) =>
+                setBillDiscount((d) => ({ ...d, value: Math.max(0, Number(e.target.value)) }))
+              }
               inputProps={{ min: 0, step: '0.01' }}
               disabled={readOnly}
             />
@@ -668,23 +706,38 @@ export default function PurchaseReceiptForm({
           <Box sx={{ textAlign: 'end' }}>
             <Typography>
               {t('receipt.subtotal')}:{' '}
-              {formatNumber(totals.itemSubtotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {formatNumber(totals.itemSubtotal, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </Typography>
             <Typography>
               {t('receipt.itemDiscounts')}: −
-              {formatNumber(totals.itemDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {formatNumber(totals.itemDiscountTotal, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </Typography>
             <Typography>
               {t('receipt.billDiscount')}: −
-              {formatNumber(totals.billDiscountTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {formatNumber(totals.billDiscountTotal, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </Typography>
             <Typography>
               {t('receipt.tax')} ({formatNumber(totals.taxPercent)}%):{' '}
-              {formatNumber(totals.taxTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {formatNumber(totals.taxTotal, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </Typography>
             <Typography variant="h6">
               {t('receipt.grandTotal')}:{' '}
-              {formatNumber(totals.grandTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {formatNumber(totals.grandTotal, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </Typography>
           </Box>
 
@@ -706,20 +759,35 @@ export default function PurchaseReceiptForm({
               >
                 {t('common.reset')}
               </Button>
-              <Button type="submit" variant="contained" disabled={readOnly || submitting || !companyId}>
-                {submitting ? t('common.saving') : (mode === 'create' ? t('purchase.saveReceipt') : t('common.save'))}
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={readOnly || submitting || !companyId}
+              >
+                {submitting
+                  ? t('common.saving')
+                  : mode === 'create'
+                    ? t('purchase.saveReceipt')
+                    : t('common.save')}
               </Button>
             </Stack>
           </ResponsiveActionsBar>
         </Stack>
       </Box>
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack((s) => ({ ...s, open: false }))}>
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant="filled">
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.severity}
+          variant="filled"
+        >
           {snack.message}
         </Alert>
       </Snackbar>
     </Paper>
   );
 }
-

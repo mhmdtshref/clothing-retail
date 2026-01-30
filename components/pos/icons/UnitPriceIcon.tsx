@@ -15,4 +15,3 @@ import type { SvgIconProps } from '@mui/material/SvgIcon';
 export default function UnitPriceIcon(props: SvgIconProps) {
   return <AttachMoneyIcon {...props} />;
 }
-

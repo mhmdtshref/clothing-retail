@@ -49,11 +49,7 @@ export default function EditPurchaseReceiptPage({ id, companies }) {
   }
 
   if (error) {
-    return (
-      <Alert severity="error">
-        {error}
-      </Alert>
-    );
+    return <Alert severity="error">{error}</Alert>;
   }
 
   if (!receipt) {
@@ -81,4 +77,3 @@ export default function EditPurchaseReceiptPage({ id, companies }) {
     </>
   );
 }
-

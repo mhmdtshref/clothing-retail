@@ -45,4 +45,3 @@ export default function createAppTheme(direction = 'ltr') {
   });
   return responsiveFontSizes(base);
 }
-

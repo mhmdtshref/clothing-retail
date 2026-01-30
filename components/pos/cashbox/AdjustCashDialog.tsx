@@ -1,11 +1,28 @@
 'use client';
 
 import * as React from 'react';
-import { DialogTitle, DialogContent, DialogActions, Stack, TextField, Button, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import {
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Stack,
+  TextField,
+  Button,
+  ToggleButtonGroup,
+  ToggleButton,
+} from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
 import FullScreenDialog from '@/components/common/FullScreenDialog';
 
-export default function AdjustCashDialog({ open, onClose, onAdjusted }: { open: boolean; onClose: () => void; onAdjusted: () => void }) {
+export default function AdjustCashDialog({
+  open,
+  onClose,
+  onAdjusted,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onAdjusted: () => void;
+}) {
   const { t } = useI18n();
   const [type, setType] = React.useState<'in' | 'out'>('in');
   const [amount, setAmount] = React.useState<string>('');
@@ -46,7 +63,12 @@ export default function AdjustCashDialog({ open, onClose, onAdjusted }: { open: 
       <DialogTitle>{t('cashbox.adjustTitle')}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <ToggleButtonGroup exclusive size="small" value={type} onChange={(_e, v) => v && setType(v)}>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={type}
+            onChange={(_e, v) => v && setType(v)}
+          >
             <ToggleButton value="in">{t('cashbox.in')}</ToggleButton>
             <ToggleButton value="out">{t('cashbox.out')}</ToggleButton>
           </ToggleButtonGroup>
@@ -68,10 +90,10 @@ export default function AdjustCashDialog({ open, onClose, onAdjusted }: { open: 
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{t('common.cancel')}</Button>
-        <Button disabled={submitting} variant="contained" onClick={submit}>{t('cashbox.add')}</Button>
+        <Button disabled={submitting} variant="contained" onClick={submit}>
+          {t('cashbox.add')}
+        </Button>
       </DialogActions>
     </FullScreenDialog>
   );
 }
-
-

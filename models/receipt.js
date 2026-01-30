@@ -88,7 +88,14 @@ const ReceiptSchema = new Schema(
     date: { type: Date, default: () => new Date() },
     status: {
       type: String,
-      enum: ['ordered', 'on_delivery', 'payment_collected', 'ready_to_receive', 'completed', 'pending'],
+      enum: [
+        'ordered',
+        'on_delivery',
+        'payment_collected',
+        'ready_to_receive',
+        'completed',
+        'pending',
+      ],
       default: 'ordered',
     },
 

@@ -15,5 +15,3 @@ AreaSchema.index({ provider: 1, providerAreaId: 1 }, { unique: true });
 AreaSchema.index({ provider: 1, providerCityId: 1, name: 1 });
 
 export default mongoose.models.Area || mongoose.model('Area', AreaSchema);
-
-

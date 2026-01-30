@@ -2,9 +2,25 @@
 
 import * as React from 'react';
 import {
-  Paper, Toolbar, TextField, InputAdornment, Select, MenuItem, FormControl, InputLabel,
-  Stack, IconButton, Table, TableHead, TableRow, TableCell, TableBody, Typography,
-  Pagination, Button, Chip,
+  Paper,
+  Toolbar,
+  TextField,
+  InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Stack,
+  IconButton,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Typography,
+  Pagination,
+  Button,
+  Chip,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -41,7 +57,8 @@ export default function POSHistoryPage() {
   const [collectInfo, setCollectInfo] = React.useState({ id: null, due: 0 });
 
   const fetchList = React.useCallback(async () => {
-    setLoading(true); setError('');
+    setLoading(true);
+    setError('');
     try {
       const qs = new URLSearchParams({
         query,
@@ -69,7 +86,9 @@ export default function POSHistoryPage() {
     }
   }, [query, status, type, dateFrom, dateTo, page, limit]);
 
-  React.useEffect(() => { fetchList(); }, [fetchList]);
+  React.useEffect(() => {
+    fetchList();
+  }, [fetchList]);
 
   const onPrint = (id) => {
     setDetailsId(String(id));
@@ -82,14 +101,31 @@ export default function POSHistoryPage() {
           size="small"
           placeholder={t('pos.historySearchPlaceholder')}
           value={query}
-          onChange={(e) => { setQuery(e.target.value); setPage(1); }}
-          InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>) }}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(1);
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
           sx={{ minWidth: 260 }}
         />
 
         <FormControl size="small" sx={{ minWidth: 140 }}>
           <InputLabel id="status-label">{t('common.status')}</InputLabel>
-          <Select labelId="status-label" label={t('common.status')} value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
+          <Select
+            labelId="status-label"
+            label={t('common.status')}
+            value={status}
+            onChange={(e) => {
+              setStatus(e.target.value);
+              setPage(1);
+            }}
+          >
             <MenuItem value="all">all</MenuItem>
             <MenuItem value="completed">completed</MenuItem>
             <MenuItem value="ordered">ordered</MenuItem>
@@ -100,20 +136,54 @@ export default function POSHistoryPage() {
 
         <FormControl size="small" sx={{ minWidth: 140 }}>
           <InputLabel id="type-label">{t('common.type')}</InputLabel>
-          <Select labelId="type-label" label={t('common.type')} value={type} onChange={(e) => { setType(e.target.value); setPage(1); }}>
+          <Select
+            labelId="type-label"
+            label={t('common.type')}
+            value={type}
+            onChange={(e) => {
+              setType(e.target.value);
+              setPage(1);
+            }}
+          >
             <MenuItem value="sales">{t('pos.salesOnly')}</MenuItem>
             <MenuItem value="all">{t('common.all')}</MenuItem>
           </Select>
         </FormControl>
 
-        <TextField size="small" label={t('common.from')} type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} InputLabelProps={{ shrink: true }} />
-        <TextField size="small" label={t('common.to')} type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} InputLabelProps={{ shrink: true }} />
+        <TextField
+          size="small"
+          label={t('common.from')}
+          type="date"
+          value={dateFrom}
+          onChange={(e) => {
+            setDateFrom(e.target.value);
+            setPage(1);
+          }}
+          InputLabelProps={{ shrink: true }}
+        />
+        <TextField
+          size="small"
+          label={t('common.to')}
+          type="date"
+          value={dateTo}
+          onChange={(e) => {
+            setDateTo(e.target.value);
+            setPage(1);
+          }}
+          InputLabelProps={{ shrink: true }}
+        />
 
-        <IconButton onClick={fetchList}><RefreshIcon /></IconButton>
+        <IconButton onClick={fetchList}>
+          <RefreshIcon />
+        </IconButton>
       </Toolbar>
 
       {loading && <Typography sx={{ p: 2 }}>{t('common.loading')}</Typography>}
-      {!loading && error && <Typography color="error" sx={{ p: 2 }}>{error}</Typography>}
+      {!loading && error && (
+        <Typography color="error" sx={{ p: 2 }}>
+          {error}
+        </Typography>
+      )}
       {!loading && !error && (
         <>
           <Table size="small">
@@ -128,24 +198,54 @@ export default function POSHistoryPage() {
             </TableHead>
             <TableBody>
               {rows.length === 0 && (
-                <TableRow><TableCell colSpan={5}><Typography color="text.secondary" sx={{ py: 2 }}>{t('receipts.none')}</Typography></TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={5}>
+                    <Typography color="text.secondary" sx={{ py: 2 }}>
+                      {t('receipts.none')}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
               )}
               {rows.map((r) => (
                 <TableRow key={String(r._id)} hover>
                   <TableCell>{formatDate(r.date)}</TableCell>
                   <TableCell>
-                    <Chip size="small" label={r.status} color={r.status === 'completed' ? 'success' : 'default'} />
+                    <Chip
+                      size="small"
+                      label={r.status}
+                      color={r.status === 'completed' ? 'success' : 'default'}
+                    />
                   </TableCell>
                   <TableCell align="right">{r.itemCount}</TableCell>
-                  <TableCell align="right">{formatNumber(Number(r.grandTotal || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                   <TableCell align="right">
-                    <Button size="small" startIcon={<VisibilityIcon />} onClick={() => setDetailsId(String(r._id))}>{t('common.view')}</Button>
-                    <Button size="small" startIcon={<PrintIcon />} onClick={() => onPrint(String(r._id))}>{t('common.print')}</Button>
+                    {formatNumber(Number(r.grandTotal || 0), {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      size="small"
+                      startIcon={<VisibilityIcon />}
+                      onClick={() => setDetailsId(String(r._id))}
+                    >
+                      {t('common.view')}
+                    </Button>
+                    <Button
+                      size="small"
+                      startIcon={<PrintIcon />}
+                      onClick={() => onPrint(String(r._id))}
+                    >
+                      {t('common.print')}
+                    </Button>
                     {r.type === 'sale' && r.status === 'pending' && (
                       <Button
                         size="small"
                         startIcon={<PaymentsIcon />}
-                        onClick={() => { setCollectInfo({ id: String(r._id), due: Number(r.dueTotal || 0) }); setCollectOpen(true); }}
+                        onClick={() => {
+                          setCollectInfo({ id: String(r._id), due: Number(r.dueTotal || 0) });
+                          setCollectOpen(true);
+                        }}
                       >
                         {t('pos.collectPayment')}
                       </Button>
@@ -161,16 +261,21 @@ export default function POSHistoryPage() {
         </>
       )}
 
-      <ReceiptDetailsDialog id={detailsId} open={Boolean(detailsId)} onClose={() => setDetailsId(null)} />
+      <ReceiptDetailsDialog
+        id={detailsId}
+        open={Boolean(detailsId)}
+        onClose={() => setDetailsId(null)}
+      />
       <CollectPaymentDialog
         open={collectOpen}
         onClose={() => setCollectOpen(false)}
         receiptId={collectInfo.id}
         dueTotal={collectInfo.due}
-        onDone={() => { setCollectOpen(false); fetchList(); }}
+        onDone={() => {
+          setCollectOpen(false);
+          fetchList();
+        }}
       />
     </Paper>
   );
 }
-
-

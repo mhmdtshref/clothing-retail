@@ -1,11 +1,26 @@
 'use client';
 
 import * as React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack, Alert } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  Stack,
+  Alert,
+} from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
 import { normalizeCompanyName } from '@/lib/company-name';
 
-export default function CompanyDialog({ open, onClose, onSaved, initialValue, existingCompanies = [] }) {
+export default function CompanyDialog({
+  open,
+  onClose,
+  onSaved,
+  initialValue,
+  existingCompanies = [],
+}) {
   const { t } = useI18n();
   const [name, setName] = React.useState(initialValue?.name || '');
   const [submitting, setSubmitting] = React.useState(false);
@@ -39,7 +54,11 @@ export default function CompanyDialog({ open, onClose, onSaved, initialValue, ex
       }
       const url = isEdit ? `/api/companies/${initialValue._id}` : '/api/companies';
       const method = isEdit ? 'PATCH' : 'POST';
-      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
       const json = await res.json();
       if (!res.ok) {
         if (res.status === 409) {
@@ -80,5 +99,3 @@ export default function CompanyDialog({ open, onClose, onSaved, initialValue, ex
     </Dialog>
   );
 }
-
-

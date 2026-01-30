@@ -35,7 +35,10 @@ async function ensureUniqueSlug({ name }) {
 }
 
 const QuerySchema = z.object({
-  includeInactive: z.union([z.literal('true'), z.literal('false')]).optional().default('false'),
+  includeInactive: z
+    .union([z.literal('true'), z.literal('false')])
+    .optional()
+    .default('false'),
 });
 
 export async function GET(req) {
@@ -46,7 +49,10 @@ export async function GET(req) {
   const params = Object.fromEntries(url.searchParams.entries());
   const parsed = QuerySchema.safeParse(params);
   if (!parsed.success) {
-    return NextResponse.json({ error: 'ValidationError', issues: parsed.error.flatten?.() || parsed.error }, { status: 400 });
+    return NextResponse.json(
+      { error: 'ValidationError', issues: parsed.error.flatten?.() || parsed.error },
+      { status: 400 },
+    );
   }
 
   const includeInactive = parsed.data.includeInactive === 'true';
@@ -54,10 +60,7 @@ export async function GET(req) {
 
   try {
     await connectToDB();
-    const items = await ExpenseCategory.find(filter)
-      .sort({ name: 1 })
-      .lean()
-      .exec();
+    const items = await ExpenseCategory.find(filter).sort({ name: 1 }).lean().exec();
 
     return NextResponse.json({
       ok: true,
@@ -136,5 +139,3 @@ export async function POST(req) {
     );
   }
 }
-
-

@@ -61,17 +61,26 @@ export async function PATCH(req, context) {
   try {
     body = await req.json();
   } catch (e) {
-    return NextResponse.json({ error: 'ValidationError', message: e?.message || 'Invalid JSON body' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'ValidationError', message: e?.message || 'Invalid JSON body' },
+      { status: 400 },
+    );
   }
 
   const parsed = ExpenseUpdateSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: 'ValidationError', issues: parsed.error.flatten?.() || parsed.error }, { status: 400 });
+    return NextResponse.json(
+      { error: 'ValidationError', issues: parsed.error.flatten?.() || parsed.error },
+      { status: 400 },
+    );
   }
 
   const update = { ...parsed.data };
   if (update.categoryId && !mongoose.isValidObjectId(update.categoryId)) {
-    return NextResponse.json({ error: 'ValidationError', message: 'Invalid categoryId' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'ValidationError', message: 'Invalid categoryId' },
+      { status: 400 },
+    );
   }
 
   try {
@@ -86,7 +95,10 @@ export async function PATCH(req, context) {
       }
     }
 
-    const doc = await Expense.findByIdAndUpdate(id, update, { new: true, runValidators: true }).lean();
+    const doc = await Expense.findByIdAndUpdate(id, update, {
+      new: true,
+      runValidators: true,
+    }).lean();
     if (!doc) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
 
     const cat = await ExpenseCategory.findById(doc.categoryId, { name: 1 }).lean().exec();
@@ -134,5 +146,3 @@ export async function DELETE(_req, context) {
     );
   }
 }
-
-

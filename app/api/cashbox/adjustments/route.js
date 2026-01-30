@@ -22,13 +22,19 @@ export async function POST(req) {
   try {
     body = BodySchema.parse(await req.json());
   } catch (e) {
-    return NextResponse.json({ error: 'ValidationError', message: e?.message || 'Invalid payload' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'ValidationError', message: e?.message || 'Invalid payload' },
+      { status: 400 },
+    );
   }
 
   await connectToDB();
   const session = await CashboxSession.findOne({ status: 'open' }).lean();
   if (!session) {
-    return NextResponse.json({ error: 'NoOpenSession', message: 'No open cashbox session' }, { status: 409 });
+    return NextResponse.json(
+      { error: 'NoOpenSession', message: 'No open cashbox session' },
+      { status: 409 },
+    );
   }
 
   const movement = await CashMovement.create({
@@ -43,5 +49,3 @@ export async function POST(req) {
 
   return NextResponse.json({ ok: true, movement });
 }
-
-

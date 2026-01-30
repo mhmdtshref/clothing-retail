@@ -1,7 +1,15 @@
 'use client';
 
 import * as React from 'react';
-import { DialogTitle, DialogContent, DialogActions, Stack, TextField, Button, Typography } from '@mui/material';
+import {
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Stack,
+  TextField,
+  Button,
+  Typography,
+} from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
 import FullScreenDialog from '@/components/common/FullScreenDialog';
 
@@ -10,7 +18,13 @@ type Summary = {
   cashIn: number;
   cashOut: number;
   expectedCash: number;
-  bySource: { sale: number; payment: number; return: number; adjustmentIn: number; adjustmentOut: number };
+  bySource: {
+    sale: number;
+    payment: number;
+    return: number;
+    adjustmentIn: number;
+    adjustmentOut: number;
+  };
 };
 
 export default function CloseCashboxDialog({
@@ -65,7 +79,11 @@ export default function CloseCashboxDialog({
           {summary && (
             <>
               <Typography color="text.secondary">
-                {t('cashbox.expected')}: {formatNumber(summary.expectedCash, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {t('cashbox.expected')}:{' '}
+                {formatNumber(summary.expectedCash, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </Typography>
             </>
           )}
@@ -87,10 +105,10 @@ export default function CloseCashboxDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{t('common.cancel')}</Button>
-        <Button disabled={submitting} variant="contained" onClick={submit}>{t('cashbox.confirmClose')}</Button>
+        <Button disabled={submitting} variant="contained" onClick={submit}>
+          {t('cashbox.confirmClose')}
+        </Button>
       </DialogActions>
     </FullScreenDialog>
   );
 }
-
-

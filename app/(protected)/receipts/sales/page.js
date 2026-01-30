@@ -10,4 +10,3 @@ export default async function SalesReceiptsRoutePage() {
   if (!session) redirect('/sign-in?redirect_url=/receipts/sales');
   return <SalesReceiptsPage />;
 }
-

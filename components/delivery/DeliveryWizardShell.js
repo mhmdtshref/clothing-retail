@@ -1,7 +1,19 @@
 'use client';
 
 import * as React from 'react';
-import { Box, Paper, Stack, Typography, Stepper, Step, StepLabel, Button, ToggleButton, ToggleButtonGroup, TextField } from '@mui/material';
+import {
+  Box,
+  Paper,
+  Stack,
+  Typography,
+  Stepper,
+  Step,
+  StepLabel,
+  Button,
+  ToggleButton,
+  ToggleButtonGroup,
+  TextField,
+} from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
 import POSCatalog from '@/components/pos/POSCatalog';
 import CartView from '@/components/pos/CartView';
@@ -20,29 +32,54 @@ export default function DeliveryWizardShell() {
   const [billDiscount, setBillDiscount] = React.useState({ mode: 'amount', value: 0 });
   const [taxPercent, setTaxPercent] = React.useState(0);
   const [deliveryCompany, setDeliveryCompany] = React.useState('optimus');
-  const [deliveryAddress, setDeliveryAddress] = React.useState({ line1: '', line2: '', city: '', state: '', postalCode: '', country: '' });
+  const [deliveryAddress, setDeliveryAddress] = React.useState({
+    line1: '',
+    line2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: '',
+  });
   const [deliveryContact, setDeliveryContact] = React.useState({ name: '', phone: '' });
-  const [optimusData, setOptimusData] = React.useState({ cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '', deliveryFees: '' });
+  const [optimusData, setOptimusData] = React.useState({
+    cityId: '',
+    areaId: '',
+    cityName: '',
+    areaName: '',
+    name: '',
+    phone: '',
+    addressLine: '',
+    codAmount: '',
+    deliveryFees: '',
+  });
   const [hasReturn, setHasReturn] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
   const [result, setResult] = React.useState(null); // { receipt, totals, ... }
 
   const totals = computeReceiptTotals({
     type: 'sale',
-    items: cart.items.map((l) => ({ qty: Number(l.qty) || 0, unitPrice: Number(l.unitPrice) || 0, discount: l.discount && Number(l.discount.value) > 0 ? l.discount : undefined })),
+    items: cart.items.map((l) => ({
+      qty: Number(l.qty) || 0,
+      unitPrice: Number(l.unitPrice) || 0,
+      discount: l.discount && Number(l.discount.value) > 0 ? l.discount : undefined,
+    })),
     billDiscount: billDiscount && Number(billDiscount.value) > 0 ? billDiscount : undefined,
     taxPercent: Number(taxPercent) || 0,
   }).totals;
 
   const returnTotals = computeReceiptTotals({
     type: 'sale_return',
-    items: returnCart.items.map((l) => ({ qty: Number(l.qty) || 0, unitPrice: Number(l.unitPrice) || 0, discount: l.discount && Number(l.discount.value) > 0 ? l.discount : undefined })),
+    items: returnCart.items.map((l) => ({
+      qty: Number(l.qty) || 0,
+      unitPrice: Number(l.unitPrice) || 0,
+      discount: l.discount && Number(l.discount.value) > 0 ? l.discount : undefined,
+    })),
   }).totals;
 
   const fees = Math.max(0, Number(optimusData?.deliveryFees || 0) || 0);
   const saleGrand = Number(totals?.grandTotal || 0);
   const returnGrand = Number(returnTotals?.grandTotal || 0);
-  const codPreClamp = (hasReturn ? (saleGrand - returnGrand) : saleGrand) + fees;
+  const codPreClamp = (hasReturn ? saleGrand - returnGrand : saleGrand) + fees;
   const codToCollect = Math.max(0, codPreClamp);
 
   const canNextFromStep1 = cart.items.length > 0 && cart.items.every((l) => Number(l.qty) > 0);
@@ -56,9 +93,29 @@ export default function DeliveryWizardShell() {
         billDiscount,
         taxPercent,
         deliveryCompany,
-        deliveryAddress: { ...deliveryAddress, ...(deliveryCompany === 'optimus' ? { line1: optimusData.addressLine, city: optimusData.cityName || String(optimusData.cityId || '') } : {}) },
-        deliveryContact: deliveryCompany === 'optimus' ? { name: optimusData.name || '', phone: optimusData.phone || '' } : deliveryContact,
-        deliveryProviderMeta: deliveryCompany === 'optimus' ? { ...optimusData, hasReturn, returnNotes: '', codAmount: Number(codToCollect.toFixed(2)), enteredDeliveryFees: Number(optimusData?.deliveryFees || 0) } : undefined,
+        deliveryAddress: {
+          ...deliveryAddress,
+          ...(deliveryCompany === 'optimus'
+            ? {
+                line1: optimusData.addressLine,
+                city: optimusData.cityName || String(optimusData.cityId || ''),
+              }
+            : {}),
+        },
+        deliveryContact:
+          deliveryCompany === 'optimus'
+            ? { name: optimusData.name || '', phone: optimusData.phone || '' }
+            : deliveryContact,
+        deliveryProviderMeta:
+          deliveryCompany === 'optimus'
+            ? {
+                ...optimusData,
+                hasReturn,
+                returnNotes: '',
+                codAmount: Number(codToCollect.toFixed(2)),
+                enteredDeliveryFees: Number(optimusData?.deliveryFees || 0),
+              }
+            : undefined,
         hasReturn,
         returnItems: hasReturn ? returnCart.items : [],
       });
@@ -80,30 +137,56 @@ export default function DeliveryWizardShell() {
     setDeliveryCompany('optimus');
     setDeliveryAddress({ line1: '', line2: '', city: '', state: '', postalCode: '', country: '' });
     setDeliveryContact({ name: '', phone: '' });
-    setOptimusData({ cityId: '', areaId: '', cityName: '', areaName: '', name: '', phone: '', addressLine: '', codAmount: '', deliveryFees: '' });
+    setOptimusData({
+      cityId: '',
+      areaId: '',
+      cityName: '',
+      areaName: '',
+      name: '',
+      phone: '',
+      addressLine: '',
+      codAmount: '',
+      deliveryFees: '',
+    });
     setHasReturn(false);
     setResult(null);
   }
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ mb: 1 }}>{t('delivery.newReceipt')}</Typography>
+      <Typography variant="h6" sx={{ mb: 1 }}>
+        {t('delivery.newReceipt')}
+      </Typography>
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 2 }}>
-        <Step><StepLabel>{t('pos.sale')}</StepLabel></Step>
-        <Step><StepLabel>{t('delivery.details')}</StepLabel></Step>
-        {hasReturn && <Step><StepLabel>{t('delivery.returned')}</StepLabel></Step>}
-        <Step><StepLabel>{t('delivery.result')}</StepLabel></Step>
+        <Step>
+          <StepLabel>{t('pos.sale')}</StepLabel>
+        </Step>
+        <Step>
+          <StepLabel>{t('delivery.details')}</StepLabel>
+        </Step>
+        {hasReturn && (
+          <Step>
+            <StepLabel>{t('delivery.returned')}</StepLabel>
+          </Step>
+        )}
+        <Step>
+          <StepLabel>{t('delivery.result')}</StepLabel>
+        </Step>
       </Stepper>
 
       {activeStep === 0 && (
         <Paper sx={{ p: 2 }}>
           <Stack direction="column" spacing={2}>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="subtitle1" gutterBottom>{t('pos.sale')}</Typography>
+              <Typography variant="subtitle1" gutterBottom>
+                {t('pos.sale')}
+              </Typography>
               <POSCatalog onPickVariant={(v, p) => cart.addVariant(v, p)} isReturnMode={false} />
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="subtitle1" gutterBottom>{t('cart.title')}</Typography>
+              <Typography variant="subtitle1" gutterBottom>
+                {t('cart.title')}
+              </Typography>
               <CartView
                 items={cart.items}
                 inc={cart.inc}
@@ -122,7 +205,13 @@ export default function DeliveryWizardShell() {
           </Stack>
           <ResponsiveActionsBar>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end">
-              <Button variant="contained" onClick={() => setActiveStep(1)} disabled={!canNextFromStep1}>{t('common.next')}</Button>
+              <Button
+                variant="contained"
+                onClick={() => setActiveStep(1)}
+                disabled={!canNextFromStep1}
+              >
+                {t('common.next')}
+              </Button>
             </Stack>
           </ResponsiveActionsBar>
         </Paper>
@@ -132,11 +221,26 @@ export default function DeliveryWizardShell() {
         <Paper sx={{ p: 2 }}>
           <Stack spacing={2}>
             <Typography variant="subtitle1">{t('delivery.details')}</Typography>
-            <ToggleButtonGroup size="small" exclusive value={deliveryCompany} onChange={(_e, val) => { if (val) setDeliveryCompany(val); }}>
+            <ToggleButtonGroup
+              size="small"
+              exclusive
+              value={deliveryCompany}
+              onChange={(_e, val) => {
+                if (val) setDeliveryCompany(val);
+              }}
+            >
               <ToggleButton value="optimus">{t('delivery.company.optimus')}</ToggleButton>
               <ToggleButton value="sabeq_laheq">{t('delivery.company.sabeq_laheq')}</ToggleButton>
             </ToggleButtonGroup>
-            <ToggleButtonGroup size="small" exclusive value={hasReturn ? 'yes' : 'no'} onChange={(_e, val) => { if (val === 'yes') setHasReturn(true); if (val === 'no') setHasReturn(false); }}>
+            <ToggleButtonGroup
+              size="small"
+              exclusive
+              value={hasReturn ? 'yes' : 'no'}
+              onChange={(_e, val) => {
+                if (val === 'yes') setHasReturn(true);
+                if (val === 'no') setHasReturn(false);
+              }}
+            >
               <ToggleButton value="no">{t('delivery.normalShipment')}</ToggleButton>
               <ToggleButton value="yes">{t('delivery.exchangeShipment')}</ToggleButton>
             </ToggleButtonGroup>
@@ -144,20 +248,45 @@ export default function DeliveryWizardShell() {
               <OptimusForm value={optimusData} onChange={setOptimusData} amountFieldMode="fees" />
             ) : (
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-                <TextField label={t('delivery.contactName')} value={deliveryContact.name} onChange={(e) => setDeliveryContact((c) => ({ ...c, name: e.target.value }))} fullWidth />
-                <TextField label={t('delivery.contactPhone')} value={deliveryContact.phone} onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))} fullWidth />
+                <TextField
+                  label={t('delivery.contactName')}
+                  value={deliveryContact.name}
+                  onChange={(e) => setDeliveryContact((c) => ({ ...c, name: e.target.value }))}
+                  fullWidth
+                />
+                <TextField
+                  label={t('delivery.contactPhone')}
+                  value={deliveryContact.phone}
+                  onChange={(e) => setDeliveryContact((c) => ({ ...c, phone: e.target.value }))}
+                  fullWidth
+                />
               </Stack>
             )}
             <ResponsiveActionsBar>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end" alignItems="center">
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={2}
+                justifyContent="flex-end"
+                alignItems="center"
+              >
                 <Typography variant="body2" color="text.secondary" sx={{ mr: { sm: 'auto' } }}>
-                  {t('delivery.codToCollect')}: {formatNumber(codToCollect, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {t('delivery.codToCollect')}:{' '}
+                  {formatNumber(codToCollect, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </Typography>
-                <Button variant="outlined" onClick={() => setActiveStep(0)}>{t('common.back')}</Button>
+                <Button variant="outlined" onClick={() => setActiveStep(0)}>
+                  {t('common.back')}
+                </Button>
                 {hasReturn ? (
-                  <Button variant="contained" onClick={() => setActiveStep(2)}>{t('common.next')}</Button>
+                  <Button variant="contained" onClick={() => setActiveStep(2)}>
+                    {t('common.next')}
+                  </Button>
                 ) : (
-                  <Button variant="contained" onClick={handleSubmit} disabled={submitting}>{submitting ? t('common.submitting') : t('common.submit')}</Button>
+                  <Button variant="contained" onClick={handleSubmit} disabled={submitting}>
+                    {submitting ? t('common.submitting') : t('common.submit')}
+                  </Button>
                 )}
               </Stack>
             </ResponsiveActionsBar>
@@ -169,11 +298,18 @@ export default function DeliveryWizardShell() {
         <Paper sx={{ p: 2 }}>
           <Stack direction="column" spacing={2}>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="subtitle1" gutterBottom>{t('delivery.returned')}</Typography>
-              <POSCatalog onPickVariant={(v, p) => returnCart.addVariant(v, p)} isReturnMode={true} />
+              <Typography variant="subtitle1" gutterBottom>
+                {t('delivery.returned')}
+              </Typography>
+              <POSCatalog
+                onPickVariant={(v, p) => returnCart.addVariant(v, p)}
+                isReturnMode={true}
+              />
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="subtitle1" gutterBottom>{t('cart.returnCart')}</Typography>
+              <Typography variant="subtitle1" gutterBottom>
+                {t('cart.returnCart')}
+              </Typography>
               <CartView
                 items={returnCart.items}
                 inc={returnCart.inc}
@@ -192,12 +328,24 @@ export default function DeliveryWizardShell() {
             </Box>
           </Stack>
           <ResponsiveActionsBar>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end" alignItems="center">
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={2}
+              justifyContent="flex-end"
+              alignItems="center"
+            >
               <Typography variant="body2" color="text.secondary" sx={{ mr: { sm: 'auto' } }}>
-                {t('delivery.codToCollect')}: {formatNumber(codToCollect, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {t('delivery.codToCollect')}:{' '}
+                {formatNumber(codToCollect, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </Typography>
-              <Button variant="outlined" onClick={() => setActiveStep(1)}>{t('common.back')}</Button>
-              <Button variant="contained" onClick={handleSubmit} disabled={submitting || !canNextFromReturns}>
+              <Button variant="outlined" onClick={() => setActiveStep(1)}>
+                {t('common.back')}
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+                disabled={submitting || !canNextFromReturns}
+              >
                 {submitting ? t('common.submitting') : t('common.submit')}
               </Button>
             </Stack>
@@ -207,17 +355,26 @@ export default function DeliveryWizardShell() {
 
       {((!hasReturn && activeStep === 2) || (hasReturn && activeStep === 3)) && result && (
         <Paper sx={{ p: 2 }}>
-          <Typography variant="subtitle1" gutterBottom>{t('delivery.receiptCreated')}</Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            {t('delivery.receiptCreated')}
+          </Typography>
           <Box sx={{ border: '1px solid', borderColor: 'divider', p: 1 }}>
-            <ReceiptPrintTemplate receipt={result.receipt} totals={result.totals} autoPrint={false} />
+            <ReceiptPrintTemplate
+              receipt={result.receipt}
+              totals={result.totals}
+              autoPrint={false}
+            />
           </Box>
           <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
-            <Button variant="outlined" onClick={resetWizard}>{t('delivery.newReceipt')}</Button>
-            <Button variant="contained" onClick={() => window.print()}>{t('common.print')}</Button>
+            <Button variant="outlined" onClick={resetWizard}>
+              {t('delivery.newReceipt')}
+            </Button>
+            <Button variant="contained" onClick={() => window.print()}>
+              {t('common.print')}
+            </Button>
           </Stack>
         </Paper>
       )}
     </Box>
   );
 }
-

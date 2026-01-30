@@ -2,9 +2,24 @@
 
 import * as React from 'react';
 import {
-  Box, Stack, Paper, Typography, TextField, Select, MenuItem, InputLabel, FormControl,
-  Chip, Button, Snackbar, Alert,
-  Table, TableHead, TableRow, TableCell, TableBody,
+  Box,
+  Stack,
+  Paper,
+  Typography,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Chip,
+  Button,
+  Snackbar,
+  Alert,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
   Divider,
   Autocomplete,
 } from '@mui/material';
@@ -81,7 +96,11 @@ export default function ProductDetailsPage({
       new Set((variants || []).map((v) => String(v?.companyId ?? '')).filter(Boolean)),
     );
 
-    setLockedDims({ sizeIds: lockedSizeIds, colorIds: lockedColorIds, companyIds: lockedCompanyIds });
+    setLockedDims({
+      sizeIds: lockedSizeIds,
+      colorIds: lockedColorIds,
+      companyIds: lockedCompanyIds,
+    });
     setDraftDims((prev) => ({
       sizeIds: uniqIds([...(prev?.sizeIds || []), ...lockedSizeIds]),
       colorIds: uniqIds([...(prev?.colorIds || []), ...lockedColorIds]),
@@ -90,8 +109,10 @@ export default function ProductDetailsPage({
   }, [variants]);
 
   const loadAll = React.useCallback(async () => {
-    setLoading(true); setError('');
-    setVariantsLoading(true); setVariantsError('');
+    setLoading(true);
+    setError('');
+    setVariantsLoading(true);
+    setVariantsError('');
     try {
       const pRes = await fetch(`/api/products/${productId}`, { cache: 'no-store' });
       const pJson = await pRes.json();
@@ -121,7 +142,9 @@ export default function ProductDetailsPage({
     }
   }, [productId, t]);
 
-  React.useEffect(() => { loadAll(); }, [loadAll]);
+  React.useEffect(() => {
+    loadAll();
+  }, [loadAll]);
 
   const companyById = React.useMemo(() => {
     const map = new Map();
@@ -154,7 +177,9 @@ export default function ProductDetailsPage({
     try {
       const sizeIds = uniqIds(draftDims.sizeIds);
       const colorIds = uniqIds(draftDims.colorIds);
-      const companyIds = Array.from(new Set((draftDims.companyIds || []).map((x) => String(x)).filter(Boolean)));
+      const companyIds = Array.from(
+        new Set((draftDims.companyIds || []).map((x) => String(x)).filter(Boolean)),
+      );
 
       if (sizeIds.length === 0 || colorIds.length === 0 || companyIds.length === 0) {
         setSnack({ open: true, severity: 'error', message: t('errors.provideSizeColorCompany') });
@@ -195,7 +220,9 @@ export default function ProductDetailsPage({
   async function onSaveNewVariants() {
     const sizeIds = uniqIds(draftDims.sizeIds);
     const colorIds = uniqIds(draftDims.colorIds);
-    const companyIds = Array.from(new Set((draftDims.companyIds || []).map((x) => String(x)).filter(Boolean)));
+    const companyIds = Array.from(
+      new Set((draftDims.companyIds || []).map((x) => String(x)).filter(Boolean)),
+    );
 
     if (sizeIds.length === 0 || colorIds.length === 0 || companyIds.length === 0) {
       setSnack({ open: true, severity: 'error', message: t('errors.provideSizeColorCompany') });
@@ -253,7 +280,9 @@ export default function ProductDetailsPage({
       if (!res.ok) throw new Error(json?.message || json?.error || 'Failed to save');
 
       const newQty = Number(json?.qty ?? n);
-      setVariants((prev) => (prev || []).map((v) => (String(v?._id) === id ? { ...v, qty: newQty } : v)));
+      setVariants((prev) =>
+        (prev || []).map((v) => (String(v?._id) === id ? { ...v, qty: newQty } : v)),
+      );
       setQtyDraftById((prev) => ({ ...(prev || {}), [id]: String(newQty) }));
       setSnack({ open: true, severity: 'success', message: t('common.saved') });
     } catch (e) {
@@ -300,7 +329,13 @@ export default function ProductDetailsPage({
     <Box sx={{ p: 2 }}>
       <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">{product?.code || t('products.product')}</Typography>
-        {product && <Chip size="small" label={product.status} color={product.status === 'active' ? 'success' : 'default'} />}
+        {product && (
+          <Chip
+            size="small"
+            label={product.status}
+            color={product.status === 'active' ? 'success' : 'default'}
+          />
+        )}
       </Stack>
 
       {loading && <Typography color="text.secondary">{t('common.loading')}</Typography>}
@@ -310,21 +345,53 @@ export default function ProductDetailsPage({
         <Stack spacing={2} sx={{ maxWidth: 1200, mx: 'auto' }}>
           <Paper sx={{ p: 2 }}>
             <Stack spacing={2}>
-              <TextField label={t('products.code')} value={editing.code} onChange={(e) => setEditing((s) => ({ ...s, code: e.target.value }))} fullWidth />
-              <TextField label={t('products.localCode')} value={product.localCode || ''} fullWidth disabled />
-              <TextField label={t('products.basePrice')} type="number" value={editing.basePrice} onChange={(e) => setEditing((s) => ({ ...s, basePrice: e.target.value }))} fullWidth />
+              <TextField
+                label={t('products.code')}
+                value={editing.code}
+                onChange={(e) => setEditing((s) => ({ ...s, code: e.target.value }))}
+                fullWidth
+              />
+              <TextField
+                label={t('products.localCode')}
+                value={product.localCode || ''}
+                fullWidth
+                disabled
+              />
+              <TextField
+                label={t('products.basePrice')}
+                type="number"
+                value={editing.basePrice}
+                onChange={(e) => setEditing((s) => ({ ...s, basePrice: e.target.value }))}
+                fullWidth
+              />
               <FormControl fullWidth>
                 <InputLabel>{t('common.status')}</InputLabel>
-                <Select label={t('common.status')} value={editing.status} onChange={(e) => setEditing((s) => ({ ...s, status: e.target.value }))}>
+                <Select
+                  label={t('common.status')}
+                  value={editing.status}
+                  onChange={(e) => setEditing((s) => ({ ...s, status: e.target.value }))}
+                >
                   <MenuItem value="active">{t('status.active')}</MenuItem>
                   <MenuItem value="archived">{t('status.archived')}</MenuItem>
                 </Select>
               </FormControl>
               <Box>
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>{t('products.image')}</Typography>
-                <ProductImageUploader value={editing.image} onChange={(img) => setEditing((s) => ({ ...s, image: img }))} />
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                  {t('products.image')}
+                </Typography>
+                <ProductImageUploader
+                  value={editing.image}
+                  onChange={(img) => setEditing((s) => ({ ...s, image: img }))}
+                />
                 {editing.image && (
-                  <Button sx={{ mt: 1 }} size="small" color="warning" onClick={() => setEditing((s) => ({ ...s, image: null }))}>{t('products.removeImage')}</Button>
+                  <Button
+                    sx={{ mt: 1 }}
+                    size="small"
+                    color="warning"
+                    onClick={() => setEditing((s) => ({ ...s, image: null }))}
+                  >
+                    {t('products.removeImage')}
+                  </Button>
                 )}
               </Box>
             </Stack>
@@ -342,7 +409,9 @@ export default function ProductDetailsPage({
                   multiple
                   options={variantSizes}
                   getOptionLabel={(o) => pickLocalizedName(o?.name, locale)}
-                  value={(variantSizes || []).filter((s) => (draftDims.sizeIds || []).includes(String(s?._id)))}
+                  value={(variantSizes || []).filter((s) =>
+                    (draftDims.sizeIds || []).includes(String(s?._id)),
+                  )}
                   onChange={(_, newVal) =>
                     setDraftDims((prev) =>
                       forceAddOnlyDraft({
@@ -366,7 +435,9 @@ export default function ProductDetailsPage({
                   multiple
                   options={variantColors}
                   getOptionLabel={(o) => pickLocalizedName(o?.name, locale)}
-                  value={(variantColors || []).filter((c) => (draftDims.colorIds || []).includes(String(c?._id)))}
+                  value={(variantColors || []).filter((c) =>
+                    (draftDims.colorIds || []).includes(String(c?._id)),
+                  )}
                   onChange={(_, newVal) =>
                     setDraftDims((prev) =>
                       forceAddOnlyDraft({
@@ -392,7 +463,9 @@ export default function ProductDetailsPage({
                 multiple
                 options={companies}
                 getOptionLabel={(o) => o?.name || ''}
-                value={(companies || []).filter((c) => (draftDims.companyIds || []).includes(String(c?._id)))}
+                value={(companies || []).filter((c) =>
+                  (draftDims.companyIds || []).includes(String(c?._id)),
+                )}
                 onChange={(_, newVal) =>
                   setDraftDims((prev) =>
                     forceAddOnlyDraft({
@@ -411,7 +484,11 @@ export default function ProductDetailsPage({
               />
 
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end">
-                <Button variant="outlined" onClick={onApplyVariants} disabled={applying || variantsLoading}>
+                <Button
+                  variant="outlined"
+                  onClick={onApplyVariants}
+                  disabled={applying || variantsLoading}
+                >
                   {applying ? t('common.loading') : t('products.applyVariants')}
                 </Button>
                 <Button
@@ -423,7 +500,9 @@ export default function ProductDetailsPage({
                 </Button>
               </Stack>
 
-              {variantsLoading && <Typography color="text.secondary">{t('common.loading')}</Typography>}
+              {variantsLoading && (
+                <Typography color="text.secondary">{t('common.loading')}</Typography>
+              )}
               {!variantsLoading && variantsError && <Alert severity="error">{variantsError}</Alert>}
 
               {!variantsLoading && !variantsError && (
@@ -442,22 +521,37 @@ export default function ProductDetailsPage({
                     {(variants || []).map((v) => {
                       const id = String(v?._id || '');
                       const isSaving = savingVariantId === id;
-                      const draft = typeof qtyDraftById?.[id] === 'undefined' ? String(v?.qty ?? 0) : qtyDraftById[id];
+                      const draft =
+                        typeof qtyDraftById?.[id] === 'undefined'
+                          ? String(v?.qty ?? 0)
+                          : qtyDraftById[id];
                       return (
                         <TableRow key={id} hover>
                           <TableCell>{v.companyName || '-'}</TableCell>
                           <TableCell>{v.size}</TableCell>
                           <TableCell>{v.color}</TableCell>
                           <TableCell>
-                            <Chip size="small" label={t('common.saved')} color="success" variant="outlined" />
+                            <Chip
+                              size="small"
+                              label={t('common.saved')}
+                              color="success"
+                              variant="outlined"
+                            />
                           </TableCell>
                           <TableCell align="right" sx={{ width: 180 }}>
                             <TextField
                               size="small"
                               type="number"
                               value={draft}
-                              onChange={(e) => setQtyDraftById((prev) => ({ ...(prev || {}), [id]: e.target.value }))}
-                              onKeyDown={(e) => { if (e.key === 'Enter') onSaveVariantQty(id); }}
+                              onChange={(e) =>
+                                setQtyDraftById((prev) => ({
+                                  ...(prev || {}),
+                                  [id]: e.target.value,
+                                }))
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') onSaveVariantQty(id);
+                              }}
                               inputProps={{ step: 1 }}
                             />
                           </TableCell>
@@ -481,13 +575,26 @@ export default function ProductDetailsPage({
                         <TableCell>{v.sizeLabel}</TableCell>
                         <TableCell>{v.colorLabel}</TableCell>
                         <TableCell>
-                          <Chip size="small" label={t('products.unsaved')} color="warning" variant="outlined" />
+                          <Chip
+                            size="small"
+                            label={t('products.unsaved')}
+                            color="warning"
+                            variant="outlined"
+                          />
                         </TableCell>
                         <TableCell align="right" sx={{ width: 180 }}>
-                          <TextField size="small" type="number" value={0} disabled inputProps={{ step: 1 }} />
+                          <TextField
+                            size="small"
+                            type="number"
+                            value={0}
+                            disabled
+                            inputProps={{ step: 1 }}
+                          />
                         </TableCell>
                         <TableCell align="right" sx={{ width: 140 }}>
-                          <Typography color="text.secondary" variant="body2">—</Typography>
+                          <Typography color="text.secondary" variant="body2">
+                            —
+                          </Typography>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -499,18 +606,30 @@ export default function ProductDetailsPage({
 
           <ResponsiveActionsBar>
             <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="flex-end" spacing={1}>
-              <Button variant="outlined" onClick={onReset} disabled={!product}>{t('common.reset')}</Button>
-              <Button variant="contained" onClick={onSave} disabled={!product}>{t('common.save')}</Button>
+              <Button variant="outlined" onClick={onReset} disabled={!product}>
+                {t('common.reset')}
+              </Button>
+              <Button variant="contained" onClick={onSave} disabled={!product}>
+                {t('common.save')}
+              </Button>
             </Stack>
           </ResponsiveActionsBar>
         </Stack>
       )}
 
-      <Snackbar open={snack.open} autoHideDuration={2500} onClose={() => setSnack((s) => ({ ...s, open: false }))}>
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant="filled">{snack.message}</Alert>
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={2500}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.severity}
+          variant="filled"
+        >
+          {snack.message}
+        </Alert>
       </Snackbar>
     </Box>
   );
 }
-
-

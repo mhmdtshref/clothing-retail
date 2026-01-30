@@ -10,4 +10,3 @@ export default async function POSDepositReceiptsPage() {
   if (!session) redirect('/sign-in?redirect_url=/pos/deposits');
   return <DepositReceiptsPage />;
 }
-

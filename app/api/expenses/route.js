@@ -38,7 +38,10 @@ export async function GET(req) {
   const filter = {};
   if (categoryId) {
     if (!mongoose.isValidObjectId(categoryId)) {
-      return NextResponse.json({ error: 'ValidationError', message: 'Invalid categoryId' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'ValidationError', message: 'Invalid categoryId' },
+        { status: 400 },
+      );
     }
     filter.categoryId = new mongoose.Types.ObjectId(categoryId);
   }
@@ -135,7 +138,10 @@ export async function POST(req) {
 
     const { date, categoryId, amount, vendor = '', note = '' } = parsed.data;
     if (!mongoose.isValidObjectId(categoryId)) {
-      return NextResponse.json({ error: 'ValidationError', message: 'Invalid categoryId' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'ValidationError', message: 'Invalid categoryId' },
+        { status: 400 },
+      );
     }
 
     await connectToDB();
@@ -171,5 +177,3 @@ export async function POST(req) {
     );
   }
 }
-
-

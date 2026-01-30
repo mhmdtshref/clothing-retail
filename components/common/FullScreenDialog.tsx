@@ -13,5 +13,3 @@ export default function FullScreenDialog({ forceFullScreen, ...props }: FullScre
   const fullScreen = forceFullScreen ?? isXs;
   return <Dialog fullScreen={fullScreen} {...props} />;
 }
-
-

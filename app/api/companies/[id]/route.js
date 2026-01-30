@@ -42,13 +42,16 @@ export async function PATCH(req, context) {
     await connectToDB();
 
     if (typeof update.name !== 'undefined') {
-      const existing = await Company.findOne({ _id: { $ne: id }, nameKey: update.nameKey }).lean().exec();
+      const existing = await Company.findOne({ _id: { $ne: id }, nameKey: update.nameKey })
+        .lean()
+        .exec();
       const conflict =
         Boolean(existing) ||
-        (await Company.find({ _id: { $ne: id } }, { name: 1 })
-          .lean()
-          .exec())
-          .some((c) => normalizeCompanyName(c?.name || '') === update.nameKey);
+        (
+          await Company.find({ _id: { $ne: id } }, { name: 1 })
+            .lean()
+            .exec()
+        ).some((c) => normalizeCompanyName(c?.name || '') === update.nameKey);
 
       if (conflict) {
         return NextResponse.json(
@@ -79,5 +82,3 @@ export async function PATCH(req, context) {
     );
   }
 }
-
-

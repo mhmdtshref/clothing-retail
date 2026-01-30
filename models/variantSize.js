@@ -15,4 +15,3 @@ const VariantSizeSchema = new Schema(
 VariantSizeSchema.index({ nameKey: 1 }, { unique: true });
 
 export default mongoose.models.VariantSize || mongoose.model('VariantSize', VariantSizeSchema);
-

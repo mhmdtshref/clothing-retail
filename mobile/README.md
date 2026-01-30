@@ -3,6 +3,7 @@
 This wrapper opens the production URL inside a native WebView so you can publish to stores quickly. Later you can bundle static assets.
 
 Setup:
+
 1. Install deps:
    npm i -D @capacitor/cli
    npm i @capacitor/core @capacitor/android @capacitor/ios
@@ -16,11 +17,11 @@ Setup:
    npx cap open ios
 
 Plugins:
+
 - @capacitor/app, @capacitor/splash-screen (optional)
 - For printing/camera, add community plugins as needed.
 
 URL-mode now. To bundle assets later:
+
 - next build && next export (static parts)
 - set server: { url: undefined }, webDir to your export dir and enable bundledWebRuntime
-
-

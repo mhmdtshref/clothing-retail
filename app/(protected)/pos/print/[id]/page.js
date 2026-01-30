@@ -42,5 +42,3 @@ export default async function POSPrintPage({ params, searchParams }) {
   const autoPrint = !(sp && String(sp.autoprint || '') === '0');
   return <ReceiptPrintTemplate receipt={receipt} totals={totals} autoPrint={autoPrint} />;
 }
-
-

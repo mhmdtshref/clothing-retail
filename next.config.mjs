@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const urlStr = process.env.S3_PUBLIC_BASE_URL || 'https://example.com';
 let url;
-try { url = new URL(urlStr); } catch { url = new URL('https://example.com'); }
+try {
+  url = new URL(urlStr);
+} catch {
+  url = new URL('https://example.com');
+}
 
 const nextConfig = {
   experimental: {

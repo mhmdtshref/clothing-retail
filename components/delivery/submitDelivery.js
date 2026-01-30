@@ -19,7 +19,11 @@ export default async function submitDelivery({
       throw new Error('Delivery address (line1, city) and contact phone are required');
     }
   } else {
-    if (!deliveryProviderMeta?.cityId || !deliveryProviderMeta?.areaId || !/^\d{10}$/.test(String(deliveryProviderMeta?.phone || ''))) {
+    if (
+      !deliveryProviderMeta?.cityId ||
+      !deliveryProviderMeta?.areaId ||
+      !/^\d{10}$/.test(String(deliveryProviderMeta?.phone || ''))
+    ) {
       throw new Error('Optimus: city, area, and 10-digit phone are required');
     }
   }
@@ -68,13 +72,15 @@ export default async function submitDelivery({
   // Build return notes if needed
   let returnNotes = '';
   if (hasReturn && Array.isArray(returnItems) && returnItems.length) {
-    const lines = returnItems.map((l) => {
-      const code = l.code || '';
-      const size = l.size || '';
-      const color = l.color || '';
-      const qty = Number(l.qty || 0);
-      return [code, [size, color].filter(Boolean).join('/'), `x${qty}`].filter(Boolean).join(' ');
-    }).filter(Boolean);
+    const lines = returnItems
+      .map((l) => {
+        const code = l.code || '';
+        const size = l.size || '';
+        const color = l.color || '';
+        const qty = Number(l.qty || 0);
+        return [code, [size, color].filter(Boolean).join('/'), `x${qty}`].filter(Boolean).join(' ');
+      })
+      .filter(Boolean);
     returnNotes = lines.join('\n');
   }
 
@@ -85,17 +91,21 @@ export default async function submitDelivery({
       variantId: l.variantId,
       qty: Number(l.qty) || 0,
       unitPrice: Number(l.unitPrice) || 0,
-      discount: l.discount && Number(l.discount.value) > 0
-        ? { mode: l.discount.mode, value: Number(l.discount.value) }
-        : undefined,
+      discount:
+        l.discount && Number(l.discount.value) > 0
+          ? { mode: l.discount.mode, value: Number(l.discount.value) }
+          : undefined,
     })),
-    billDiscount: billDiscount && Number(billDiscount.value) > 0
-      ? { mode: billDiscount.mode, value: Number(billDiscount.value) }
-      : undefined,
+    billDiscount:
+      billDiscount && Number(billDiscount.value) > 0
+        ? { mode: billDiscount.mode, value: Number(billDiscount.value) }
+        : undefined,
     taxPercent: Number(taxPercent) || 0,
     note: 'Delivery',
     delivery: { company: deliveryCompany, address: deliveryAddress, contact: deliveryContact },
-    ...(deliveryCompany === 'optimus' ? { deliveryProviderMeta: { ...deliveryProviderMeta, hasReturn, returnNotes } } : {}),
+    ...(deliveryCompany === 'optimus'
+      ? { deliveryProviderMeta: { ...deliveryProviderMeta, hasReturn, returnNotes } }
+      : {}),
     ...(customerIdToUse ? { customerId: customerIdToUse } : {}),
   };
 
@@ -115,9 +125,10 @@ export default async function submitDelivery({
         variantId: l.variantId,
         qty: Number(l.qty) || 0,
         unitPrice: Number(l.unitPrice) || 0,
-        discount: l.discount && Number(l.discount.value) > 0
-          ? { mode: l.discount.mode, value: Number(l.discount.value) }
-          : undefined,
+        discount:
+          l.discount && Number(l.discount.value) > 0
+            ? { mode: l.discount.mode, value: Number(l.discount.value) }
+            : undefined,
       })),
       note: `Exchange return for sale ${json?.receipt?._id || ''}`,
       // Link return receipt to the same shipment for tracking
@@ -145,5 +156,3 @@ export default async function submitDelivery({
 
   return json;
 }
-
-

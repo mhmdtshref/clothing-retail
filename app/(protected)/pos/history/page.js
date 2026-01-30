@@ -10,5 +10,3 @@ export default async function POSHistory() {
   if (!session) redirect('/sign-in?redirect_url=/pos/history');
   return <POSHistoryPage />;
 }
-
-

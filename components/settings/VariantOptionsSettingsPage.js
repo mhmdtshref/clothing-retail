@@ -36,7 +36,11 @@ function a11yProps(name, index) {
 function TabPanel({ value, index, children }) {
   if (value !== index) return null;
   return (
-    <Box role="tabpanel" id={`settings-tabpanel-${index}`} aria-labelledby={`settings-tab-${index}`}>
+    <Box
+      role="tabpanel"
+      id={`settings-tabpanel-${index}`}
+      aria-labelledby={`settings-tab-${index}`}
+    >
       <Box sx={{ pt: 2 }}>{children}</Box>
     </Box>
   );
@@ -62,7 +66,10 @@ export default function VariantOptionsSettingsPage() {
     setLoading(true);
     setError('');
     try {
-      const [cRes, sRes] = await Promise.all([fetch('/api/variant-colors'), fetch('/api/variant-sizes')]);
+      const [cRes, sRes] = await Promise.all([
+        fetch('/api/variant-colors'),
+        fetch('/api/variant-sizes'),
+      ]);
       const [cJson, sJson] = await Promise.all([cRes.json(), sRes.json()]);
       if (!cRes.ok) throw new Error(cJson?.message || t('errors.loadVariantColors'));
       if (!sRes.ok) throw new Error(sJson?.message || t('errors.loadVariantSizes'));
@@ -143,7 +150,9 @@ export default function VariantOptionsSettingsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t('settings.searchPlaceholder')}
             InputProps={{
-              startAdornment: <SearchIcon fontSize="small" style={{ opacity: 0.7, marginRight: 8 }} />,
+              startAdornment: (
+                <SearchIcon fontSize="small" style={{ opacity: 0.7, marginRight: 8 }} />
+              ),
             }}
             sx={{ width: { xs: 180, sm: 260 } }}
           />
@@ -153,7 +162,11 @@ export default function VariantOptionsSettingsPage() {
         </Stack>
       </Toolbar>
 
-      <Tabs value={tab} onChange={(_e, v) => setTab(v)} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <Tabs
+        value={tab}
+        onChange={(_e, v) => setTab(v)}
+        sx={{ borderBottom: 1, borderColor: 'divider' }}
+      >
         <Tab label={t('variantColors.title')} {...a11yProps('settings', 0)} />
         <Tab label={t('variantSizes.title')} {...a11yProps('settings', 1)} />
       </Tabs>
@@ -226,7 +239,11 @@ export default function VariantOptionsSettingsPage() {
                 title={pickLocalizedName(row?.name, locale)}
                 subtitle={`${row?.name?.en || ''} • ${row?.name?.ar || ''}`}
                 actions={
-                  <Button size="small" startIcon={<EditIcon fontSize="small" />} onClick={() => onEdit(row)}>
+                  <Button
+                    size="small"
+                    startIcon={<EditIcon fontSize="small" />}
+                    onClick={() => onEdit(row)}
+                  >
                     {t('common.edit') || 'Edit'}
                   </Button>
                 }
@@ -253,4 +270,3 @@ export default function VariantOptionsSettingsPage() {
     </Paper>
   );
 }
-

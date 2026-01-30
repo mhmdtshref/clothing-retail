@@ -5,7 +5,15 @@ import { DialogTitle, DialogContent, DialogActions, Stack, TextField, Button } f
 import { useI18n } from '@/components/i18n/useI18n';
 import FullScreenDialog from '@/components/common/FullScreenDialog';
 
-export default function OpenCashboxDialog({ open, onClose, onOpened }: { open: boolean; onClose: () => void; onOpened: () => void }) {
+export default function OpenCashboxDialog({
+  open,
+  onClose,
+  onOpened,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onOpened: () => void;
+}) {
   const { t } = useI18n();
   const [amount, setAmount] = React.useState<string>('');
   const [submitting, setSubmitting] = React.useState(false);
@@ -53,10 +61,10 @@ export default function OpenCashboxDialog({ open, onClose, onOpened }: { open: b
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{t('common.cancel')}</Button>
-        <Button disabled={submitting} variant="contained" onClick={submit}>{t('cashbox.openNow')}</Button>
+        <Button disabled={submitting} variant="contained" onClick={submit}>
+          {t('cashbox.openNow')}
+        </Button>
       </DialogActions>
     </FullScreenDialog>
   );
 }
-
-

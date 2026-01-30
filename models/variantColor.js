@@ -15,4 +15,3 @@ const VariantColorSchema = new Schema(
 VariantColorSchema.index({ nameKey: 1 }, { unique: true });
 
 export default mongoose.models.VariantColor || mongoose.model('VariantColor', VariantColorSchema);
-

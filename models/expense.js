@@ -16,5 +16,3 @@ ExpenseSchema.index({ date: -1 });
 ExpenseSchema.index({ categoryId: 1, date: -1 });
 
 export default mongoose.models.Expense || mongoose.model('Expense', ExpenseSchema);
-
-
