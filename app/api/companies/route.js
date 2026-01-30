@@ -15,7 +15,7 @@ export async function GET() {
 
   try {
     await connectToDB();
-    const items = await Company.find({}, { name: 1, createdAt: 1, updatedAt: 1 })
+    const items = await Company.find({}, { name: 1, store: 1, createdAt: 1, updatedAt: 1 })
       .sort({ name: 1 })
       .lean()
       .exec();
@@ -25,6 +25,7 @@ export async function GET() {
       items: items.map((c) => ({
         _id: c._id,
         name: c.name,
+        store: c.store || 'Lariche',
         createdAt: c.createdAt,
         updatedAt: c.updatedAt,
       })),
@@ -51,7 +52,7 @@ export async function POST(req) {
       );
     }
 
-    const { name } = parsed.data;
+    const { name, store } = parsed.data;
     const nameKey = normalizeCompanyName(name);
 
     await connectToDB();
@@ -70,13 +71,14 @@ export async function POST(req) {
       );
     }
 
-    const doc = await Company.create({ name, nameKey });
+    const doc = await Company.create({ name, nameKey, store });
     return NextResponse.json(
       {
         ok: true,
         company: {
           _id: doc._id,
           name: doc.name,
+          store: doc.store || 'Lariche',
           createdAt: doc.createdAt,
           updatedAt: doc.updatedAt,
         },

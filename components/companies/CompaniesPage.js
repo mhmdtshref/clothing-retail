@@ -123,6 +123,7 @@ export default function CompaniesPage() {
             <TableHead>
               <TableRow>
                 <TableCell>{t('common.name')}</TableCell>
+                <TableCell>{t('companies.store')}</TableCell>
                 <TableCell width={120} align="right">
                   {t('common.actions')}
                 </TableCell>
@@ -131,7 +132,7 @@ export default function CompaniesPage() {
             <TableBody>
               {filteredItems.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={2}>
+                  <TableCell colSpan={3}>
                     <Typography variant="body2" color="text.secondary">
                       {t('companies.none')}
                     </Typography>
@@ -141,6 +142,7 @@ export default function CompaniesPage() {
                 filteredItems.map((row) => (
                   <TableRow key={String(row._id)} hover>
                     <TableCell>{row.name}</TableCell>
+                    <TableCell>{row.store || 'Lariche'}</TableCell>
                     <TableCell align="right">
                       <IconButton size="small" onClick={() => onEdit(row)}>
                         <EditIcon fontSize="small" />
@@ -162,6 +164,7 @@ export default function CompaniesPage() {
               <ResponsiveListItem
                 key={String(row._id)}
                 title={row.name}
+                subtitle={`${t('companies.store')}: ${row.store || 'Lariche'}`}
                 actions={
                   <Button
                     size="small"

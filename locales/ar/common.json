@@ -159,6 +159,7 @@
   "companies.none": "لا توجد شركات.",
   "companies.edit": "تعديل شركة",
   "companies.new": "شركة جديدة",
+  "companies.store": "المتجر",
   "companies.searchPlaceholder": "ابحث في الشركات…",
   "errors.loadCompanies": "فشل في تحميل الشركات",
   "errors.companyNameExists": "اسم الشركة موجود بالفعل.",

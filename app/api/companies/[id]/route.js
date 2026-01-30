@@ -37,6 +37,9 @@ export async function PATCH(req, context) {
     update.name = input.name;
     update.nameKey = normalizeCompanyName(input.name);
   }
+  if (typeof input.store !== 'undefined') {
+    update.store = input.store;
+  }
 
   try {
     await connectToDB();
@@ -64,11 +67,14 @@ export async function PATCH(req, context) {
     const doc = await Company.findByIdAndUpdate(id, update, {
       new: true,
       runValidators: true,
-      projection: { name: 1, createdAt: 1, updatedAt: 1 },
+      projection: { name: 1, store: 1, createdAt: 1, updatedAt: 1 },
     }).lean();
     if (!doc) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
 
-    return NextResponse.json({ ok: true, company: { ...doc, _id: doc._id } });
+    return NextResponse.json({
+      ok: true,
+      company: { ...doc, _id: doc._id, store: doc.store || 'Lariche' },
+    });
   } catch (err) {
     if (err?.code === 11000) {
       return NextResponse.json(
