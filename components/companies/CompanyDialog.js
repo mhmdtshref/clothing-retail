@@ -10,9 +10,12 @@ import {
   Button,
   Stack,
   Alert,
+  MenuItem,
 } from '@mui/material';
 import { useI18n } from '@/components/i18n/useI18n';
 import { normalizeCompanyName } from '@/lib/company-name';
+
+const STORE_OPTIONS = ['Lariche', 'Mini Queen'];
 
 export default function CompanyDialog({
   open,
@@ -23,6 +26,7 @@ export default function CompanyDialog({
 }) {
   const { t } = useI18n();
   const [name, setName] = React.useState(initialValue?.name || '');
+  const [store, setStore] = React.useState(initialValue?.store || 'Lariche');
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState('');
 
@@ -31,6 +35,7 @@ export default function CompanyDialog({
   React.useEffect(() => {
     if (open) {
       setName(initialValue?.name || '');
+      setStore(initialValue?.store || 'Lariche');
       setError('');
     }
   }, [open, initialValue]);
@@ -40,7 +45,7 @@ export default function CompanyDialog({
     setSubmitting(true);
     try {
       setError('');
-      const payload = { name: name.trim() };
+      const payload = { name: name.trim(), store };
       const nextKey = normalizeCompanyName(payload.name);
       const currentId = isEdit ? String(initialValue?._id || '') : '';
       const conflictLocal = (existingCompanies || []).some((c) => {
@@ -86,6 +91,18 @@ export default function CompanyDialog({
             onChange={(e) => setName(e.target.value)}
             error={Boolean(error)}
           />
+          <TextField
+            select
+            label={t('companies.store')}
+            value={store}
+            onChange={(e) => setStore(e.target.value)}
+          >
+            {STORE_OPTIONS.map((opt) => (
+              <MenuItem key={opt} value={opt}>
+                {opt}
+              </MenuItem>
+            ))}
+          </TextField>
         </Stack>
       </DialogContent>
       <DialogActions>
