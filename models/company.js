@@ -5,6 +5,13 @@ const CompanySchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
     nameKey: { type: String, required: true, trim: true },
+    store: {
+      type: String,
+      enum: ['Mini Queen', 'Lariche'],
+      default: 'Lariche',
+      required: true,
+      trim: true,
+    },
   },
   { timestamps: true },
 );
