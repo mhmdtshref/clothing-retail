@@ -20,22 +20,35 @@ const ImageSchema = z
 
 const ProductCreateSchema = z.object({
   code: z.union([z.string().max(120).trim(), z.null()]).optional(),
+  // Used only to generate localCode; not persisted.
+  costUSD: z.preprocess((v) => {
+    // Prevent blank/whitespace from coercing to 0
+    if (v === null || typeof v === 'undefined') return v;
+    if (typeof v === 'string' && v.trim() === '') return undefined;
+    return v;
+  }, z.coerce.number().int().min(0).max(9999)),
   basePrice: z.number().nonnegative().default(0),
   status: z.enum(['active', 'archived']).optional().default('active'),
   image: ImageSchema,
 });
 
-async function generateLocalCode() {
+function formatCostPart(costUSD) {
+  // costUSD validated as int 0..9999
+  return String(costUSD).padStart(4, '0');
+}
+
+async function generateLocalCode(costUSD) {
+  const cccc = formatCostPart(costUSD);
   const yy = String(new Date().getFullYear()).slice(-2);
   let n = await Product.countDocuments().exec();
   for (let i = 0; i < 5; i++) {
     n += 1;
-    const candidate = `${yy}-${String(n).padStart(6, '0')}`;
+    const candidate = `${cccc}-${yy}-${String(n).padStart(6, '0')}`;
 
     const exists = await Product.exists({ $or: [{ localCode: candidate }, { code: candidate }] });
     if (!exists) return candidate;
   }
-  return `${yy}-${String(n + 1).padStart(6, '0')}`;
+  return `${cccc}-${yy}-${String(n + 1).padStart(6, '0')}`;
 }
 
 export async function POST(req) {
@@ -57,12 +70,12 @@ export async function POST(req) {
 
     const rawCode = parsed.data.code;
     const userCode = typeof rawCode === 'string' ? rawCode.trim() : '';
-    const { basePrice, status, image } = parsed.data;
+    const { costUSD, basePrice, status, image } = parsed.data;
 
     await connectToDB();
 
-    // Generate localCode (YY-XXXXXX) and create product
-    let localCode = await generateLocalCode();
+    // Generate localCode (CCCC-YY-XXXXXX) and create product
+    let localCode = await generateLocalCode(costUSD);
     const code = userCode || localCode;
 
     // Optional: pre-check to provide cleaner 409 without stack trace (only for user-provided codes)
@@ -81,7 +94,7 @@ export async function POST(req) {
     } catch (e) {
       // In rare case of duplicate localCode, retry once
       if (e?.code === 11000 && e?.keyPattern?.localCode) {
-        localCode = await generateLocalCode();
+        localCode = await generateLocalCode(costUSD);
         doc = await Product.create({
           code,
           localCode,

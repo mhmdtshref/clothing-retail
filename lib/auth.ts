@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
+import { username } from 'better-auth/plugins';
 import { nextCookies } from 'better-auth/next-js';
 import { MongoClient } from 'mongodb';
 
@@ -31,5 +32,5 @@ export const auth = betterAuth({
   emailAndPassword: { enabled: true },
   experimental: { joins: true },
   // Make sure this is the last plugin in the array.
-  plugins: [nextCookies()],
+  plugins: [username(), nextCookies()],
 });

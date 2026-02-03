@@ -38,6 +38,12 @@ const productSchema = z.object({
       z.union([z.string().max(120), z.null()]).optional(),
     )
     .optional(),
+  costUSD: z.preprocess((v) => {
+    // Prevent '' / whitespace from becoming 0
+    if (v === null || typeof v === 'undefined') return v;
+    if (typeof v === 'string' && v.trim() === '') return undefined;
+    return typeof v === 'string' ? Number(v) : v;
+  }, z.number().int().min(0).max(9999)),
   basePrice: z.preprocess(
     (v) => (typeof v === 'string' ? Number(v) : v),
     z.number().nonnegative().default(0),
@@ -72,6 +78,7 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
   const { t, locale } = useI18n();
   const [values, setValues] = React.useState({
     code: '',
+    costUSD: '',
     basePrice: '',
     status: 'active',
     sizeIds: [],
@@ -112,6 +119,7 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
 
       const prodInput = productSchema.parse({
         code: values.code,
+        costUSD: values.costUSD,
         basePrice: values.basePrice === '' ? 0 : values.basePrice,
         status: values.status,
       });
@@ -202,6 +210,16 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
           </Stack>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            <TextField
+              label={t('products.localCodeCostUSD')}
+              helperText={t('products.localCodeCostUSDHelper')}
+              value={values.costUSD}
+              onChange={handleChange('costUSD')}
+              type="number"
+              inputProps={{ step: '1', min: '0', max: '9999' }}
+              fullWidth
+              required
+            />
             <TextField
               label={t('products.basePrice')}
               value={values.basePrice}
@@ -323,6 +341,7 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
                 onClick={() =>
                   setValues({
                     code: '',
+                    costUSD: '',
                     basePrice: '',
                     status: 'active',
                     sizeIds: [],
