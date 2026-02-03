@@ -109,6 +109,8 @@
   "products.createdAt": "Created At",
   "products.code": "Code",
   "products.localCode": "Local Code",
+  "products.localCodeCostUSD": "Cost (USD) for Local Code",
+  "products.localCodeCostUSDHelper": "Used only to generate Local Code. Not saved.",
   "products.basePrice": "Base Price",
   "products.variants": "Variants",
   "products.created": "Created",
