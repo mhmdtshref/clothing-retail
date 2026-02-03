@@ -28,6 +28,7 @@ import { normalizeCompanyName } from '@/lib/company-name';
 import { pickLocalizedName } from '@/lib/i18n/name';
 import VariantColorDialog from '@/components/settings/VariantColorDialog';
 import VariantSizeDialog from '@/components/settings/VariantSizeDialog';
+import VariantSizeGroupDialog from '@/components/settings/VariantSizeGroupDialog';
 
 function a11yProps(name, index) {
   return { id: `${name}-tab-${index}`, 'aria-controls': `${name}-tabpanel-${index}` };
@@ -48,10 +49,11 @@ function TabPanel({ value, index, children }) {
 
 export default function VariantOptionsSettingsPage() {
   const { t, locale } = useI18n();
-  const [tab, setTab] = React.useState(0); // 0 colors, 1 sizes
+  const [tab, setTab] = React.useState(0); // 0 colors, 1 sizes, 2 size groups
 
   const [colors, setColors] = React.useState([]);
   const [sizes, setSizes] = React.useState([]);
+  const [sizeGroups, setSizeGroups] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -59,22 +61,27 @@ export default function VariantOptionsSettingsPage() {
   // dialogs
   const [colorDialogOpen, setColorDialogOpen] = React.useState(false);
   const [sizeDialogOpen, setSizeDialogOpen] = React.useState(false);
+  const [sizeGroupDialogOpen, setSizeGroupDialogOpen] = React.useState(false);
   const [editingColor, setEditingColor] = React.useState(null);
   const [editingSize, setEditingSize] = React.useState(null);
+  const [editingSizeGroup, setEditingSizeGroup] = React.useState(null);
 
   const fetchAll = React.useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const [cRes, sRes] = await Promise.all([
+      const [cRes, sRes, gRes] = await Promise.all([
         fetch('/api/variant-colors'),
         fetch('/api/variant-sizes'),
+        fetch('/api/variant-size-groups'),
       ]);
-      const [cJson, sJson] = await Promise.all([cRes.json(), sRes.json()]);
+      const [cJson, sJson, gJson] = await Promise.all([cRes.json(), sRes.json(), gRes.json()]);
       if (!cRes.ok) throw new Error(cJson?.message || t('errors.loadVariantColors'));
       if (!sRes.ok) throw new Error(sJson?.message || t('errors.loadVariantSizes'));
+      if (!gRes.ok) throw new Error(gJson?.message || t('errors.loadVariantSizeGroups'));
       setColors(Array.isArray(cJson.items) ? cJson.items : []);
       setSizes(Array.isArray(sJson.items) ? sJson.items : []);
+      setSizeGroups(Array.isArray(gJson.items) ? gJson.items : []);
     } catch (e) {
       setError(e?.message || t('errors.saveFailed'));
     } finally {
@@ -106,16 +113,26 @@ export default function VariantOptionsSettingsPage() {
     });
   }, [sizes, searchQuery]);
 
-  const list = tab === 0 ? filteredColors : filteredSizes;
-  const title = tab === 0 ? t('variantColors.title') : t('variantSizes.title');
+  const filteredSizeGroups = React.useMemo(() => {
+    const q = normalizeCompanyName(searchQuery);
+    if (!q) return sizeGroups || [];
+    return (sizeGroups || []).filter((g) => normalizeCompanyName(g?.name || '').includes(q));
+  }, [sizeGroups, searchQuery]);
+
+  const list = tab === 0 ? filteredColors : tab === 1 ? filteredSizes : filteredSizeGroups;
+  const title =
+    tab === 0 ? t('variantColors.title') : tab === 1 ? t('variantSizes.title') : t('variantSizeGroups.title');
 
   function onAdd() {
     if (tab === 0) {
       setEditingColor(null);
       setColorDialogOpen(true);
-    } else {
+    } else if (tab === 1) {
       setEditingSize(null);
       setSizeDialogOpen(true);
+    } else {
+      setEditingSizeGroup(null);
+      setSizeGroupDialogOpen(true);
     }
   }
 
@@ -123,9 +140,12 @@ export default function VariantOptionsSettingsPage() {
     if (tab === 0) {
       setEditingColor(row);
       setColorDialogOpen(true);
-    } else {
+    } else if (tab === 1) {
       setEditingSize(row);
       setSizeDialogOpen(true);
+    } else {
+      setEditingSizeGroup(row);
+      setSizeGroupDialogOpen(true);
     }
   }
 
@@ -133,8 +153,10 @@ export default function VariantOptionsSettingsPage() {
     await fetchAll();
     setColorDialogOpen(false);
     setSizeDialogOpen(false);
+    setSizeGroupDialogOpen(false);
     setEditingColor(null);
     setEditingSize(null);
+    setEditingSizeGroup(null);
   }
 
   return (
@@ -157,7 +179,11 @@ export default function VariantOptionsSettingsPage() {
             sx={{ width: { xs: 180, sm: 260 } }}
           />
           <Button onClick={onAdd} variant="contained" startIcon={<AddIcon />}>
-            {tab === 0 ? t('variantColors.add') : t('variantSizes.add')}
+            {tab === 0
+              ? t('variantColors.add')
+              : tab === 1
+                ? t('variantSizes.add')
+                : t('variantSizeGroups.add')}
           </Button>
         </Stack>
       </Toolbar>
@@ -169,6 +195,7 @@ export default function VariantOptionsSettingsPage() {
       >
         <Tab label={t('variantColors.title')} {...a11yProps('settings', 0)} />
         <Tab label={t('variantSizes.title')} {...a11yProps('settings', 1)} />
+        <Tab label={t('variantSizeGroups.title')} {...a11yProps('settings', 2)} />
       </Tabs>
 
       {loading ? (
@@ -190,66 +217,131 @@ export default function VariantOptionsSettingsPage() {
             {title}
           </Typography>
 
-          <Table size="small" sx={{ display: { xs: 'none', sm: 'table' } }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>{t('common.name')}</TableCell>
-                <TableCell width={200}>{t('common.nameEn')}</TableCell>
-                <TableCell width={200}>{t('common.nameAr')}</TableCell>
-                <TableCell width={120} align="right">
-                  {t('common.actions')}
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {list.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4}>
-                    <Typography variant="body2" color="text.secondary">
-                      {tab === 0 ? t('variantColors.none') : t('variantSizes.none')}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                list.map((row) => (
-                  <TableRow key={String(row._id)} hover>
-                    <TableCell>{pickLocalizedName(row?.name, locale)}</TableCell>
-                    <TableCell>{row?.name?.en || ''}</TableCell>
-                    <TableCell>{row?.name?.ar || ''}</TableCell>
-                    <TableCell align="right">
-                      <IconButton size="small" onClick={() => onEdit(row)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
+          {tab === 2 ? (
+            <>
+              <Table size="small" sx={{ display: { xs: 'none', sm: 'table' } }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{t('common.name')}</TableCell>
+                    <TableCell width={200}>{t('variantSizeGroups.sizes')}</TableCell>
+                    <TableCell width={120} align="right">
+                      {t('common.actions')}
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                </TableHead>
+                <TableBody>
+                  {list.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={3}>
+                        <Typography variant="body2" color="text.secondary">
+                          {t('variantSizeGroups.none')}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    list.map((row) => (
+                      <TableRow key={String(row._id)} hover>
+                        <TableCell>{row?.name || ''}</TableCell>
+                        <TableCell>{Array.isArray(row?.sizeIds) ? row.sizeIds.length : 0}</TableCell>
+                        <TableCell align="right">
+                          <IconButton size="small" onClick={() => onEdit(row)}>
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
 
-          <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
-            {list.length === 0 && (
-              <Typography variant="body2" color="text.secondary">
-                {tab === 0 ? t('variantColors.none') : t('variantSizes.none')}
-              </Typography>
-            )}
-            {list.map((row) => (
-              <ResponsiveListItem
-                key={String(row._id)}
-                title={pickLocalizedName(row?.name, locale)}
-                subtitle={`${row?.name?.en || ''} • ${row?.name?.ar || ''}`}
-                actions={
-                  <Button
-                    size="small"
-                    startIcon={<EditIcon fontSize="small" />}
-                    onClick={() => onEdit(row)}
-                  >
-                    {t('common.edit') || 'Edit'}
-                  </Button>
-                }
-              />
-            ))}
-          </Stack>
+              <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
+                {list.length === 0 && (
+                  <Typography variant="body2" color="text.secondary">
+                    {t('variantSizeGroups.none')}
+                  </Typography>
+                )}
+                {list.map((row) => (
+                  <ResponsiveListItem
+                    key={String(row._id)}
+                    title={row?.name || ''}
+                    subtitle={`${Array.isArray(row?.sizeIds) ? row.sizeIds.length : 0} ${t('variantSizeGroups.sizes')}`}
+                    actions={
+                      <Button
+                        size="small"
+                        startIcon={<EditIcon fontSize="small" />}
+                        onClick={() => onEdit(row)}
+                      >
+                        {t('common.edit') || 'Edit'}
+                      </Button>
+                    }
+                  />
+                ))}
+              </Stack>
+            </>
+          ) : (
+            <>
+              <Table size="small" sx={{ display: { xs: 'none', sm: 'table' } }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{t('common.name')}</TableCell>
+                    <TableCell width={200}>{t('common.nameEn')}</TableCell>
+                    <TableCell width={200}>{t('common.nameAr')}</TableCell>
+                    <TableCell width={120} align="right">
+                      {t('common.actions')}
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {list.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <Typography variant="body2" color="text.secondary">
+                          {tab === 0 ? t('variantColors.none') : t('variantSizes.none')}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    list.map((row) => (
+                      <TableRow key={String(row._id)} hover>
+                        <TableCell>{pickLocalizedName(row?.name, locale)}</TableCell>
+                        <TableCell>{row?.name?.en || ''}</TableCell>
+                        <TableCell>{row?.name?.ar || ''}</TableCell>
+                        <TableCell align="right">
+                          <IconButton size="small" onClick={() => onEdit(row)}>
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+
+              <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
+                {list.length === 0 && (
+                  <Typography variant="body2" color="text.secondary">
+                    {tab === 0 ? t('variantColors.none') : t('variantSizes.none')}
+                  </Typography>
+                )}
+                {list.map((row) => (
+                  <ResponsiveListItem
+                    key={String(row._id)}
+                    title={pickLocalizedName(row?.name, locale)}
+                    subtitle={`${row?.name?.en || ''} • ${row?.name?.ar || ''}`}
+                    actions={
+                      <Button
+                        size="small"
+                        startIcon={<EditIcon fontSize="small" />}
+                        onClick={() => onEdit(row)}
+                      >
+                        {t('common.edit') || 'Edit'}
+                      </Button>
+                    }
+                  />
+                ))}
+              </Stack>
+            </>
+          )}
         </TabPanel>
       )}
 
@@ -266,6 +358,14 @@ export default function VariantOptionsSettingsPage() {
         onSaved={onSaved}
         initialValue={editingSize}
         existingSizes={sizes}
+      />
+      <VariantSizeGroupDialog
+        open={sizeGroupDialogOpen}
+        onClose={() => setSizeGroupDialogOpen(false)}
+        onSaved={onSaved}
+        initialValue={editingSizeGroup}
+        existingGroups={sizeGroups}
+        sizes={sizes}
       />
     </Paper>
   );
