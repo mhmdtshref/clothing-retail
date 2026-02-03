@@ -73,7 +73,12 @@ function cartesianPreview(sizes, colors, companies, limit = 10) {
   return { rows, total };
 }
 
-export default function CreateProductForm({ companies, variantSizes = [], variantColors = [] }) {
+export default function CreateProductForm({
+  companies,
+  variantSizes = [],
+  variantColors = [],
+  sizeGroups = [],
+}) {
   const router = useRouter();
   const { t, locale } = useI18n();
   const [values, setValues] = React.useState({
@@ -111,6 +116,27 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
   const handleChange = (field) => (e) => {
     setValues((v) => ({ ...v, [field]: e.target.value }));
   };
+
+  const variantSizeIdSet = React.useMemo(
+    () => new Set((variantSizes || []).map((s) => String(s?._id))),
+    [variantSizes],
+  );
+
+  const showSizeGroupShortcuts =
+    (values.sizeIds?.length ?? 0) === 0 && Array.isArray(sizeGroups) && sizeGroups.length > 0;
+
+  function addSizesByIds(ids) {
+    setValues((v) => {
+      const next = new Set((v.sizeIds || []).map((x) => String(x)));
+      for (const id of ids || []) {
+        const sid = String(id || '');
+        if (!sid) continue;
+        if (!variantSizeIdSet.has(sid)) continue; // ignore stale ids
+        next.add(sid);
+      }
+      return { ...v, sizeIds: Array.from(next) };
+    });
+  }
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -244,25 +270,41 @@ export default function CreateProductForm({ companies, variantSizes = [], varian
 
           <Typography variant="subtitle1">{t('products.variantGeneration')}</Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <Autocomplete
-              multiple
-              options={variantSizes}
-              getOptionLabel={(o) => pickLocalizedName(o?.name, locale)}
-              value={selectedSizes}
-              onChange={(_, newVal) =>
-                setValues((v) => ({ ...v, sizeIds: newVal.map((x) => x._id) }))
-              }
-              fullWidth
-              sx={{ flex: 1, minWidth: 0 }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={t('products.sizes')}
-                  placeholder={t('products.selectOneOrMore')}
-                  fullWidth
-                />
+            <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+              {showSizeGroupShortcuts && (
+                <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                  {sizeGroups.map((g) => (
+                    <Chip
+                      key={String(g._id)}
+                      label={g.name}
+                      size="small"
+                      variant="outlined"
+                      onClick={() => addSizesByIds(g.sizeIds)}
+                      sx={{ mb: 0.5 }}
+                    />
+                  ))}
+                </Stack>
               )}
-            />
+              <Autocomplete
+                multiple
+                options={variantSizes}
+                getOptionLabel={(o) => pickLocalizedName(o?.name, locale)}
+                value={selectedSizes}
+                onChange={(_, newVal) =>
+                  setValues((v) => ({ ...v, sizeIds: newVal.map((x) => x._id) }))
+                }
+                fullWidth
+                sx={{ minWidth: 0 }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('products.sizes')}
+                    placeholder={t('products.selectOneOrMore')}
+                    fullWidth
+                  />
+                )}
+              />
+            </Stack>
             <Autocomplete
               multiple
               options={variantColors}
