@@ -358,5 +358,6 @@
   "auth.signUp.submit": "إنشاء حساب",
   "auth.signUp.haveAccount": "لديك حساب بالفعل؟",
   "auth.signUp.signInLink": "تسجيل الدخول",
+  "auth.signUp.disabledMessage": "لا يمكن إنشاء حساب جديد حاليًا.",
   "auth.signUp.errorGeneric": "فشل إنشاء الحساب"
 }

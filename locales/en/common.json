@@ -358,5 +358,6 @@
   "auth.signUp.submit": "Create account",
   "auth.signUp.haveAccount": "Already have an account?",
   "auth.signUp.signInLink": "Sign in",
+  "auth.signUp.disabledMessage": "Sign-ups are currently disabled.",
   "auth.signUp.errorGeneric": "Failed to sign up"
 }

@@ -3,6 +3,7 @@ import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { username } from 'better-auth/plugins';
 import { nextCookies } from 'better-auth/next-js';
 import { MongoClient } from 'mongodb';
+import { getSignupEnabled } from '@/lib/env';
 
 declare global {
   var _betterAuthMongoClient: MongoClient | undefined;
@@ -20,6 +21,8 @@ if (!MONGODB_URI) {
   throw new Error('Missing MONGODB_URI in environment.');
 }
 
+const signupEnabled = getSignupEnabled();
+
 const client = global._betterAuthMongoClient ?? new MongoClient(MONGODB_URI);
 if (!global._betterAuthMongoClient) {
   global._betterAuthMongoClient = client;
@@ -29,7 +32,7 @@ export const auth = betterAuth({
   // Note: passing `client` enables database transactions. Standalone MongoDB doesn't support
   // transactions (requires replica set or mongos), so we omit it.
   database: mongodbAdapter(client.db()),
-  emailAndPassword: { enabled: true },
+  emailAndPassword: { enabled: true, disableSignUp: !signupEnabled },
   experimental: { joins: true },
   // Make sure this is the last plugin in the array.
   plugins: [username(), nextCookies()],
