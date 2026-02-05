@@ -342,6 +342,10 @@
   "auth.signIn.signUpLink": "إنشاء حساب",
   "auth.signIn.errorGeneric": "فشل تسجيل الدخول",
 
+  "auth.signOutConfirmTitle": "تسجيل الخروج؟",
+  "auth.signOutConfirmBody": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "auth.signOutConfirmAction": "تسجيل الخروج",
+
   "auth.signUp.title": "إنشاء حساب",
   "auth.signUp.nameLabel": "الاسم",
   "auth.signUp.usernameLabel": "اسم المستخدم",

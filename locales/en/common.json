@@ -342,6 +342,10 @@
   "auth.signIn.signUpLink": "Sign up",
   "auth.signIn.errorGeneric": "Failed to sign in",
 
+  "auth.signOutConfirmTitle": "Sign out?",
+  "auth.signOutConfirmBody": "Are you sure you want to sign out?",
+  "auth.signOutConfirmAction": "Sign out",
+
   "auth.signUp.title": "Sign up",
   "auth.signUp.nameLabel": "Name",
   "auth.signUp.usernameLabel": "Username",
