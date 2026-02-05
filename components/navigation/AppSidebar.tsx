@@ -81,6 +81,7 @@ export default function AppSidebar({
   const langValue = (locale || 'en').split('-')[0];
   const { data: session } = authClient.useSession();
   const signedIn = Boolean(session?.user);
+  const [signOutConfirmOpen, setSignOutConfirmOpen] = React.useState(false);
 
   const items: NavItem[] = [
     { href: '/', icon: <HomeIcon />, label: t('nav.home') },
@@ -264,7 +265,7 @@ export default function AppSidebar({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleSignOut();
+                  setSignOutConfirmOpen(true);
                 }}
                 sx={{ justifyContent: 'center', px: 1 }}
                 aria-label={t('nav.signOut')}
@@ -279,7 +280,7 @@ export default function AppSidebar({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleSignOut();
+                setSignOutConfirmOpen(true);
               }}
             >
               <ListItemIcon>
