@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from '@mui/material/styles';
 import {
+  Button,
   Drawer,
   Box,
   List,
@@ -17,6 +18,11 @@ import {
   Typography,
   ToggleButtonGroup,
   ToggleButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -81,6 +87,7 @@ export default function AppSidebar({
   const langValue = (locale || 'en').split('-')[0];
   const { data: session } = authClient.useSession();
   const signedIn = Boolean(session?.user);
+  const [signOutConfirmOpen, setSignOutConfirmOpen] = React.useState(false);
 
   const items: NavItem[] = [
     { href: '/', icon: <HomeIcon />, label: t('nav.home') },
@@ -123,6 +130,11 @@ export default function AppSidebar({
     }
   }, [router]);
 
+  const confirmSignOut = React.useCallback(async () => {
+    setSignOutConfirmOpen(false);
+    await handleSignOut();
+  }, [handleSignOut]);
+
   const handleLang = React.useCallback(
     (_e: unknown, next: string | null) => {
       if (!next) return;
@@ -136,186 +148,207 @@ export default function AppSidebar({
   );
 
   const content = (
-    <Box
-      role="navigation"
-      aria-label="Sidebar navigation"
-      sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        pt: 'calc(8px + env(safe-area-inset-top, 0px))',
-        pb: 'calc(8px + env(safe-area-inset-bottom, 0px))',
-      }}
-    >
+    <>
       <Box
+        role="navigation"
+        aria-label="Sidebar navigation"
         sx={{
+          height: '100%',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: collapsed ? 'center' : 'space-between',
-          gap: 1,
-          px: collapsed ? 0 : 2,
-          minHeight: 56,
+          flexDirection: 'column',
+          pt: 'calc(8px + env(safe-area-inset-top, 0px))',
+          pb: 'calc(8px + env(safe-area-inset-bottom, 0px))',
         }}
       >
-        {!collapsed && (
-          <Typography
-            variant="subtitle1"
-            sx={{
-              fontWeight: 700,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {process.env.NEXT_PUBLIC_SHOP_NAME || t('nav.appTitle')}
-          </Typography>
-        )}
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
-            flexDirection: collapsed ? 'column' : 'row',
-            gap: collapsed ? 0.5 : 0.75,
+            justifyContent: collapsed ? 'center' : 'space-between',
+            gap: 1,
+            px: collapsed ? 0 : 2,
+            minHeight: 56,
           }}
         >
-          <TauriWindowControls collapsed={collapsed} />
-          {showCollapseToggle && (
-            <IconButton
-              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onToggleCollapsed?.();
+          {!collapsed && (
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: 700,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }}
-              size="small"
             >
-              {chevron}
-            </IconButton>
+              {process.env.NEXT_PUBLIC_SHOP_NAME || t('nav.appTitle')}
+            </Typography>
           )}
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          px: collapsed ? 1 : 2,
-          pb: 1,
-        }}
-      >
-        <ToggleButtonGroup
-          size="small"
-          exclusive
-          orientation={collapsed ? 'vertical' : 'horizontal'}
-          value={langValue}
-          onChange={handleLang}
-          aria-label="Language"
-        >
-          <ToggleButton value="en">EN</ToggleButton>
-          <ToggleButton value="ar">AR</ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
-      <Divider />
-      <Box sx={{ flex: 1, overflowY: 'auto' }}>
-        <List sx={{ py: 1 }}>
-          {items.map((item) => {
-            const selected = isItemSelected(pathname, item.href);
-            const btn = (
-              <ListItemButton
-                key={item.href}
-                component={Link}
-                href={item.href}
-                selected={selected}
-                onClick={handleItemClick}
-                aria-label={collapsed ? item.label : undefined}
-                sx={{
-                  justifyContent: collapsed ? 'center' : 'flex-start',
-                  px: collapsed ? 1 : 2,
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              flexDirection: collapsed ? 'column' : 'row',
+              gap: collapsed ? 0.5 : 0.75,
+            }}
+          >
+            <TauriWindowControls collapsed={collapsed} />
+            {showCollapseToggle && (
+              <IconButton
+                aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onToggleCollapsed?.();
                 }}
+                size="small"
               >
-                <ListItemIcon sx={{ minWidth: collapsed ? 0 : 40, justifyContent: 'center' }}>
-                  {item.icon}
-                </ListItemIcon>
-                {!collapsed && <ListItemText primary={item.label} />}
-              </ListItemButton>
-            );
+                {chevron}
+              </IconButton>
+            )}
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            px: collapsed ? 1 : 2,
+            pb: 1,
+          }}
+        >
+          <ToggleButtonGroup
+            size="small"
+            exclusive
+            orientation={collapsed ? 'vertical' : 'horizontal'}
+            value={langValue}
+            onChange={handleLang}
+            aria-label="Language"
+          >
+            <ToggleButton value="en">EN</ToggleButton>
+            <ToggleButton value="ar">AR</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+        <Divider />
+        <Box sx={{ flex: 1, overflowY: 'auto' }}>
+          <List sx={{ py: 1 }}>
+            {items.map((item) => {
+              const selected = isItemSelected(pathname, item.href);
+              const btn = (
+                <ListItemButton
+                  key={item.href}
+                  component={Link}
+                  href={item.href}
+                  selected={selected}
+                  onClick={handleItemClick}
+                  aria-label={collapsed ? item.label : undefined}
+                  sx={{
+                    justifyContent: collapsed ? 'center' : 'flex-start',
+                    px: collapsed ? 1 : 2,
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: collapsed ? 0 : 40, justifyContent: 'center' }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  {!collapsed && <ListItemText primary={item.label} />}
+                </ListItemButton>
+              );
 
-            if (!collapsed) return btn;
-            return (
-              <Tooltip key={item.href} title={item.label} placement={tooltipSide}>
-                <Box component="span">{btn}</Box>
+              if (!collapsed) return btn;
+              return (
+                <Tooltip key={item.href} title={item.label} placement={tooltipSide}>
+                  <Box component="span">{btn}</Box>
+                </Tooltip>
+              );
+            })}
+          </List>
+        </Box>
+        <Divider />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            px: collapsed ? 1 : 2,
+            pt: 1,
+          }}
+        >
+          {signedIn ? (
+            collapsed ? (
+              <Tooltip title={t('nav.signOut')} placement={tooltipSide}>
+                <ListItemButton
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSignOutConfirmOpen(true);
+                  }}
+                  sx={{ justifyContent: 'center', px: 1 }}
+                  aria-label={t('nav.signOut')}
+                >
+                  <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
+                    <LogoutIcon />
+                  </ListItemIcon>
+                </ListItemButton>
               </Tooltip>
-            );
-          })}
-        </List>
-      </Box>
-      <Divider />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: collapsed ? 'center' : 'flex-start',
-          px: collapsed ? 1 : 2,
-          pt: 1,
-        }}
-      >
-        {signedIn ? (
-          collapsed ? (
-            <Tooltip title={t('nav.signOut')} placement={tooltipSide}>
+            ) : (
               <ListItemButton
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleSignOut();
+                  setSignOutConfirmOpen(true);
                 }}
+              >
+                <ListItemIcon>
+                  <LogoutIcon />
+                </ListItemIcon>
+                <ListItemText primary={t('nav.signOut')} />
+              </ListItemButton>
+            )
+          ) : collapsed ? (
+            <Tooltip title={t('nav.signIn')} placement={tooltipSide}>
+              <ListItemButton
+                component={Link}
+                href={`/sign-in?redirect_url=${encodeURIComponent(pathname || '/')}`}
+                onClick={handleItemClick}
                 sx={{ justifyContent: 'center', px: 1 }}
-                aria-label={t('nav.signOut')}
+                aria-label={t('nav.signIn')}
               >
                 <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
-                  <LogoutIcon />
+                  <LoginIcon />
                 </ListItemIcon>
               </ListItemButton>
             </Tooltip>
           ) : (
             <ListItemButton
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleSignOut();
-              }}
-            >
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('nav.signOut')} />
-            </ListItemButton>
-          )
-        ) : collapsed ? (
-          <Tooltip title={t('nav.signIn')} placement={tooltipSide}>
-            <ListItemButton
               component={Link}
               href={`/sign-in?redirect_url=${encodeURIComponent(pathname || '/')}`}
               onClick={handleItemClick}
-              sx={{ justifyContent: 'center', px: 1 }}
-              aria-label={t('nav.signIn')}
             >
-              <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center' }}>
+              <ListItemIcon>
                 <LoginIcon />
               </ListItemIcon>
+              <ListItemText primary={t('nav.signIn')} />
             </ListItemButton>
-          </Tooltip>
-        ) : (
-          <ListItemButton
-            component={Link}
-            href={`/sign-in?redirect_url=${encodeURIComponent(pathname || '/')}`}
-            onClick={handleItemClick}
-          >
-            <ListItemIcon>
-              <LoginIcon />
-            </ListItemIcon>
-            <ListItemText primary={t('nav.signIn')} />
-          </ListItemButton>
-        )}
+          )}
+        </Box>
       </Box>
-    </Box>
+
+      <Dialog open={signOutConfirmOpen} onClose={() => setSignOutConfirmOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>{t('auth.signOutConfirmTitle')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>{t('auth.signOutConfirmBody')}</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSignOutConfirmOpen(false)}>{t('common.cancel')}</Button>
+          <Button
+            onClick={() => {
+              void confirmSignOut();
+            }}
+            color="error"
+            variant="contained"
+          >
+            {t('auth.signOutConfirmAction')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 
   return (

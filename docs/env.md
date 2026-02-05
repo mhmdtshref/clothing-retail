@@ -25,9 +25,11 @@ Image size limit:
 ## Amplify
 
 If you deploy with `amplify.yml`, `.env` is generated from a single AWS Secrets Manager JSON secret.
-Add the keys above (especially `S3_MAX_IMAGE_BYTES`) to that JSON payload.
+Add the keys you use (including feature flags like `SIGNUP_ENABLED`) to that JSON payload.
 
-## Authentication (Better Auth)This app uses Better Auth for authentication (email + password).
+## Authentication (Better Auth)
+
+This app uses Better Auth for authentication (email + password).
 
 Required:
 
@@ -38,3 +40,11 @@ Required:
   - Base URL of your app (dev example): `http://localhost:3000`
 - `MONGODB_URI`
   - MongoDB connection string used by the app **and** Better Auth.
+
+Optional:
+
+- `SIGNUP_ENABLED`
+  - Feature flag to allow/disallow new account creation.
+  - Defaults to `true` when unset.
+  - Set to `false` to disable sign-ups (server-enforced).
+  - Accepted values: `true/false`, `1/0`, `yes/no`, `on/off`.
