@@ -13,8 +13,9 @@ function getRedirectUrl(searchParams) {
   return candidate.startsWith('/') ? candidate : '/';
 }
 
-export default function Page({ searchParams }) {
-  const redirectUrl = getRedirectUrl(searchParams);
+export default async function Page({ searchParams }) {
+  const sp = searchParams ? await searchParams : undefined;
+  const redirectUrl = getRedirectUrl(sp);
   const signupEnabled = getSignupEnabled();
   return <SignUpClient redirectUrl={redirectUrl} signupEnabled={signupEnabled} />;
 }
