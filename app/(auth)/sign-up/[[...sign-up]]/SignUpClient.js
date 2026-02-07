@@ -11,7 +11,9 @@ export default function SignUpClient({ redirectUrl = '/', signupEnabled = true }
   const router = useRouter();
   const { t } = useI18n();
 
-  const safeRedirectUrl = String(redirectUrl || '/').startsWith('/') ? String(redirectUrl || '/') : '/';
+  const safeRedirectUrl = String(redirectUrl || '/').startsWith('/')
+    ? String(redirectUrl || '/')
+    : '/';
   const signInHref = `/sign-in?redirect_url=${encodeURIComponent(safeRedirectUrl)}`;
 
   const [name, setName] = React.useState('');
@@ -59,7 +61,9 @@ export default function SignUpClient({ redirectUrl = '/', signupEnabled = true }
             {t('auth.signUp.title')}
           </Typography>
 
-          {!signupEnabled ? <Alert severity="info">{t('auth.signUp.disabledMessage')}</Alert> : null}
+          {!signupEnabled ? (
+            <Alert severity="info">{t('auth.signUp.disabledMessage')}</Alert>
+          ) : null}
           {signupEnabled && error ? <Alert severity="error">{error}</Alert> : null}
 
           {signupEnabled ? (

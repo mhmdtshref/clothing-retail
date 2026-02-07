@@ -1,7 +1,4 @@
-export function parseEnvBoolean(
-  value: string | undefined,
-  defaultValue: boolean,
-): boolean {
+export function parseEnvBoolean(value: string | undefined, defaultValue: boolean): boolean {
   if (value === undefined || value === null) return defaultValue;
   const v = String(value).trim().toLowerCase();
   if (!v) return defaultValue;

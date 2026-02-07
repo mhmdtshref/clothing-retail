@@ -78,7 +78,10 @@ export async function POST(req) {
     }
     const invalidId = sizeIds.find((id) => !mongoose.isValidObjectId(id));
     if (invalidId) {
-      return NextResponse.json({ error: 'ValidationError', message: 'Invalid size id.' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'ValidationError', message: 'Invalid size id.' },
+        { status: 400 },
+      );
     }
 
     const nameKey = normalizeCompanyName(name);
@@ -126,4 +129,3 @@ export async function POST(req) {
     );
   }
 }
-

@@ -5,9 +5,7 @@ const VariantSizeGroupSchema = new Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 200 },
     nameKey: { type: String, required: true, trim: true },
-    sizeIds: [
-      { type: Schema.Types.ObjectId, ref: 'VariantSize', required: true, index: true },
-    ],
+    sizeIds: [{ type: Schema.Types.ObjectId, ref: 'VariantSize', required: true, index: true }],
   },
   { timestamps: true },
 );
@@ -23,4 +21,3 @@ VariantSizeGroupSchema.path('sizeIds').validate({
 
 export default mongoose.models.VariantSizeGroup ||
   mongoose.model('VariantSizeGroup', VariantSizeGroupSchema);
-

@@ -282,7 +282,10 @@ async function compressImageToMaxBytes(
     let width = bitmap.width;
     let height = bitmap.height;
 
-    const normMime = (v) => String(v || '').toLowerCase().trim();
+    const normMime = (v) =>
+      String(v || '')
+        .toLowerCase()
+        .trim();
 
     const makeCanvas = (w, h) => {
       if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(w, h);
@@ -341,7 +344,8 @@ async function compressImageToMaxBytes(
       }
     }
 
-    const targetIsJpeg = normMime(targetMimeType) === 'image/jpeg' || normMime(targetMimeType) === 'image/jpg';
+    const targetIsJpeg =
+      normMime(targetMimeType) === 'image/jpeg' || normMime(targetMimeType) === 'image/jpg';
     const formatMax = (bytes) => {
       const n = Number(bytes);
       if (!Number.isFinite(n) || n <= 0) return 'the target size';
@@ -386,7 +390,9 @@ async function compressImageToMaxBytes(
       height = nextH;
     }
 
-    throw new Error(`Could not compress image to ${formatMax(maxBytes)}. Try a smaller/cropped image.`);
+    throw new Error(
+      `Could not compress image to ${formatMax(maxBytes)}. Try a smaller/cropped image.`,
+    );
   } finally {
     try {
       bitmap.close && bitmap.close();
