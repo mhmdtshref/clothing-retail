@@ -19,7 +19,7 @@ Required:
 Image size limit:
 
 - `S3_MAX_IMAGE_BYTES`
-  - Set to `40960` to enforce a strict **40KB** maximum.
+  - Set to `204800` to enforce a strict **200KB** maximum.
   - This limit is enforced server-side; the client also compresses before upload.
 
 ## Amplify
