@@ -330,7 +330,12 @@ export default function AppSidebar({
         </Box>
       </Box>
 
-      <Dialog open={signOutConfirmOpen} onClose={() => setSignOutConfirmOpen(false)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={signOutConfirmOpen}
+        onClose={() => setSignOutConfirmOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
         <DialogTitle>{t('auth.signOutConfirmTitle')}</DialogTitle>
         <DialogContent>
           <DialogContentText>{t('auth.signOutConfirmBody')}</DialogContentText>

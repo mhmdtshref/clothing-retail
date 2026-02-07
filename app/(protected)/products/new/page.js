@@ -18,10 +18,7 @@ export default async function NewProductPage() {
   const companies = await Company.find({}, { name: 1 }).sort({ name: 1 }).lean();
   const sizes = await VariantSize.find({}, { name: 1, nameKey: 1 }).sort({ nameKey: 1 }).lean();
   const colors = await VariantColor.find({}, { name: 1, nameKey: 1 }).sort({ nameKey: 1 }).lean();
-  const sizeGroups = await VariantSizeGroup.find(
-    {},
-    { name: 1, nameKey: 1, sizeIds: 1 },
-  )
+  const sizeGroups = await VariantSizeGroup.find({}, { name: 1, nameKey: 1, sizeIds: 1 })
     .sort({ nameKey: 1 })
     .lean();
 

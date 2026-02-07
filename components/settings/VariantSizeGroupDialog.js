@@ -100,9 +100,7 @@ export default function VariantSizeGroupDialog({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        {isEdit ? t('variantSizeGroups.edit') : t('variantSizeGroups.new')}
-      </DialogTitle>
+      <DialogTitle>{isEdit ? t('variantSizeGroups.edit') : t('variantSizeGroups.new')}</DialogTitle>
       <DialogContent dividers>
         <Stack spacing={2} sx={{ mt: 1 }}>
           {error && <Alert severity="error">{error}</Alert>}
@@ -140,4 +138,3 @@ export default function VariantSizeGroupDialog({
     </Dialog>
   );
 }
-

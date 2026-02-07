@@ -121,7 +121,11 @@ export default function VariantOptionsSettingsPage() {
 
   const list = tab === 0 ? filteredColors : tab === 1 ? filteredSizes : filteredSizeGroups;
   const title =
-    tab === 0 ? t('variantColors.title') : tab === 1 ? t('variantSizes.title') : t('variantSizeGroups.title');
+    tab === 0
+      ? t('variantColors.title')
+      : tab === 1
+        ? t('variantSizes.title')
+        : t('variantSizeGroups.title');
 
   function onAdd() {
     if (tab === 0) {
@@ -242,7 +246,9 @@ export default function VariantOptionsSettingsPage() {
                     list.map((row) => (
                       <TableRow key={String(row._id)} hover>
                         <TableCell>{row?.name || ''}</TableCell>
-                        <TableCell>{Array.isArray(row?.sizeIds) ? row.sizeIds.length : 0}</TableCell>
+                        <TableCell>
+                          {Array.isArray(row?.sizeIds) ? row.sizeIds.length : 0}
+                        </TableCell>
                         <TableCell align="right">
                           <IconButton size="small" onClick={() => onEdit(row)}>
                             <EditIcon fontSize="small" />

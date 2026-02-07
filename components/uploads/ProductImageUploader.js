@@ -70,7 +70,7 @@ export default function ProductImageUploader({
     let objURL = '';
     try {
       setProcessing(true);
-      const minimized = await compressImageToMaxBytes(f, { maxBytes: 40 * 1024 });
+      const minimized = await compressImageToMaxBytes(f, { maxBytes: 200 * 1024 });
       setFile(minimized);
       // cleanup previous local preview to avoid leaks when replacing an image
       try {
@@ -208,7 +208,10 @@ export default function ProductImageUploader({
       </Stack>
       {typeof maxBytesHint === 'number' && (
         <Typography variant="caption" color="text.secondary">
-          Max size ~{Math.round(maxBytesHint / 1024 / 1024)} MB
+          Max size ~
+          {maxBytesHint < 1024 * 1024
+            ? `${Math.round(maxBytesHint / 1024)} KB`
+            : `${Math.round(maxBytesHint / 1024 / 1024)} MB`}
         </Typography>
       )}
       {uploading && (
@@ -250,20 +253,23 @@ function getImageDimensions(src) {
 
 /**
  * Compress/resize an image to <= maxBytes before upload.
- * - Converts to WebP (as per decision) for best compression.
+ * - Prefers WebP for best compression, but falls back to JPEG when WebP export isn't supported
+ *   (notably iOS Safari: canvas.toBlob('image/webp') is unsupported and silently falls back).
  * - Strict: throws if it cannot reach the target size.
  * - Note: canvas-based encoding will flatten animated GIFs, so we reject GIF inputs.
  */
 async function compressImageToMaxBytes(
   file,
   {
-    maxBytes = 40 * 1024, // 40KB
+    maxBytes = 200 * 1024, // 200KB
     mimeType = 'image/webp',
+    fallbackMimeType = 'image/jpeg',
     startQuality = 0.82,
     minQuality = 0.35,
     downscaleStep = 0.85,
     minWidth = 160,
     minHeight = 160,
+    maxDownscaleAttempts = 25,
   } = {},
 ) {
   if (!file?.type?.startsWith('image/')) throw new Error('Please select an image file.');
@@ -275,6 +281,11 @@ async function compressImageToMaxBytes(
   try {
     let width = bitmap.width;
     let height = bitmap.height;
+
+    const normMime = (v) =>
+      String(v || '')
+        .toLowerCase()
+        .trim();
 
     const makeCanvas = (w, h) => {
       if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(w, h);
@@ -298,22 +309,74 @@ async function compressImageToMaxBytes(
     };
 
     const makeFileName = (oldName, type) => {
-      const ext = type === 'image/webp' ? 'webp' : type === 'image/jpeg' ? 'jpg' : 'png';
+      const t = normMime(type);
+      const ext =
+        t === 'image/webp'
+          ? 'webp'
+          : t === 'image/png'
+            ? 'png'
+            : t === 'image/jpeg' || t === 'image/jpg'
+              ? 'jpg'
+              : 'jpg';
       const base = String(oldName || 'image').replace(/\.[^.]+$/, '');
       return `${base}.${ext}`;
     };
 
+    // iOS Safari cannot export WebP via canvas; detect and fall back early so we don't waste
+    // iterations (WebP request silently becomes PNG, and the quality parameter becomes useless).
+    let targetMimeType = mimeType;
+    if (normMime(mimeType) === 'image/webp') {
+      try {
+        const testCanvas = makeCanvas(1, 1);
+        const testCtx = testCanvas.getContext('2d');
+        if (testCtx) {
+          testCtx.fillStyle = '#000';
+          testCtx.fillRect(0, 0, 1, 1);
+          const testBlob = await canvasToBlob(testCanvas, 'image/webp', 0.8);
+          if (normMime(testBlob?.type) !== 'image/webp') {
+            targetMimeType = fallbackMimeType;
+          }
+        } else {
+          targetMimeType = fallbackMimeType;
+        }
+      } catch {
+        targetMimeType = fallbackMimeType;
+      }
+    }
+
+    const targetIsJpeg =
+      normMime(targetMimeType) === 'image/jpeg' || normMime(targetMimeType) === 'image/jpg';
+    const formatMax = (bytes) => {
+      const n = Number(bytes);
+      if (!Number.isFinite(n) || n <= 0) return 'the target size';
+      if (n < 1024) return `${Math.round(n)} B`;
+      return `${Math.round(n / 1024)} KB`;
+    };
+
     // Draw at current size; try lowering quality first, then downscale and retry.
-    for (let downscaleAttempts = 0; downscaleAttempts < 10; downscaleAttempts++) {
+    for (let downscaleAttempts = 0; downscaleAttempts < maxDownscaleAttempts; downscaleAttempts++) {
       const canvas = makeCanvas(width, height);
       const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas 2D context is not available');
+      // Higher quality resizing where supported
+      try {
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+      } catch {}
+
+      if (targetIsJpeg) {
+        // JPEG has no alpha; paint a white background to avoid black/transparent artifacts.
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, width, height);
+      }
       ctx.drawImage(bitmap, 0, 0, width, height);
 
       let quality = startQuality;
       for (let qAttempts = 0; qAttempts < 12; qAttempts++) {
-        const blob = await canvasToBlob(canvas, mimeType, quality);
+        const blob = await canvasToBlob(canvas, targetMimeType, quality);
         if (blob.size <= maxBytes) {
-          return new File([blob], makeFileName(file.name, mimeType), { type: mimeType });
+          const outType = normMime(blob?.type) ? blob.type : targetMimeType;
+          return new File([blob], makeFileName(file.name, outType), { type: outType });
         }
         const nextQuality = Math.max(minQuality, quality - 0.08);
         if (nextQuality === quality) break;
@@ -327,7 +390,9 @@ async function compressImageToMaxBytes(
       height = nextH;
     }
 
-    throw new Error('Could not compress image to 40KB. Try a smaller/cropped image.');
+    throw new Error(
+      `Could not compress image to ${formatMax(maxBytes)}. Try a smaller/cropped image.`,
+    );
   } finally {
     try {
       bitmap.close && bitmap.close();
