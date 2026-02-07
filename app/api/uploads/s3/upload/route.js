@@ -10,12 +10,21 @@ import { getS3, getBucket, publicUrlForKey } from '@/lib/aws/s3';
 // Parse MAX_BYTES safely (avoid BigInt / invalid values in env)
 const MAX_BYTES = (() => {
   const raw = process.env.S3_MAX_IMAGE_BYTES;
-  if (!raw) return 40960; // default 40KB
+  if (!raw) return 200 * 1024; // default 200KB
   const normalized = String(raw).trim().replace(/_/g, '').replace(/n$/i, '');
   const parsed = Number(normalized);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 5 * 1024 * 1024;
 })();
-const MAX_MB = Math.max(1, Math.round(MAX_BYTES / (1024 * 1024)));
+
+function formatBytes(bytes) {
+  const n = Number(bytes);
+  if (!Number.isFinite(n) || n <= 0) return '';
+  if (n < 1024) return `${Math.round(n)} B`;
+  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+  const mb = n / (1024 * 1024);
+  const rounded = mb >= 10 ? Math.round(mb) : Math.round(mb * 10) / 10;
+  return `${rounded} MB`;
+}
 
 const EXT_FROM_MIME = {
   'image/jpeg': 'jpg',
@@ -52,10 +61,13 @@ export async function POST(req) {
     // Prefer size check BEFORE reading the blob to avoid disturbing the body
     const fileSize = Number(file?.size ?? 0);
     if (fileSize > MAX_BYTES) {
-      return new Response(JSON.stringify({ error: `File too large (max ${MAX_MB} MB)` }), {
-        status: 413,
-        headers: { 'content-type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ error: `File too large (max ${formatBytes(MAX_BYTES)})` }),
+        {
+          status: 413,
+          headers: { 'content-type': 'application/json' },
+        },
+      );
     }
 
     const buf = Buffer.from(await file.arrayBuffer());

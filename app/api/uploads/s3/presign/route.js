@@ -7,7 +7,14 @@ import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import crypto from 'node:crypto';
 import { getS3, getBucket, publicUrlForKey } from '@/lib/aws/s3';
 
-const MAX_BYTES = Number(process.env.S3_MAX_IMAGE_BYTES || 40960); // 40KB default
+// Parse MAX_BYTES safely (avoid BigInt / invalid values in env)
+const MAX_BYTES = (() => {
+  const raw = process.env.S3_MAX_IMAGE_BYTES;
+  if (!raw) return 200 * 1024; // default 200KB
+  const normalized = String(raw).trim().replace(/_/g, '').replace(/n$/i, '');
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 5 * 1024 * 1024;
+})();
 
 const EXT_FROM_MIME = {
   'image/jpeg': 'jpg',
