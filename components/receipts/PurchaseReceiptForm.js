@@ -85,6 +85,18 @@ export default function PurchaseReceiptForm({
   const [selectedSizes, setSelectedSizes] = React.useState([]);
   const [selectedColors, setSelectedColors] = React.useState([]);
 
+  const mergeVariantsById = React.useCallback((...lists) => {
+    const m = new Map();
+    for (const list of lists) {
+      for (const v of list || []) {
+        const id = String(v?._id || '');
+        if (!id) continue;
+        m.set(id, v);
+      }
+    }
+    return Array.from(m.values()).filter((v) => v && v._id);
+  }, []);
+
   const [items, setItems] = React.useState(() => {
     const src = Array.isArray(initialReceipt?.items) ? initialReceipt.items : [];
     if (!src.length) return [];
@@ -112,15 +124,15 @@ export default function PurchaseReceiptForm({
         return { _id: id, size, color, companyName: '' };
       })
       .filter(Boolean);
-    setExtraVariantOptions(placeholders);
-  }, [initialReceipt]);
+    // Merge placeholders (fallback) without wiping cached variants.
+    setExtraVariantOptions((prev) => mergeVariantsById(placeholders, prev));
+  }, [initialReceipt, mergeVariantsById]);
 
   const allVariantOptions = React.useMemo(() => {
-    const m = new Map();
-    for (const v of variantOptions || []) m.set(String(v?._id || ''), v);
-    for (const v of extraVariantOptions || []) m.set(String(v?._id || ''), v);
-    return Array.from(m.values()).filter((v) => v && v._id);
-  }, [variantOptions, extraVariantOptions]);
+    // extraVariantOptions keeps variants already used in receipt lines across products.
+    // variantOptions is for the currently selected product and should override placeholders.
+    return mergeVariantsById(extraVariantOptions, variantOptions);
+  }, [variantOptions, extraVariantOptions, mergeVariantsById]);
 
   React.useEffect(() => {
     const tt = setTimeout(async () => {
@@ -231,7 +243,15 @@ export default function PurchaseReceiptForm({
       }
       return [...(arr || []), ...toAdd];
     });
-  }, [matchingVariants]);
+
+    // Cache generated variants so switching the generator product doesn't blank existing lines.
+    setExtraVariantOptions((prev) => mergeVariantsById(prev, matchingVariants));
+
+    // After generating, reset the generator inputs so new batches can be generated
+    // without affecting already-generated receipt lines.
+    setSelectedSizes([]);
+    setSelectedColors([]);
+  }, [matchingVariants, mergeVariantsById]);
 
   const removeItem = (id) => setItems((arr) => (arr || []).filter((x) => x.id !== id));
   const updateItem = (id, patch) =>
@@ -571,7 +591,21 @@ export default function PurchaseReceiptForm({
                             if (selectedProduct?._id && companyId)
                               loadVariants(selectedProduct._id, companyId);
                           }}
-                          onChange={(_, val) => updateItem(row.id, { variantId: val?._id || '' })}
+                          onChange={(_, val) => {
+                            updateItem(row.id, {
+                              variantId: String(val?._id || ''),
+                              snapshot: val
+                                ? {
+                                    size: val?.size || '',
+                                    color: val?.color || '',
+                                  }
+                                : null,
+                            });
+                            if (val?._id) {
+                              // Cache manually selected variants so they remain visible after switching products.
+                              setExtraVariantOptions((prev) => mergeVariantsById(prev, [val]));
+                            }
+                          }}
                           renderInput={(params) => (
                             <TextField {...params} label={t('common.variant')} />
                           )}
@@ -750,6 +784,7 @@ export default function PurchaseReceiptForm({
                   setItems([]);
                   setSelectedProduct(null);
                   setVariantOptions([]);
+                  setExtraVariantOptions([]);
                   setNote('');
                   setStatus('ordered');
                   setTaxPercent(0);
