@@ -160,10 +160,23 @@ jobs:
           echo "Amplify job did not succeed (status=${{ steps.wait.outputs.final-status }})"
           exit 1
 
+  tauri-msi-to-s3-approval:
+    name: Approve Tauri MSI → S3
+    runs-on: ubuntu-latest
+    needs: deploy
+    # Configure required reviewers on this environment to get the
+    # "Waiting for approval" gate in GitHub Actions, without gating `deploy`.
+    environment: tauri-msi-to-s3
+    steps:
+      - name: Approved
+        run: echo "Approval granted. Starting Tauri MSI → S3 job."
+
   tauri-msi-to-s3:
     name: Tauri MSI → S3
     runs-on: windows-latest
-    needs: deploy
+    needs: tauri-msi-to-s3-approval
+    # Use the same environment as `deploy` so this job gets the same
+    # environment-scoped secrets/vars (e.g. clothing-retail-main).
     environment: clothing-retail-${{ github.ref_name }}
     defaults:
       run:
