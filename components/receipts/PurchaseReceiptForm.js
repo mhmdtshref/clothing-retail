@@ -248,7 +248,7 @@ export default function PurchaseReceiptForm({
           id: crypto.randomUUID(),
           productId: String(v?.productId || selectedProduct?._id || ''),
           variantId,
-          qty: 0,
+          qty: 1,
           unitCost: 0,
           discount: { mode: 'amount', value: 0 },
           snapshot: {
@@ -649,6 +649,12 @@ export default function PurchaseReceiptForm({
                       ? `${t('common.product')} ${group.productId}`
                       : t('common.product');
 
+                  const unitCosts = group.rows.map((r) => Number(r?.unitCost) || 0);
+                  const firstUnitCost = unitCosts[0] ?? 0;
+                  const mixedUnitCost = unitCosts.some((v) => v !== firstUnitCost);
+                  const groupUnitCostValue = mixedUnitCost ? '' : firstUnitCost;
+                  const groupRowIdSet = new Set(group.rows.map((r) => r.id));
+
                   const toggle = () =>
                     setCollapsedByProduct((prev) => ({ ...prev, [group.key]: !prev[group.key] }));
 
@@ -677,7 +683,35 @@ export default function PurchaseReceiptForm({
                           </Stack>
                         </TableCell>
                         <TableCell align="right">{groupTotals.qty}</TableCell>
-                        <TableCell />
+                        <TableCell align="right">
+                          <TextField
+                            size="small"
+                            type="number"
+                            value={groupUnitCostValue}
+                            placeholder={mixedUnitCost ? '—' : ''}
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                            onChange={(e) => {
+                              const raw = e.target.value;
+                              const next = raw === '' ? 0 : Number(raw);
+                              if (Number.isNaN(next)) return;
+                              setItems((arr) =>
+                                (arr || []).map((row) =>
+                                  groupRowIdSet.has(row.id)
+                                    ? { ...row, unitCost: Math.max(0, next) }
+                                    : row,
+                                ),
+                              );
+                            }}
+                            inputProps={{
+                              min: 0,
+                              step: '0.01',
+                              style: { textAlign: 'right' },
+                            }}
+                            sx={{ width: 120 }}
+                            disabled={readOnly}
+                          />
+                        </TableCell>
                         <TableCell />
                         <TableCell align="right">
                           {formatNumber(groupTotals.line, {
