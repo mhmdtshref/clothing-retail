@@ -28,6 +28,8 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { computeReceiptTotals, computeLine } from '@/lib/pricing';
 import { useI18n } from '@/components/i18n/useI18n';
 import ResponsiveActionsBar from '@/components/common/ResponsiveActionsBar';
@@ -85,11 +87,25 @@ export default function PurchaseReceiptForm({
   const [selectedSizes, setSelectedSizes] = React.useState([]);
   const [selectedColors, setSelectedColors] = React.useState([]);
 
+  const mergeVariantsById = React.useCallback((...lists) => {
+    const m = new Map();
+    for (const list of lists) {
+      for (const v of list || []) {
+        const id = String(v?._id || '');
+        if (!id) continue;
+        m.set(id, v);
+      }
+    }
+    return Array.from(m.values()).filter((v) => v && v._id);
+  }, []);
+
   const [items, setItems] = React.useState(() => {
     const src = Array.isArray(initialReceipt?.items) ? initialReceipt.items : [];
     if (!src.length) return [];
     return src.map((it) => ({
       id: crypto.randomUUID(),
+      // Local-only grouping field (not submitted)
+      productId: '',
       variantId: String(it?.variantId || ''),
       qty: Number(it?.qty || 0),
       unitCost: Number(it?.unitCost || 0),
@@ -112,15 +128,15 @@ export default function PurchaseReceiptForm({
         return { _id: id, size, color, companyName: '' };
       })
       .filter(Boolean);
-    setExtraVariantOptions(placeholders);
-  }, [initialReceipt]);
+    // Merge placeholders (fallback) without wiping cached variants.
+    setExtraVariantOptions((prev) => mergeVariantsById(placeholders, prev));
+  }, [initialReceipt, mergeVariantsById]);
 
   const allVariantOptions = React.useMemo(() => {
-    const m = new Map();
-    for (const v of variantOptions || []) m.set(String(v?._id || ''), v);
-    for (const v of extraVariantOptions || []) m.set(String(v?._id || ''), v);
-    return Array.from(m.values()).filter((v) => v && v._id);
-  }, [variantOptions, extraVariantOptions]);
+    // extraVariantOptions keeps variants already used in receipt lines across products.
+    // variantOptions is for the currently selected product and should override placeholders.
+    return mergeVariantsById(extraVariantOptions, variantOptions);
+  }, [variantOptions, extraVariantOptions, mergeVariantsById]);
 
   React.useEffect(() => {
     const tt = setTimeout(async () => {
@@ -203,11 +219,20 @@ export default function PurchaseReceiptForm({
       ...(arr || []),
       {
         id: crypto.randomUUID(),
+        // Group this new row under the currently selected product.
+        productId: String(selectedProduct?._id || ''),
         variantId: '',
         qty: 1,
         unitCost: 0,
         discount: { mode: 'amount', value: 0 },
-        snapshot: null,
+        snapshot: selectedProduct
+          ? {
+              productCode: String(selectedProduct.code || ''),
+              productName: String(selectedProduct.localCode || ''),
+              size: '',
+              color: '',
+            }
+          : null,
       },
     ]);
   };
@@ -221,21 +246,69 @@ export default function PurchaseReceiptForm({
         if (!variantId || existing.has(variantId)) continue;
         toAdd.push({
           id: crypto.randomUUID(),
+          productId: String(v?.productId || selectedProduct?._id || ''),
           variantId,
-          qty: 0,
+          qty: 1,
           unitCost: 0,
           discount: { mode: 'amount', value: 0 },
-          snapshot: { size: v?.size || '', color: v?.color || '' },
+          snapshot: {
+            productCode: String(selectedProduct?.code || ''),
+            productName: String(selectedProduct?.localCode || ''),
+            size: v?.size || '',
+            color: v?.color || '',
+          },
         });
         existing.add(variantId);
       }
       return [...(arr || []), ...toAdd];
     });
-  }, [matchingVariants]);
+
+    // Cache generated variants so switching the generator product doesn't blank existing lines.
+    setExtraVariantOptions((prev) => mergeVariantsById(prev, matchingVariants));
+
+    // After generating, reset the generator inputs so new batches can be generated
+    // without affecting already-generated receipt lines.
+    setSelectedSizes([]);
+    setSelectedColors([]);
+  }, [
+    matchingVariants,
+    mergeVariantsById,
+    selectedProduct?._id,
+    selectedProduct?.code,
+    selectedProduct?.localCode,
+  ]);
 
   const removeItem = (id) => setItems((arr) => (arr || []).filter((x) => x.id !== id));
   const updateItem = (id, patch) =>
     setItems((arr) => (arr || []).map((x) => (x.id === id ? { ...x, ...patch } : x)));
+
+  const [collapsedByProduct, setCollapsedByProduct] = React.useState({});
+
+  const variantById = React.useMemo(() => {
+    const m = new Map();
+    for (const v of allVariantOptions || []) m.set(String(v?._id || ''), v);
+    return m;
+  }, [allVariantOptions]);
+
+  const groupedItems = React.useMemo(() => {
+    const groups = new Map();
+    const order = [];
+
+    for (const row of items || []) {
+      const variantId = String(row?.variantId || '');
+      const v = variantId ? variantById.get(variantId) : null;
+      const productId = String(row?.productId || v?.productId || '');
+      const key = productId || 'unassigned';
+
+      if (!groups.has(key)) {
+        groups.set(key, { key, productId, rows: [] });
+        order.push(key);
+      }
+      groups.get(key).rows.push(row);
+    }
+
+    return order.map((k) => groups.get(k));
+  }, [items, variantById]);
 
   const pricingPayload = React.useMemo(
     () => ({
@@ -544,123 +617,264 @@ export default function PurchaseReceiptForm({
                   </TableRow>
                 )}
 
-                {items.map((row) => {
-                  const lineCalc = computeLine({
-                    qty: Number(row.qty) || 0,
-                    unit: Number(row.unitCost) || 0,
-                    discount:
-                      row.discount && Number(row.discount.value) > 0 ? row.discount : undefined,
-                  });
+                {groupedItems.map((group) => {
+                  const expanded = collapsedByProduct[group.key] !== true;
+
+                  const groupTotals = group.rows.reduce(
+                    (acc, row) => {
+                      const qty = Number(row?.qty) || 0;
+                      const unitCost = Number(row?.unitCost) || 0;
+                      const line = qty * unitCost;
+                      const lineCalc = computeLine({
+                        qty,
+                        unit: unitCost,
+                        discount:
+                          row.discount && Number(row.discount.value) > 0 ? row.discount : undefined,
+                      });
+                      return {
+                        qty: acc.qty + qty,
+                        line: acc.line + line,
+                        net: acc.net + Number(lineCalc.net || 0),
+                      };
+                    },
+                    { qty: 0, line: 0, net: 0 },
+                  );
+
+                  const snap =
+                    group.rows.find((r) => r?.snapshot?.productCode || r?.snapshot?.productName)
+                      ?.snapshot || null;
+                  const label = snap?.productCode
+                    ? `${snap.productCode}${snap.productName ? ' — ' + snap.productName : ''}`
+                    : group.productId
+                      ? `${t('common.product')} ${group.productId}`
+                      : t('common.product');
+
+                  const unitCosts = group.rows.map((r) => Number(r?.unitCost) || 0);
+                  const firstUnitCost = unitCosts[0] ?? 0;
+                  const mixedUnitCost = unitCosts.some((v) => v !== firstUnitCost);
+                  const groupUnitCostValue = mixedUnitCost ? '' : firstUnitCost;
+                  const groupRowIdSet = new Set(group.rows.map((r) => r.id));
+
+                  const toggle = () =>
+                    setCollapsedByProduct((prev) => ({ ...prev, [group.key]: !prev[group.key] }));
 
                   return (
-                    <TableRow key={row.id}>
-                      <TableCell>
-                        <Autocomplete
-                          loading={loadingVariants}
-                          options={allVariantOptions}
-                          isOptionEqualToValue={(a, b) =>
-                            String(a?._id || '') === String(b?._id || '')
-                          }
-                          getOptionLabel={(o) => `${o.size} / ${o.color} — ${o.companyName || ''}`}
-                          value={
-                            allVariantOptions.find(
-                              (v) => String(v._id) === String(row.variantId),
-                            ) || null
-                          }
-                          onOpen={() => {
-                            if (selectedProduct?._id && companyId)
-                              loadVariants(selectedProduct._id, companyId);
-                          }}
-                          onChange={(_, val) => updateItem(row.id, { variantId: val?._id || '' })}
-                          renderInput={(params) => (
-                            <TextField {...params} label={t('common.variant')} />
-                          )}
-                          sx={{ minWidth: 240 }}
-                          disabled={readOnly}
-                        />
-                      </TableCell>
-                      <TableCell align="right">
-                        <TextField
-                          type="number"
-                          value={row.qty}
-                          onChange={(e) =>
-                            updateItem(row.id, { qty: Math.max(0, Number(e.target.value)) })
-                          }
-                          inputProps={{ min: 0, step: 1 }}
-                          size="small"
-                          disabled={readOnly}
-                        />
-                      </TableCell>
-                      <TableCell align="right">
-                        <TextField
-                          type="number"
-                          value={row.unitCost}
-                          onChange={(e) =>
-                            updateItem(row.id, { unitCost: Math.max(0, Number(e.target.value)) })
-                          }
-                          inputProps={{ min: 0, step: '0.01' }}
-                          size="small"
-                          disabled={readOnly}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Stack direction="row" spacing={1}>
-                          <Select
-                            size="small"
-                            value={row.discount?.mode || 'amount'}
-                            onChange={(e) =>
-                              updateItem(row.id, {
-                                discount: {
-                                  mode: e.target.value,
-                                  value: Number(row.discount?.value || 0),
-                                },
-                              })
-                            }
-                            sx={{ width: 120 }}
-                            disabled={readOnly}
-                          >
-                            <MenuItem value="amount">{t('discount.amount')}</MenuItem>
-                            <MenuItem value="percent">{t('discount.percent')}</MenuItem>
-                          </Select>
+                    <React.Fragment key={group.key}>
+                      <TableRow
+                        hover
+                        onClick={toggle}
+                        sx={{ cursor: 'pointer', bgcolor: 'action.hover' }}
+                      >
+                        <TableCell>
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggle();
+                              }}
+                            >
+                              {expanded ? <KeyboardArrowDownIcon /> : <KeyboardArrowRightIcon />}
+                            </IconButton>
+                            <Typography variant="subtitle2">{label}</Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              ({group.rows.length})
+                            </Typography>
+                          </Stack>
+                        </TableCell>
+                        <TableCell align="right">{groupTotals.qty}</TableCell>
+                        <TableCell align="right">
                           <TextField
                             size="small"
                             type="number"
-                            value={row.discount?.value || 0}
-                            onChange={(e) =>
-                              updateItem(row.id, {
-                                discount: {
-                                  mode: row.discount?.mode || 'amount',
-                                  value: Math.max(0, Number(e.target.value)),
-                                },
-                              })
-                            }
-                            inputProps={{ min: 0, step: '0.01' }}
+                            value={groupUnitCostValue}
+                            placeholder={mixedUnitCost ? '—' : ''}
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                            onChange={(e) => {
+                              const raw = e.target.value;
+                              const next = raw === '' ? 0 : Number(raw);
+                              if (Number.isNaN(next)) return;
+                              setItems((arr) =>
+                                (arr || []).map((row) =>
+                                  groupRowIdSet.has(row.id)
+                                    ? { ...row, unitCost: Math.max(0, next) }
+                                    : row,
+                                ),
+                              );
+                            }}
+                            inputProps={{
+                              min: 0,
+                              step: '0.01',
+                              style: { textAlign: 'right' },
+                            }}
+                            sx={{ width: 120 }}
                             disabled={readOnly}
                           />
-                        </Stack>
-                      </TableCell>
-                      <TableCell align="right">
-                        {formatNumber(Number(row.qty || 0) * Number(row.unitCost || 0), {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                        </TableCell>
+                        <TableCell />
+                        <TableCell align="right">
+                          {formatNumber(groupTotals.line, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </TableCell>
+                        <TableCell align="right">
+                          {formatNumber(groupTotals.net, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </TableCell>
+                        <TableCell />
+                      </TableRow>
+
+                      {expanded &&
+                        group.rows.map((row) => {
+                          const lineCalc = computeLine({
+                            qty: Number(row.qty) || 0,
+                            unit: Number(row.unitCost) || 0,
+                            discount:
+                              row.discount && Number(row.discount.value) > 0
+                                ? row.discount
+                                : undefined,
+                          });
+
+                          return (
+                            <TableRow key={row.id}>
+                              <TableCell sx={{ pl: 6 }}>
+                                <Autocomplete
+                                  loading={loadingVariants}
+                                  options={allVariantOptions}
+                                  isOptionEqualToValue={(a, b) =>
+                                    String(a?._id || '') === String(b?._id || '')
+                                  }
+                                  getOptionLabel={(o) =>
+                                    `${o.size} / ${o.color} — ${o.companyName || ''}`
+                                  }
+                                  value={
+                                    allVariantOptions.find(
+                                      (v) => String(v._id) === String(row.variantId),
+                                    ) || null
+                                  }
+                                  onOpen={() => {
+                                    if (selectedProduct?._id && companyId)
+                                      loadVariants(selectedProduct._id, companyId);
+                                  }}
+                                  onChange={(_, val) => {
+                                    updateItem(row.id, {
+                                      variantId: String(val?._id || ''),
+                                      productId: String(val?.productId || row.productId || ''),
+                                      snapshot: val
+                                        ? {
+                                            ...(row.snapshot || {}),
+                                            size: val?.size || '',
+                                            color: val?.color || '',
+                                          }
+                                        : row.snapshot
+                                          ? { ...row.snapshot, size: '', color: '' }
+                                          : null,
+                                    });
+                                    if (val?._id) {
+                                      // Cache manually selected variants so they remain visible after switching products.
+                                      setExtraVariantOptions((prev) =>
+                                        mergeVariantsById(prev, [val]),
+                                      );
+                                    }
+                                  }}
+                                  renderInput={(params) => (
+                                    <TextField {...params} label={t('common.variant')} />
+                                  )}
+                                  sx={{ minWidth: 240 }}
+                                  disabled={readOnly}
+                                />
+                              </TableCell>
+                              <TableCell align="right">
+                                <TextField
+                                  type="number"
+                                  value={row.qty}
+                                  onChange={(e) =>
+                                    updateItem(row.id, { qty: Math.max(0, Number(e.target.value)) })
+                                  }
+                                  inputProps={{ min: 0, step: 1 }}
+                                  size="small"
+                                  disabled={readOnly}
+                                />
+                              </TableCell>
+                              <TableCell align="right">
+                                <TextField
+                                  type="number"
+                                  value={row.unitCost}
+                                  onChange={(e) =>
+                                    updateItem(row.id, {
+                                      unitCost: Math.max(0, Number(e.target.value)),
+                                    })
+                                  }
+                                  inputProps={{ min: 0, step: '0.01' }}
+                                  size="small"
+                                  disabled={readOnly}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Stack direction="row" spacing={1}>
+                                  <Select
+                                    size="small"
+                                    value={row.discount?.mode || 'amount'}
+                                    onChange={(e) =>
+                                      updateItem(row.id, {
+                                        discount: {
+                                          mode: e.target.value,
+                                          value: Number(row.discount?.value || 0),
+                                        },
+                                      })
+                                    }
+                                    sx={{ width: 120 }}
+                                    disabled={readOnly}
+                                  >
+                                    <MenuItem value="amount">{t('discount.amount')}</MenuItem>
+                                    <MenuItem value="percent">{t('discount.percent')}</MenuItem>
+                                  </Select>
+                                  <TextField
+                                    size="small"
+                                    type="number"
+                                    value={row.discount?.value || 0}
+                                    onChange={(e) =>
+                                      updateItem(row.id, {
+                                        discount: {
+                                          mode: row.discount?.mode || 'amount',
+                                          value: Math.max(0, Number(e.target.value)),
+                                        },
+                                      })
+                                    }
+                                    inputProps={{ min: 0, step: '0.01' }}
+                                    disabled={readOnly}
+                                  />
+                                </Stack>
+                              </TableCell>
+                              <TableCell align="right">
+                                {formatNumber(Number(row.qty || 0) * Number(row.unitCost || 0), {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}
+                              </TableCell>
+                              <TableCell align="right">
+                                {formatNumber(lineCalc.net, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}
+                              </TableCell>
+                              <TableCell align="center">
+                                <IconButton
+                                  color="error"
+                                  onClick={() => removeItem(row.id)}
+                                  disabled={readOnly}
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
                         })}
-                      </TableCell>
-                      <TableCell align="right">
-                        {formatNumber(lineCalc.net, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          color="error"
-                          onClick={() => removeItem(row.id)}
-                          disabled={readOnly}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
+                    </React.Fragment>
                   );
                 })}
               </TableBody>
@@ -750,6 +964,8 @@ export default function PurchaseReceiptForm({
                   setItems([]);
                   setSelectedProduct(null);
                   setVariantOptions([]);
+                  setExtraVariantOptions([]);
+                  setCollapsedByProduct({});
                   setNote('');
                   setStatus('ordered');
                   setTaxPercent(0);
