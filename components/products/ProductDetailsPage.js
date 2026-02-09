@@ -37,6 +37,19 @@ function uniqIds(arr) {
   return Array.from(new Set((arr || []).map(normId).filter(Boolean)));
 }
 
+function normText(s) {
+  return String(s ?? '').trim();
+}
+
+function cmpText(a, b, collator) {
+  const aa = normText(a);
+  const bb = normText(b);
+  if (!aa && !bb) return 0;
+  if (!aa) return 1; // empty last
+  if (!bb) return -1;
+  return collator.compare(aa, bb);
+}
+
 function variantKey({ sizeId, colorId, companyId }) {
   return `${normId(sizeId)}|${normId(colorId)}|${String(companyId ?? '')}`;
 }
@@ -161,6 +174,39 @@ export default function ProductDetailsPage({
     }
     return s;
   }, [variants]);
+
+  const textCollator = React.useMemo(
+    () => new Intl.Collator(locale || undefined, { numeric: true, sensitivity: 'base' }),
+    [locale],
+  );
+
+  const sortedVariants = React.useMemo(() => {
+    const arr = Array.isArray(variants) ? [...variants] : [];
+    arr.sort((a, b) => {
+      const byColor = cmpText(a?.color, b?.color, textCollator);
+      if (byColor) return byColor;
+      const bySize = cmpText(a?.size, b?.size, textCollator);
+      if (bySize) return bySize;
+      const byCompany = cmpText(a?.companyName, b?.companyName, textCollator);
+      if (byCompany) return byCompany;
+      return cmpText(a?._id, b?._id, textCollator);
+    });
+    return arr;
+  }, [variants, textCollator]);
+
+  const sortedPendingVariants = React.useMemo(() => {
+    const arr = Array.isArray(pendingVariants) ? [...pendingVariants] : [];
+    arr.sort((a, b) => {
+      const byColor = cmpText(a?.colorLabel, b?.colorLabel, textCollator);
+      if (byColor) return byColor;
+      const bySize = cmpText(a?.sizeLabel, b?.sizeLabel, textCollator);
+      if (bySize) return bySize;
+      const byCompany = cmpText(a?.companyName, b?.companyName, textCollator);
+      if (byCompany) return byCompany;
+      return cmpText(a?._key, b?._key, textCollator);
+    });
+    return arr;
+  }, [pendingVariants, textCollator]);
 
   function forceAddOnlyDraft(nextDraft) {
     return {
@@ -518,7 +564,7 @@ export default function ProductDetailsPage({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {(variants || []).map((v) => {
+                    {sortedVariants.map((v) => {
                       const id = String(v?._id || '');
                       const isSaving = savingVariantId === id;
                       const draft =
@@ -569,7 +615,7 @@ export default function ProductDetailsPage({
                       );
                     })}
 
-                    {(pendingVariants || []).map((v) => (
+                    {sortedPendingVariants.map((v) => (
                       <TableRow key={`pending:${v._key}`} hover sx={{ opacity: 0.85 }}>
                         <TableCell>{v.companyName || '-'}</TableCell>
                         <TableCell>{v.sizeLabel}</TableCell>
