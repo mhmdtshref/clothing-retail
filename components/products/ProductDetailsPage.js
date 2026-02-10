@@ -50,6 +50,25 @@ function cmpText(a, b, collator) {
   return collator.compare(aa, bb);
 }
 
+function firstNumberOrNull(label) {
+  const s = normText(label);
+  if (!s) return null;
+  // Grab the first number in the label (supports "38", "EU 38", "38.5", "38,5")
+  const m = s.match(/(\d+(?:[.,]\d+)?)/);
+  if (!m) return null;
+  const n = Number.parseFloat(m[1].replace(',', '.'));
+  return Number.isFinite(n) ? n : null;
+}
+
+function cmpSizeLabel(aLabel, bLabel, collator) {
+  const aNum = firstNumberOrNull(aLabel);
+  const bNum = firstNumberOrNull(bLabel);
+  if (aNum !== null && bNum !== null) return aNum - bNum;
+  if (aNum !== null) return -1; // numeric sizes first
+  if (bNum !== null) return 1;
+  return cmpText(aLabel, bLabel, collator);
+}
+
 function variantKey({ sizeId, colorId, companyId }) {
   return `${normId(sizeId)}|${normId(colorId)}|${String(companyId ?? '')}`;
 }
@@ -185,7 +204,7 @@ export default function ProductDetailsPage({
     arr.sort((a, b) => {
       const byColor = cmpText(a?.color, b?.color, textCollator);
       if (byColor) return byColor;
-      const bySize = cmpText(a?.size, b?.size, textCollator);
+      const bySize = cmpSizeLabel(a?.size, b?.size, textCollator);
       if (bySize) return bySize;
       const byCompany = cmpText(a?.companyName, b?.companyName, textCollator);
       if (byCompany) return byCompany;
@@ -199,7 +218,7 @@ export default function ProductDetailsPage({
     arr.sort((a, b) => {
       const byColor = cmpText(a?.colorLabel, b?.colorLabel, textCollator);
       if (byColor) return byColor;
-      const bySize = cmpText(a?.sizeLabel, b?.sizeLabel, textCollator);
+      const bySize = cmpSizeLabel(a?.sizeLabel, b?.sizeLabel, textCollator);
       if (bySize) return bySize;
       const byCompany = cmpText(a?.companyName, b?.companyName, textCollator);
       if (byCompany) return byCompany;

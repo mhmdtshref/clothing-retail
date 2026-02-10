@@ -8,13 +8,24 @@ import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
 import Product from '@/models/product';
 
+function noStoreJson(body, init) {
+  const res = NextResponse.json(body, init);
+  // Prevent browser/proxy/CDN caching for authenticated, rapidly-changing data.
+  res.headers.set('Cache-Control', 'private, no-store, max-age=0, must-revalidate');
+  res.headers.set('Pragma', 'no-cache');
+  res.headers.set('Expires', '0');
+  // Avoid shared caches mixing responses across sessions.
+  res.headers.append('Vary', 'Cookie');
+  return res;
+}
+
 export async function GET(_req, context) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!session) return noStoreJson({ error: 'Unauthorized' }, { status: 401 });
   const params = await context.params;
   const { productId } = params || {};
   if (!productId || !mongoose.isValidObjectId(productId))
-    return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
+    return noStoreJson({ error: 'Invalid id' }, { status: 400 });
   try {
     await connectToDB();
     const doc = await Product.findById(productId, {
@@ -26,10 +37,10 @@ export async function GET(_req, context) {
       createdAt: 1,
       updatedAt: 1,
     }).lean();
-    if (!doc) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
-    return NextResponse.json({ ok: true, product: { ...doc, _id: String(doc._id) } });
+    if (!doc) return noStoreJson({ error: 'Not Found' }, { status: 404 });
+    return noStoreJson({ ok: true, product: { ...doc, _id: String(doc._id) } });
   } catch (e) {
-    return NextResponse.json(
+    return noStoreJson(
       { error: 'InternalServerError', message: e?.message || String(e) },
       { status: 500 },
     );

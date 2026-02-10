@@ -72,11 +72,22 @@ export async function POST(req) {
 
     const buf = Buffer.from(await file.arrayBuffer());
     const ext = pickExt(contentType, givenExt || file.name?.split('.').pop() || '');
-    const idPart = productId || crypto.randomUUID();
-    const key = `products/${idPart}.${ext}`;
+    const uuid = crypto.randomUUID();
+    // Use immutable URLs by writing to a unique key per upload.
+    // - When editing an existing product, callers pass productId, and we store under a per-product folder.
+    // - When creating a new product (no id yet), we still use a unique key.
+    const key = productId ? `products/${productId}/${uuid}.${ext}` : `products/${uuid}.${ext}`;
     const s3 = getS3();
     const Bucket = getBucket();
-    await s3.send(new PutObjectCommand({ Bucket, Key: key, Body: buf, ContentType: contentType }));
+    await s3.send(
+      new PutObjectCommand({
+        Bucket,
+        Key: key,
+        Body: buf,
+        ContentType: contentType,
+        CacheControl: 'public, max-age=31536000, immutable',
+      }),
+    );
     const publicUrl = publicUrlForKey(key);
     return NextResponse.json({ ok: true, key, publicUrl, contentType });
   } catch (e) {
