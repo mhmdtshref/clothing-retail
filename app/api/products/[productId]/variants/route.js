@@ -12,9 +12,20 @@ import VariantColor from '@/models/variantColor';
 import { pickLocalizedName } from '@/lib/i18n/name';
 import { normalizeLocale } from '@/lib/i18n/config';
 
+function noStoreJson(body, init) {
+  const res = NextResponse.json(body, init);
+  // Prevent browser/proxy/CDN caching for authenticated, rapidly-changing data.
+  res.headers.set('Cache-Control', 'private, no-store, max-age=0, must-revalidate');
+  res.headers.set('Pragma', 'no-cache');
+  res.headers.set('Expires', '0');
+  // Avoid shared caches mixing responses across sessions.
+  res.headers.append('Vary', 'Cookie');
+  return res;
+}
+
 export async function GET(req, context) {
   const authSession = await auth.api.getSession({ headers: await headers() });
-  if (!authSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!authSession) return noStoreJson({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     await connectToDB();
@@ -64,7 +75,7 @@ export async function GET(req, context) {
       { $sort: { 'sizeName.en': 1, 'colorName.en': 1 } },
     ]);
 
-    return NextResponse.json({
+    return noStoreJson({
       ok: true,
       items: variants.map((v) => ({
         _id: v._id,
@@ -79,7 +90,7 @@ export async function GET(req, context) {
       })),
     });
   } catch (err) {
-    return NextResponse.json(
+    return noStoreJson(
       { error: 'InternalServerError', message: err?.message || String(err) },
       { status: 500 },
     );

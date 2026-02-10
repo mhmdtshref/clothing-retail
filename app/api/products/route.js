@@ -8,6 +8,17 @@ import { connectToDB } from '@/lib/mongoose';
 import Product from '@/models/product';
 import Variant from '@/models/variant';
 
+function noStoreJson(body, init) {
+  const res = NextResponse.json(body, init);
+  // Prevent browser/proxy/CDN caching for authenticated, rapidly-changing data.
+  res.headers.set('Cache-Control', 'private, no-store, max-age=0, must-revalidate');
+  res.headers.set('Pragma', 'no-cache');
+  res.headers.set('Expires', '0');
+  // Avoid shared caches mixing responses across sessions.
+  res.headers.append('Vary', 'Cookie');
+  return res;
+}
+
 const ImageSchema = z
   .object({
     url: z.string().url(),
@@ -155,14 +166,14 @@ export async function GET(req) {
   // Require authentication
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return noStoreJson({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const url = new URL(req.url);
   const params = Object.fromEntries(url.searchParams.entries());
   const parsed = QuerySchema.safeParse(params);
   if (!parsed.success) {
-    return NextResponse.json(
+    return noStoreJson(
       { error: 'ValidationError', issues: parsed.error.flatten?.() || parsed.error },
       { status: 400 },
     );
@@ -233,7 +244,7 @@ export async function GET(req) {
       ...(withCounts ? { variantCount: doc.variantCount ?? 0 } : {}),
     }));
 
-    return NextResponse.json({
+    return noStoreJson({
       ok: true,
       items: payload,
       meta: {
@@ -249,7 +260,7 @@ export async function GET(req) {
       },
     });
   } catch (err) {
-    return NextResponse.json(
+    return noStoreJson(
       { error: 'InternalServerError', message: err?.message || String(err) },
       { status: 500 },
     );
