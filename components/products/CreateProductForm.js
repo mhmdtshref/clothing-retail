@@ -170,6 +170,7 @@ export default function CreateProductForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...prodInput,
+          companyIds: genInput.companyIds,
           // allow backend to copy localCode if code is missing/null/blank
           code: prodInput?.code ?? null,
           image: image || undefined,

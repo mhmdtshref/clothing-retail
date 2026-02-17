@@ -6,6 +6,7 @@ import { auth } from '@/lib/auth';
 import { z } from 'zod';
 import { connectToDB } from '@/lib/mongoose';
 import Product from '@/models/product';
+import Company from '@/models/company';
 import Variant from '@/models/variant';
 
 function noStoreJson(body, init) {
@@ -38,6 +39,8 @@ const ProductCreateSchema = z.object({
     if (typeof v === 'string' && v.trim() === '') return undefined;
     return v;
   }, z.coerce.number().int().min(0).max(9999)),
+  // Used only to generate localCode; not persisted.
+  companyIds: z.array(z.string().min(1)).optional().default([]),
   basePrice: z.number().nonnegative().default(0),
   status: z.enum(['active', 'archived']).optional().default('active'),
   image: ImageSchema,
@@ -48,18 +51,50 @@ function formatCostPart(costUSD) {
   return String(costUSD).padStart(4, '0');
 }
 
-async function generateLocalCode(costUSD) {
+function normalizeCompanyLabel(name) {
+  return String(name || '').trim().replace(/\s+/g, ' ');
+}
+
+async function getCompanyPrefix(companyIds) {
+  const ids = [];
+  const seen = new Set();
+  for (const raw of companyIds || []) {
+    const id = String(raw || '').trim();
+    if (!id) continue;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    ids.push(id);
+  }
+  if (ids.length === 0) return '';
+
+  const companies = await Company.find({ _id: { $in: ids } }, { name: 1 }).lean().exec();
+  const nameById = new Map(
+    companies.map((c) => [String(c._id), normalizeCompanyLabel(c?.name || '')]),
+  );
+
+  const names = ids.map((id) => nameById.get(id)).filter(Boolean);
+  if (names.length !== ids.length) {
+    const err = new Error('One or more companyIds do not exist');
+    err.status = 400;
+    throw err;
+  }
+
+  return `${names.join(' ')} `;
+}
+
+async function generateLocalCode(costUSD, companyIds = []) {
+  const prefix = await getCompanyPrefix(companyIds);
   const cccc = formatCostPart(costUSD);
   const yy = String(new Date().getFullYear()).slice(-2);
   let n = await Product.countDocuments().exec();
   for (let i = 0; i < 5; i++) {
     n += 1;
-    const candidate = `${cccc}-${yy}-${String(n).padStart(6, '0')}`;
+    const candidate = `${prefix}${cccc}-${yy}-${String(n).padStart(6, '0')}`;
 
     const exists = await Product.exists({ $or: [{ localCode: candidate }, { code: candidate }] });
     if (!exists) return candidate;
   }
-  return `${cccc}-${yy}-${String(n + 1).padStart(6, '0')}`;
+  return `${prefix}${cccc}-${yy}-${String(n + 1).padStart(6, '0')}`;
 }
 
 export async function POST(req) {
@@ -81,12 +116,12 @@ export async function POST(req) {
 
     const rawCode = parsed.data.code;
     const userCode = typeof rawCode === 'string' ? rawCode.trim() : '';
-    const { costUSD, basePrice, status, image } = parsed.data;
+    const { costUSD, basePrice, status, image, companyIds } = parsed.data;
 
     await connectToDB();
 
-    // Generate localCode (CCCC-YY-XXXXXX) and create product
-    let localCode = await generateLocalCode(costUSD);
+    // Generate localCode ([COMP1 COMP2 ]CCCC-YY-XXXXXX) and create product
+    let localCode = await generateLocalCode(costUSD, companyIds);
     const code = userCode || localCode;
 
     // Optional: pre-check to provide cleaner 409 without stack trace (only for user-provided codes)
@@ -105,7 +140,7 @@ export async function POST(req) {
     } catch (e) {
       // In rare case of duplicate localCode, retry once
       if (e?.code === 11000 && e?.keyPattern?.localCode) {
-        localCode = await generateLocalCode(costUSD);
+        localCode = await generateLocalCode(costUSD, companyIds);
         doc = await Product.create({
           code,
           localCode,
@@ -134,6 +169,12 @@ export async function POST(req) {
       { status: 201 },
     );
   } catch (err) {
+    if (err?.status === 400) {
+      return NextResponse.json(
+        { error: 'ValidationError', message: err?.message || 'Invalid input' },
+        { status: 400 },
+      );
+    }
     // Handle Mongo duplicate key just in case of race
     if (err?.code === 11000 && err?.keyPattern?.code) {
       return NextResponse.json(
