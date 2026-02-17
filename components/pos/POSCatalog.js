@@ -49,6 +49,37 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
   const searchInputRef = React.useRef(null);
   const fetchSeq = React.useRef(0);
 
+  const textCollator = React.useMemo(
+    () => new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }),
+    [],
+  );
+
+  function normText(s) {
+    return String(s ?? '').trim();
+  }
+
+  function cmpText(a, b) {
+    const aa = normText(a);
+    const bb = normText(b);
+    if (!aa && !bb) return 0;
+    if (!aa) return 1; // empty last
+    if (!bb) return -1;
+    return textCollator.compare(aa, bb);
+  }
+
+  const selectedVariantsSorted = React.useMemo(() => {
+    const arr = Array.isArray(selected?.variants) ? [...selected.variants] : [];
+    arr.sort((a, b) => {
+      const byColor = cmpText(a?.color, b?.color);
+      if (byColor) return byColor;
+      const ap = Number.isFinite(Number(a?.sizePriority)) ? Number(a.sizePriority) : 1;
+      const bp = Number.isFinite(Number(b?.sizePriority)) ? Number(b.sizePriority) : 1;
+      if (ap !== bp) return ap - bp;
+      return 0; // stable for ties
+    });
+    return arr;
+  }, [selected, textCollator]);
+
   const fetchList = React.useCallback(
     async (search) => {
       const trimmed = (search ?? '').trim();
@@ -298,7 +329,7 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {(selected.variants || []).map((v) => {
+                  {selectedVariantsSorted.map((v) => {
                     const out = Number(v.qty || 0) <= 0;
                     return (
                       <TableRow key={v._id} hover>

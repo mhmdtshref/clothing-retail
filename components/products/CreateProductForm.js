@@ -57,11 +57,11 @@ const genSchema = z.object({
   companyIds: z.array(z.string().min(1)),
 });
 
-function cartesianPreview(sizes, colors, companies, limit = 10) {
+function cartesianPreview(colors, sizes, companies, limit = 10) {
   const rows = [];
   let total = 0;
-  for (const size of sizes) {
-    for (const color of colors) {
+  for (const color of colors) {
+    for (const size of sizes) {
       for (const company of companies) {
         total++;
         if (rows.length < limit) {
@@ -99,6 +99,17 @@ export default function CreateProductForm({
     const sizeIdSet = new Set((values.sizeIds || []).map((x) => String(x)));
     return (variantSizes || []).filter((s) => sizeIdSet.has(String(s?._id)));
   }, [variantSizes, values.sizeIds]);
+  const selectedSizesSorted = React.useMemo(() => {
+    const arr = Array.isArray(selectedSizes) ? [...selectedSizes] : [];
+    // Stable sort by priority (ties preserve existing order)
+    arr.sort((a, b) => {
+      const ap = Number.isFinite(Number(a?.priority)) ? Number(a.priority) : 1;
+      const bp = Number.isFinite(Number(b?.priority)) ? Number(b.priority) : 1;
+      if (ap !== bp) return ap - bp;
+      return 0;
+    });
+    return arr;
+  }, [selectedSizes]);
   const selectedColors = React.useMemo(() => {
     const colorIdSet = new Set((values.colorIds || []).map((x) => String(x)));
     return (variantColors || []).filter((c) => colorIdSet.has(String(c?._id)));
@@ -109,8 +120,8 @@ export default function CreateProductForm({
   );
 
   const preview = React.useMemo(
-    () => cartesianPreview(selectedSizes, selectedColors, selectedCompanies, 10),
-    [selectedSizes, selectedColors, selectedCompanies],
+    () => cartesianPreview(selectedColors, selectedSizesSorted, selectedCompanies, 10),
+    [selectedColors, selectedSizesSorted, selectedCompanies],
   );
 
   const handleChange = (field) => (e) => {

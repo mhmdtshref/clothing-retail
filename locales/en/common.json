@@ -10,6 +10,7 @@
   "common.back": "Back",
   "common.submit": "Submit",
   "common.edit": "Edit",
+  "common.priority": "Priority",
   "delivery.newReceipt": "New Delivery Receipt",
   "delivery.details": "Delivery details",
   "delivery.returned": "Returned",

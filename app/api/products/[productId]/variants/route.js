@@ -71,8 +71,13 @@ export async function GET(req, context) {
           colorName: { $ifNull: [{ $arrayElemAt: ['$colorDoc.name', 0] }, {}] },
         },
       },
+      {
+        $addFields: {
+          sizePriority: { $ifNull: [{ $arrayElemAt: ['$sizeDoc.priority', 0] }, 1] },
+        },
+      },
       { $project: { company: 0, sizeDoc: 0, colorDoc: 0 } },
-      { $sort: { 'sizeName.en': 1, 'colorName.en': 1 } },
+      { $sort: { 'colorName.en': 1, sizePriority: 1, _id: 1 } },
     ]);
 
     return noStoreJson({
@@ -86,6 +91,7 @@ export async function GET(req, context) {
         colorId: v.colorId,
         size: pickLocalizedName(v.sizeName, locale),
         color: pickLocalizedName(v.colorName, locale),
+        sizePriority: typeof v.sizePriority === 'number' ? v.sizePriority : 1,
         qty: v.qty ?? 0,
       })),
     });

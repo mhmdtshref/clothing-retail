@@ -199,30 +199,46 @@ export default function ProductDetailsPage({
     [locale],
   );
 
+  const sizePriorityById = React.useMemo(() => {
+    const m = new Map();
+    for (const s of variantSizes || []) {
+      const id = String(s?._id ?? '');
+      if (!id) continue;
+      const p = Number(s?.priority);
+      m.set(id, Number.isFinite(p) ? p : 1);
+    }
+    return m;
+  }, [variantSizes]);
+
+  function getVariantSizePriority(v) {
+    const fromVariant = Number(v?.sizePriority);
+    if (Number.isFinite(fromVariant)) return fromVariant;
+    const id = String(v?.sizeId ?? '');
+    return sizePriorityById.get(id) ?? 1;
+  }
+
   const sortedVariants = React.useMemo(() => {
     const arr = Array.isArray(variants) ? [...variants] : [];
     arr.sort((a, b) => {
       const byColor = cmpText(a?.color, b?.color, textCollator);
       if (byColor) return byColor;
-      const bySize = cmpSizeLabel(a?.size, b?.size, textCollator);
-      if (bySize) return bySize;
-      const byCompany = cmpText(a?.companyName, b?.companyName, textCollator);
-      if (byCompany) return byCompany;
-      return cmpText(a?._id, b?._id, textCollator);
+      const ap = getVariantSizePriority(a);
+      const bp = getVariantSizePriority(b);
+      if (ap !== bp) return ap - bp;
+      return 0; // stable for ties (priority duplicates allowed)
     });
     return arr;
-  }, [variants, textCollator]);
+  }, [variants, textCollator, sizePriorityById]);
 
   const sortedPendingVariants = React.useMemo(() => {
     const arr = Array.isArray(pendingVariants) ? [...pendingVariants] : [];
     arr.sort((a, b) => {
       const byColor = cmpText(a?.colorLabel, b?.colorLabel, textCollator);
       if (byColor) return byColor;
-      const bySize = cmpSizeLabel(a?.sizeLabel, b?.sizeLabel, textCollator);
-      if (bySize) return bySize;
-      const byCompany = cmpText(a?.companyName, b?.companyName, textCollator);
-      if (byCompany) return byCompany;
-      return cmpText(a?._key, b?._key, textCollator);
+      const ap = Number.isFinite(Number(a?.sizePriority)) ? Number(a.sizePriority) : 1;
+      const bp = Number.isFinite(Number(b?.sizePriority)) ? Number(b.sizePriority) : 1;
+      if (ap !== bp) return ap - bp;
+      return 0; // stable for ties
     });
     return arr;
   }, [pendingVariants, textCollator]);
@@ -266,6 +282,7 @@ export default function ProductDetailsPage({
               companyName: company?.name || '-',
               sizeId,
               colorId,
+              sizePriority: typeof sizeObj?.priority === 'number' ? sizeObj.priority : 1,
               sizeLabel: pickLocalizedName(sizeObj?.name, locale),
               colorLabel: pickLocalizedName(colorObj?.name, locale),
             });

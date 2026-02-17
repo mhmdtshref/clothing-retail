@@ -24,6 +24,9 @@ export default function VariantSizeDialog({
   const { t } = useI18n();
   const [en, setEn] = React.useState(initialValue?.name?.en || '');
   const [ar, setAr] = React.useState(initialValue?.name?.ar || '');
+  const [priority, setPriority] = React.useState(
+    typeof initialValue?.priority === 'number' ? String(initialValue.priority) : '1',
+  );
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState('');
 
@@ -33,6 +36,7 @@ export default function VariantSizeDialog({
     if (open) {
       setEn(initialValue?.name?.en || '');
       setAr(initialValue?.name?.ar || '');
+      setPriority(typeof initialValue?.priority === 'number' ? String(initialValue.priority) : '1');
       setError('');
     }
   }, [open, initialValue]);
@@ -42,7 +46,10 @@ export default function VariantSizeDialog({
     setSubmitting(true);
     try {
       setError('');
-      const payload = { name: { en: String(en).trim(), ar: String(ar).trim() } };
+      const payload = {
+        name: { en: String(en).trim(), ar: String(ar).trim() },
+        priority: priority === '' ? 1 : Number(priority),
+      };
       const nextKey = normalizeCompanyName(payload.name.en);
       const currentId = isEdit ? String(initialValue?._id || '') : '';
       const conflictLocal = (existingSizes || []).some((s) => {
@@ -92,6 +99,13 @@ export default function VariantSizeDialog({
             value={ar}
             onChange={(e) => setAr(e.target.value)}
             error={Boolean(error)}
+          />
+          <TextField
+            label={t('common.priority') || 'Priority'}
+            type="number"
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+            inputProps={{ step: 1, min: 0 }}
           />
         </Stack>
       </DialogContent>

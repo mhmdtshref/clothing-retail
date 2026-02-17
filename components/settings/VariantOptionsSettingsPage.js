@@ -292,6 +292,11 @@ export default function VariantOptionsSettingsPage() {
                     <TableCell>{t('common.name')}</TableCell>
                     <TableCell width={200}>{t('common.nameEn')}</TableCell>
                     <TableCell width={200}>{t('common.nameAr')}</TableCell>
+                    {tab === 1 ? (
+                      <TableCell width={120} align="right">
+                        {t('common.priority') || 'Priority'}
+                      </TableCell>
+                    ) : null}
                     <TableCell width={120} align="right">
                       {t('common.actions')}
                     </TableCell>
@@ -300,7 +305,7 @@ export default function VariantOptionsSettingsPage() {
                 <TableBody>
                   {list.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4}>
+                      <TableCell colSpan={tab === 1 ? 5 : 4}>
                         <Typography variant="body2" color="text.secondary">
                           {tab === 0 ? t('variantColors.none') : t('variantSizes.none')}
                         </Typography>
@@ -312,6 +317,9 @@ export default function VariantOptionsSettingsPage() {
                         <TableCell>{pickLocalizedName(row?.name, locale)}</TableCell>
                         <TableCell>{row?.name?.en || ''}</TableCell>
                         <TableCell>{row?.name?.ar || ''}</TableCell>
+                        {tab === 1 ? (
+                          <TableCell align="right">{typeof row?.priority === 'number' ? row.priority : 1}</TableCell>
+                        ) : null}
                         <TableCell align="right">
                           <IconButton size="small" onClick={() => onEdit(row)}>
                             <EditIcon fontSize="small" />
@@ -333,7 +341,11 @@ export default function VariantOptionsSettingsPage() {
                   <ResponsiveListItem
                     key={String(row._id)}
                     title={pickLocalizedName(row?.name, locale)}
-                    subtitle={`${row?.name?.en || ''} • ${row?.name?.ar || ''}`}
+                    subtitle={
+                      tab === 1
+                        ? `${row?.name?.en || ''} • ${row?.name?.ar || ''} • ${(t('common.priority') || 'Priority')}: ${typeof row?.priority === 'number' ? row.priority : 1}`
+                        : `${row?.name?.en || ''} • ${row?.name?.ar || ''}`
+                    }
                     actions={
                       <Button
                         size="small"

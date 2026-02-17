@@ -15,8 +15,8 @@ export async function GET() {
 
   try {
     await connectToDB();
-    const items = await VariantSize.find({}, { name: 1, createdAt: 1, updatedAt: 1 })
-      .sort({ nameKey: 1 })
+    const items = await VariantSize.find({}, { name: 1, priority: 1, createdAt: 1, updatedAt: 1 })
+      .sort({ priority: 1, nameKey: 1 })
       .lean()
       .exec();
 
@@ -25,6 +25,7 @@ export async function GET() {
       items: items.map((s) => ({
         _id: s._id,
         name: s.name,
+        priority: typeof s.priority === 'number' ? s.priority : 1,
         createdAt: s.createdAt,
         updatedAt: s.updatedAt,
       })),
@@ -52,6 +53,7 @@ export async function POST(req) {
     }
 
     const name = parsed.data.name;
+    const priority = typeof parsed.data.priority === 'number' ? parsed.data.priority : 1;
     const nameKey = normalizeCompanyName(name?.en || '');
 
     await connectToDB();
@@ -64,13 +66,14 @@ export async function POST(req) {
       );
     }
 
-    const doc = await VariantSize.create({ name, nameKey });
+    const doc = await VariantSize.create({ name, nameKey, priority });
     return NextResponse.json(
       {
         ok: true,
         size: {
           _id: doc._id,
           name: doc.name,
+          priority: typeof doc.priority === 'number' ? doc.priority : 1,
           createdAt: doc.createdAt,
           updatedAt: doc.updatedAt,
         },
