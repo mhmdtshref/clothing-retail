@@ -201,7 +201,7 @@ export default function CreateProductForm({
       });
       // Optionally redirect to dashboard or a future product detail page
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push('/products');
       }, 800);
     } catch (err) {
       setSnack({ open: true, severity: 'error', message: err?.message || String(err) });
