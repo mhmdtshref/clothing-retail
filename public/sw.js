@@ -1,5 +1,5 @@
-/* Simple SW: navigation NetworkFirst with offline fallback, static CacheFirst, JSON SWR */
-const APP_CACHE = 'app-cache-v1';
+/* Simple SW: navigation NetworkFirst with offline fallback, static CacheFirst, JSON SWR + mutation invalidation */
+const APP_CACHE = 'app-cache-v3';
 const STATIC_CACHE = 'static-cache-v1';
 const STATIC_ASSETS = ['/offline.html', '/manifest.json'];
 
@@ -32,12 +32,71 @@ function isNavigation(request) {
   );
 }
 
+function shouldInvalidateAfterMutation(request, url) {
+  if (!request || !url) return false;
+  // Only handle same-origin API mutations.
+  if (url.origin !== self.location.origin) return false;
+
+  const p = url.pathname;
+  const m = String(request.method || '').toUpperCase();
+
+  // Create new product
+  if (m === 'POST' && p === '/api/products') return true;
+  // Update product
+  if (m === 'PATCH' && p.startsWith('/api/products/')) return true;
+  // Add variants
+  if (m === 'POST' && p.startsWith('/api/products/') && p.endsWith('/variants/generate')) return true;
+  // Update product variant qty (inventory)
+  if (m === 'PATCH' && p.startsWith('/api/inventory/')) return true;
+  // Add new sale / delivery (receipts)
+  if (m === 'POST' && p === '/api/receipts') return true;
+
+  return false;
+}
+
+function shouldDeleteCachedApiPath(pathname) {
+  if (!pathname) return false;
+  return (
+    pathname === '/api/products' ||
+    pathname.startsWith('/api/products/') ||
+    pathname === '/api/pos/search' ||
+    pathname === '/api/receipts' ||
+    pathname.startsWith('/api/receipts/')
+  );
+}
+
+async function invalidateAfterMutation() {
+  try {
+    const cache = await caches.open(APP_CACHE);
+    const keys = await cache.keys();
+    await Promise.all(
+      keys.map((req) => {
+        try {
+          const u = new URL(req.url);
+          if (shouldDeleteCachedApiPath(u.pathname)) return cache.delete(req);
+        } catch {}
+        return undefined;
+      }),
+    );
+  } catch {}
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Bypass for next dev, APIs that must hit network POST/PUT/DELETE
-  if (request.method !== 'GET') return;
+  // Non-GET mutations: pass-through, but invalidate relevant cached GET APIs on success.
+  if (request.method !== 'GET') {
+    if (shouldInvalidateAfterMutation(request, url)) {
+      event.respondWith(
+        fetch(request).then((res) => {
+          if (res && res.ok) event.waitUntil(invalidateAfterMutation());
+          return res;
+        }),
+      );
+    }
+    return;
+  }
 
   if (isNavigation(request)) {
     // Network-first for navigations
@@ -96,7 +155,8 @@ self.addEventListener('fetch', (event) => {
         const cached = await cache.match(request);
         const network = fetch(request)
           .then((res) => {
-            cache.put(request, res.clone()).catch(() => {});
+            // Cache only successful responses (avoid caching 401/500/etc).
+            if (res && res.ok) cache.put(request, res.clone()).catch(() => {});
             return res;
           })
           .catch(() => cached);
@@ -110,4 +170,4 @@ self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
-// No fetch handler -> does not interfere with network
+// Fetch handler above provides caching + mutation invalidation
