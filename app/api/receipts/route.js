@@ -320,6 +320,7 @@ export async function POST(req) {
   if (!authSession) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+  const userId = authSession.user?.id;
   const locale = normalizeLocale(req?.cookies?.get?.('lang')?.value);
 
   let parsed;

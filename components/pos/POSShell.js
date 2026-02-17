@@ -237,6 +237,7 @@ export default function POSShell() {
       cart.clear();
       cart.clearCustomer();
       setBillDiscount({ mode: 'amount', value: 0 });
+      void refreshCashbox();
     } catch (e) {
       // Fallback to offline outbox for receipts (queue when offline)
       try {
@@ -315,7 +316,10 @@ export default function POSShell() {
               size="small"
               color={cashbox.open ? 'success' : 'default'}
               label={cashbox.open ? t('cashbox.open') : t('cashbox.closed')}
-              onClick={() => setViewDialog(true)}
+              onClick={() => {
+                void refreshCashbox();
+                setViewDialog(true);
+              }}
               sx={{ cursor: 'pointer' }}
             />
           </Box>
@@ -356,7 +360,10 @@ export default function POSShell() {
               <Button
                 color="inherit"
                 variant="outlined"
-                onClick={() => setCloseDialog(true)}
+                onClick={() => {
+                  void refreshCashbox();
+                  setCloseDialog(true);
+                }}
                 sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
               >
                 {t('cashbox.close')}
@@ -385,6 +392,7 @@ export default function POSShell() {
             color="inherit"
             title="Refresh"
             sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
+            onClick={refreshCashbox}
           >
             <RefreshIcon />
           </IconButton>
