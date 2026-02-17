@@ -9,6 +9,7 @@
   "common.next": "Next",
   "common.back": "Back",
   "common.submit": "Submit",
+  "common.edit": "Edit",
   "delivery.newReceipt": "New Delivery Receipt",
   "delivery.details": "Delivery details",
   "delivery.returned": "Returned",
