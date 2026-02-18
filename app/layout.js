@@ -4,15 +4,16 @@ import './globals.scss';
 import { I18nProvider } from '@/components/i18n/I18nProvider';
 import RegisterSW from '@/components/pwa/RegisterSW';
 import { isRtl, normalizeLocale } from '@/lib/i18n/config';
+import { cookies } from 'next/headers';
 
 export const metadata = {
   title: process.env.NEXT_PUBLIC_SHOP_NAME || 'Clothing Retail Accountings',
   description: process.env.NEXT_PUBLIC_SHOP_DESCRIPTION || 'Retail accounting for clothing shops',
 };
 
-export default function RootLayout({ children }) {
-  // Read cookie server-side later if needed; default to English for now
-  const locale = normalizeLocale('en');
+export default async function RootLayout({ children }) {
+  const cookieStore = await cookies();
+  const locale = normalizeLocale(cookieStore.get('lang')?.value || 'en');
   const dir = isRtl(locale) ? 'rtl' : 'ltr';
   return (
     <html lang={locale} dir={dir}>
