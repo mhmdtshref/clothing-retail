@@ -298,7 +298,12 @@ export default function PurchaseReceiptForm({
       const variantId = String(row?.variantId || '');
       const v = variantId ? variantById.get(variantId) : null;
       const productId = String(row?.productId || v?.productId || '');
-      const key = productId || 'unassigned';
+      const snapCode = String(row?.snapshot?.productCode || '');
+      const key = productId
+        ? `product:${productId}`
+        : snapCode
+          ? `code:${snapCode}`
+          : 'unassigned';
 
       if (!groups.has(key)) {
         groups.set(key, { key, productId, rows: [] });
