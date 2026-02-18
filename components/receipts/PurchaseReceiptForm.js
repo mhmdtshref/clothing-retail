@@ -485,7 +485,7 @@ export default function PurchaseReceiptForm({
             <Autocomplete
               loading={loadingProducts}
               options={productOptions}
-              getOptionLabel={(o) => `${o.code}${o.localCode ? ' — ' + o.localCode : ''}`}
+              getOptionLabel={(o) => o.localCode ? o.localCode : o.code}
               onChange={(_, val) => setSelectedProduct(val)}
               value={selectedProduct}
               renderInput={(params) => (
@@ -649,7 +649,7 @@ export default function PurchaseReceiptForm({
                     group.rows.find((r) => r?.snapshot?.productCode || r?.snapshot?.productName)
                       ?.snapshot || null;
                   const label = snap?.productCode
-                    ? `${snap.productCode}${snap.productName ? ' — ' + snap.productName : ''}`
+                    ? `${snap.productCode}`
                     : group.productId
                       ? `${t('common.product')} ${group.productId}`
                       : t('common.product');

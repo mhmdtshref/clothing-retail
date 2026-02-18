@@ -196,9 +196,6 @@ export default function ProductsGrid({
                       <Typography variant="subtitle1" fontWeight={700}>
                         {p.code}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {p.localCode || '\u00A0'}
-                      </Typography>
                       <Chip
                         size="small"
                         label={p.status}
