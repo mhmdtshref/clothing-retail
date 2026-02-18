@@ -40,22 +40,55 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
       <style>{`
         @media print {
           @page { size: 80mm auto; margin: 0; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 80mm;
+            overflow: hidden !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
           /* Print only the receipt content */
           body * { visibility: hidden !important; }
           .receipt-80mm, .receipt-80mm * { visibility: visible !important; }
-          .receipt-80mm { position: absolute; inset: 0 auto auto 0; margin: 0; }
+          /* Some printers/drivers still add a non-printable margin; keep content slightly inset. */
+          .receipt-80mm {
+            position: absolute;
+            left: 0;
+            top: 0;
+            margin: 0;
+          }
         }
-        .receipt-80mm { width: 80mm; padding: 8px 8px 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 12px; color: #000; }
+        .receipt-80mm {
+          box-sizing: border-box;
+          /* Use a slightly smaller width to avoid right-edge clipping on many 80mm drivers. */
+          width: 76mm;
+          max-width: 76mm;
+          padding: 6px 6px 12px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+            'Courier New', monospace;
+          font-size: 14px;
+          font-weight: 600;
+          line-height: 1.25;
+          color: #000;
+        }
         .r-center { text-align: center; }
         .r-right { text-align: right; }
         .muted { color: #555; }
-        .row { display: flex; justify-content: space-between; align-items: baseline; }
+        .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+        .row > :first-child { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+        .row > :last-child { flex: 0 0 auto; white-space: nowrap; }
         .sep { border-top: 1px dashed #000; margin: 6px 0; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 2px 0; }
-        th.r, td.r { text-align: right; }
-        .title { font-weight: 700; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th, td { padding: 2px 0; overflow-wrap: anywhere; word-break: break-word; }
+        th:first-child, td:first-child { width: 46%; }
+        th:nth-child(2), td:nth-child(2) { width: 14%; }
+        th:nth-child(3), td:nth-child(3) { width: 20%; }
+        th:nth-child(4), td:nth-child(4) { width: 20%; }
+        th.r, td.r { text-align: right; white-space: nowrap; }
+        th { font-weight: 800; }
+        .title { font-weight: 800; }
+        .row.title { font-weight: 800; font-size: 15px; }
       `}</style>
 
       <div className="r-center">
