@@ -153,6 +153,7 @@ export default function ProductDetailsPage({
       setEditing({
         code: pJson.product.code || '',
         localCode: pJson.product.localCode || '',
+        costUSD: Number(pJson.product.costUSD ?? 0),
         basePrice: Number(pJson.product.basePrice || 0),
         status: pJson.product.status || 'active',
         image: pJson.product.image || null,
@@ -381,13 +382,16 @@ export default function ProductDetailsPage({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           code: editing.code,
+          costUSD: Number(editing.costUSD || 0),
           basePrice: Number(editing.basePrice || 0),
           status: editing.status,
           image: typeof editing.image === 'undefined' ? undefined : editing.image,
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(t('errors.saveFailed'));
+      if (!res.ok) {
+        throw new Error(json?.message || json?.error || t('errors.saveFailed'));
+      }
       setProduct(json.product);
       setSnack({ open: true, severity: 'success', message: t('common.saved') });
       router.push('/products');
@@ -401,6 +405,7 @@ export default function ProductDetailsPage({
     setEditing({
       code: product.code || '',
       localCode: product.localCode || '',
+      costUSD: Number(product.costUSD ?? 0),
       basePrice: Number(product.basePrice || 0),
       status: product.status || 'active',
       image: product.image || null,
@@ -438,6 +443,15 @@ export default function ProductDetailsPage({
                 value={product.localCode || ''}
                 fullWidth
                 disabled
+              />
+              <TextField
+                label={t('products.localCodeCostUSD')}
+                helperText={t('products.localCodeCostUSDHelper')}
+                type="number"
+                value={editing.costUSD}
+                onChange={(e) => setEditing((s) => ({ ...s, costUSD: e.target.value }))}
+                inputProps={{ step: '1', min: '0', max: '9999' }}
+                fullWidth
               />
               <TextField
                 label={t('products.basePrice')}

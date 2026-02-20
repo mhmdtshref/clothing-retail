@@ -16,7 +16,8 @@ const ImageSchema = new Schema(
 const ProductSchema = new Schema(
   {
     code: { type: String, required: true, trim: true }, // merchant product code (globally unique)
-    localCode: { type: String, required: true, trim: true }, // auto-generated CCCC-YY-XXXXXX
+    localCode: { type: String, required: true, trim: true }, // auto-generated [COMPANY_NAMES ]CCXXXXX
+    costUSD: { type: Number, default: 0, min: 0, max: 9999 }, // cost in USD used for localCode
     basePrice: { type: Number, default: 0 },
     status: {
       type: String,

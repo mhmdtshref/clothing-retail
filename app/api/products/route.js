@@ -32,7 +32,7 @@ const ImageSchema = z
 
 const ProductCreateSchema = z.object({
   code: z.union([z.string().max(120).trim(), z.null()]).optional(),
-  // Used only to generate localCode; not persisted.
+  // Used to generate localCode; persisted on the product.
   costUSD: z.preprocess((v) => {
     // Prevent blank/whitespace from coercing to 0
     if (v === null || typeof v === 'undefined') return v;
@@ -47,8 +47,8 @@ const ProductCreateSchema = z.object({
 });
 
 function formatCostPart(costUSD) {
-  // costUSD validated as int 0..9999
-  return String(costUSD).padStart(4, '0');
+  // costUSD validated as int 0..9999; no leading zeros
+  return String(costUSD);
 }
 
 function normalizeCompanyLabel(name) {
@@ -84,17 +84,16 @@ async function getCompanyPrefix(companyIds) {
 
 async function generateLocalCode(costUSD, companyIds = []) {
   const prefix = await getCompanyPrefix(companyIds);
-  const cccc = formatCostPart(costUSD);
-  const yy = String(new Date().getFullYear()).slice(-2);
+  const c = formatCostPart(costUSD);
   let n = await Product.countDocuments().exec();
   for (let i = 0; i < 5; i++) {
     n += 1;
-    const candidate = `${prefix}${cccc}-${yy}-${String(n).padStart(6, '0')}`;
+    const candidate = `${prefix}${c}${String(n).padStart(5, '0')}`;
 
     const exists = await Product.exists({ $or: [{ localCode: candidate }, { code: candidate }] });
     if (!exists) return candidate;
   }
-  return `${prefix}${cccc}-${yy}-${String(n + 1).padStart(6, '0')}`;
+  return `${prefix}${c}${String(n + 1).padStart(5, '0')}`;
 }
 
 export async function POST(req) {
@@ -120,7 +119,7 @@ export async function POST(req) {
 
     await connectToDB();
 
-    // Generate localCode ([COMP1 COMP2 ]CCCC-YY-XXXXXX) and create product
+    // Generate localCode ([COMP1 COMP2 ]CCXXXXX) and create product
     let localCode = await generateLocalCode(costUSD, companyIds);
     const code = userCode || localCode;
 
@@ -136,7 +135,14 @@ export async function POST(req) {
     }
     let doc;
     try {
-      doc = await Product.create({ code, localCode, basePrice, status, image: image || undefined });
+      doc = await Product.create({
+        code,
+        localCode,
+        costUSD,
+        basePrice,
+        status,
+        image: image || undefined,
+      });
     } catch (e) {
       // In rare case of duplicate localCode, retry once
       if (e?.code === 11000 && e?.keyPattern?.localCode) {
@@ -144,6 +150,7 @@ export async function POST(req) {
         doc = await Product.create({
           code,
           localCode,
+          costUSD,
           basePrice,
           status,
           image: image || undefined,
@@ -160,6 +167,7 @@ export async function POST(req) {
           _id: doc._id,
           code: doc.code,
           localCode: doc.localCode,
+          costUSD: doc.costUSD ?? costUSD,
           basePrice: doc.basePrice ?? 0,
           status: doc.status,
           createdAt: doc.createdAt,
@@ -277,6 +285,7 @@ export async function GET(req) {
       _id: doc._id,
       code: doc.code,
       localCode: doc.localCode,
+      costUSD: doc.costUSD ?? 0,
       basePrice: doc.basePrice ?? 0,
       status: doc.status,
       image: doc.image || undefined,

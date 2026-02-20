@@ -31,6 +31,7 @@ export async function GET(_req, context) {
     const doc = await Product.findById(productId, {
       code: 1,
       localCode: 1,
+      costUSD: 1,
       basePrice: 1,
       status: 1,
       image: 1,
@@ -38,7 +39,10 @@ export async function GET(_req, context) {
       updatedAt: 1,
     }).lean();
     if (!doc) return noStoreJson({ error: 'Not Found' }, { status: 404 });
-    return noStoreJson({ ok: true, product: { ...doc, _id: String(doc._id) } });
+    return noStoreJson({
+      ok: true,
+      product: { ...doc, _id: String(doc._id), costUSD: doc?.costUSD ?? 0 },
+    });
   } catch (e) {
     return noStoreJson(
       { error: 'InternalServerError', message: e?.message || String(e) },
@@ -60,6 +64,14 @@ const ImageSchema = z
 
 const PatchSchema = z.object({
   code: z.union([z.string().max(120).trim(), z.null()]).optional(),
+  costUSD: z
+    .preprocess((v) => {
+      // Prevent blank/whitespace from coercing to 0
+      if (v === null || typeof v === 'undefined') return v;
+      if (typeof v === 'string' && v.trim() === '') return undefined;
+      return v;
+    }, z.coerce.number().int().min(0).max(9999))
+    .optional(),
   basePrice: z.number().nonnegative().optional(),
   status: z.enum(['active', 'archived']).optional(),
   image: ImageSchema,
@@ -111,6 +123,7 @@ export async function PATCH(req, context) {
 
     const update = {};
     if (typeof desiredCode !== 'undefined') update.code = desiredCode;
+    if (typeof input.costUSD !== 'undefined') update.costUSD = input.costUSD;
     if (typeof input.basePrice !== 'undefined') update.basePrice = input.basePrice;
     if (typeof input.status !== 'undefined') update.status = input.status;
     if (typeof input.image !== 'undefined') {
@@ -123,6 +136,7 @@ export async function PATCH(req, context) {
       projection: {
         code: 1,
         localCode: 1,
+        costUSD: 1,
         basePrice: 1,
         status: 1,
         image: 1,
@@ -131,7 +145,10 @@ export async function PATCH(req, context) {
       },
     }).lean();
     if (!doc) return NextResponse.json({ error: 'Not Found' }, { status: 404 });
-    return NextResponse.json({ ok: true, product: { ...doc, _id: String(doc._id) } });
+    return NextResponse.json({
+      ok: true,
+      product: { ...doc, _id: String(doc._id), costUSD: doc?.costUSD ?? 0 },
+    });
   } catch (e) {
     return NextResponse.json(
       { error: 'InternalServerError', message: e?.message || String(e) },
