@@ -64,6 +64,11 @@ export default function PurchaseReceiptForm({
     : companies[0]?._id || '';
 
   const [companyId, setCompanyId] = React.useState(initialCompanyId);
+  const selectedCompany = React.useMemo(
+    () =>
+      (companies || []).find((c) => String(c?._id || '') === String(companyId || '')) || null,
+    [companies, companyId],
+  );
   const [status, setStatus] = React.useState(initialReceipt?.status || 'ordered');
   const [note, setNote] = React.useState(initialReceipt?.note || '');
   const [taxPercent, setTaxPercent] = React.useState(Number(initialReceipt?.taxPercent || 0));
@@ -81,6 +86,10 @@ export default function PurchaseReceiptForm({
   const [loadingProducts, setLoadingProducts] = React.useState(false);
 
   const [selectedProduct, setSelectedProduct] = React.useState(null);
+  const getProductOptionLabel = React.useCallback(
+    (p) => String(p?.code || p?.localCode || '').trim(),
+    [],
+  );
   const [variantOptions, setVariantOptions] = React.useState([]);
   const [extraVariantOptions, setExtraVariantOptions] = React.useState([]);
   const [loadingVariants, setLoadingVariants] = React.useState(false);
@@ -424,23 +433,20 @@ export default function PurchaseReceiptForm({
       <Box component="form" onSubmit={onSubmit}>
         <Stack spacing={2}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <FormControl fullWidth>
-              <InputLabel id="company-label">{t('purchase.company')}</InputLabel>
-              <Select
-                labelId="company-label"
-                label={t('purchase.company')}
-                value={companyId}
-                onChange={(e) => setCompanyId(e.target.value)}
-                required
-                disabled={readOnly}
-              >
-                {companies.map((c) => (
-                  <MenuItem key={c._id} value={c._id}>
-                    {c.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Autocomplete
+              options={companies || []}
+              getOptionLabel={(o) => String(o?.name || '')}
+              isOptionEqualToValue={(o, v) => String(o?._id || '') === String(v?._id || '')}
+              value={selectedCompany}
+              onChange={(_, val) => setCompanyId(val?._id ? String(val._id) : '')}
+              renderInput={(params) => (
+                <TextField {...params} label={t('purchase.company')} required fullWidth />
+              )}
+              sx={{ flex: 1, minWidth: 240 }}
+              disabled={readOnly}
+              disableClearable
+              autoHighlight
+            />
             <FormControl sx={{ minWidth: 200 }}>
               <InputLabel id="status-label">{t('common.status')}</InputLabel>
               <Select
@@ -467,31 +473,55 @@ export default function PurchaseReceiptForm({
           <Divider />
 
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-            <TextField
-              label={t('purchase.searchProduct')}
-              placeholder={t('purchase.searchProductPlaceholder')}
-              value={productQuery}
-              onChange={(e) => setProductQuery(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-              fullWidth
-              disabled={readOnly}
-            />
             <Autocomplete
               loading={loadingProducts}
               options={productOptions}
-              getOptionLabel={(o) => o?.code || ''}
-              onChange={(_, val) => setSelectedProduct(val)}
+              filterOptions={(x) => x}
+              getOptionLabel={getProductOptionLabel}
+              isOptionEqualToValue={(o, v) => String(o?._id || '') === String(v?._id || '')}
+              onChange={(_, val) => {
+                setSelectedProduct(val);
+                setProductQuery(val ? getProductOptionLabel(val) : '');
+              }}
               value={selectedProduct}
-              renderInput={(params) => (
-                <TextField {...params} label={t('purchase.chooseProduct')} />
+              inputValue={productQuery}
+              onInputChange={(_, val, reason) => {
+                setProductQuery(val);
+                if (reason === 'clear') setSelectedProduct(null);
+                if (reason === 'input' && selectedProduct) setSelectedProduct(null);
+              }}
+              renderOption={(props, option) => (
+                <li {...props} key={option?._id || getProductOptionLabel(option)}>
+                  <Stack sx={{ minWidth: 0 }}>
+                    <Typography variant="body2" noWrap>
+                      {option?.code || ''}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" noWrap>
+                      {option?.localCode || ''}
+                    </Typography>
+                  </Stack>
+                </li>
               )}
-              sx={{ minWidth: 320 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t('common.product')}
+                  placeholder={t('purchase.searchProductPlaceholder')}
+                  fullWidth
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+              sx={{ flex: 1, minWidth: 0 }}
               disabled={readOnly}
             />
             <Button
@@ -967,6 +997,7 @@ export default function PurchaseReceiptForm({
                 onClick={() => {
                   if (readOnly) return;
                   setItems([]);
+                  setProductQuery('');
                   setSelectedProduct(null);
                   setVariantOptions([]);
                   setExtraVariantOptions([]);
