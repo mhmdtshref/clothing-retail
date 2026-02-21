@@ -27,6 +27,7 @@ import { ProductImageUploader } from '@/components/uploads';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/components/i18n/useI18n';
 import ResponsiveActionsBar from '@/components/common/ResponsiveActionsBar';
+import ResponsiveListItem from '@/components/common/ResponsiveListItem';
 import { pickLocalizedName } from '@/lib/i18n/name';
 
 function normId(s) {
@@ -594,18 +595,109 @@ export default function ProductDetailsPage({
               {!variantsLoading && variantsError && <Alert severity="error">{variantsError}</Alert>}
 
               {!variantsLoading && !variantsError && (
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t('products.company')}</TableCell>
-                      <TableCell>{t('products.size')}</TableCell>
-                      <TableCell>{t('products.color')}</TableCell>
-                      <TableCell>{t('common.status')}</TableCell>
-                      <TableCell align="right">{t('pos.onHand')}</TableCell>
-                      <TableCell align="right">{t('common.action')}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
+                <>
+                  {/* Table on sm+ */}
+                  <Box sx={{ overflowX: 'auto', display: { xs: 'none', sm: 'block' } }}>
+                    <Table size="small" sx={{ minWidth: 900 }}>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>{t('products.company')}</TableCell>
+                          <TableCell>{t('products.size')}</TableCell>
+                          <TableCell>{t('products.color')}</TableCell>
+                          <TableCell>{t('common.status')}</TableCell>
+                          <TableCell align="right">{t('pos.onHand')}</TableCell>
+                          <TableCell align="right">{t('common.action')}</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {sortedVariants.map((v) => {
+                          const id = String(v?._id || '');
+                          const isSaving = savingVariantId === id;
+                          const draft =
+                            typeof qtyDraftById?.[id] === 'undefined'
+                              ? String(v?.qty ?? 0)
+                              : qtyDraftById[id];
+                          return (
+                            <TableRow key={id} hover>
+                              <TableCell>{v.companyName || '-'}</TableCell>
+                              <TableCell>{v.size}</TableCell>
+                              <TableCell>{v.color}</TableCell>
+                              <TableCell>
+                                <Chip
+                                  size="small"
+                                  label={t('common.saved')}
+                                  color="success"
+                                  variant="outlined"
+                                />
+                              </TableCell>
+                              <TableCell align="right" sx={{ width: 180, minWidth: 180 }}>
+                                <TextField
+                                  size="small"
+                                  type="number"
+                                  value={draft}
+                                  fullWidth
+                                  onChange={(e) =>
+                                    setQtyDraftById((prev) => ({
+                                      ...(prev || {}),
+                                      [id]: e.target.value,
+                                    }))
+                                  }
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') onSaveVariantQty(id);
+                                  }}
+                                  inputProps={{ step: 1, inputMode: 'numeric' }}
+                                />
+                              </TableCell>
+                              <TableCell align="right" sx={{ width: 140, minWidth: 140 }}>
+                                <Button
+                                  size="small"
+                                  variant="contained"
+                                  onClick={() => onSaveVariantQty(id)}
+                                  disabled={isSaving}
+                                >
+                                  {isSaving ? t('common.saving') : t('common.save')}
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+
+                        {sortedPendingVariants.map((v) => (
+                          <TableRow key={`pending:${v._key}`} hover sx={{ opacity: 0.85 }}>
+                            <TableCell>{v.companyName || '-'}</TableCell>
+                            <TableCell>{v.sizeLabel}</TableCell>
+                            <TableCell>{v.colorLabel}</TableCell>
+                            <TableCell>
+                              <Chip
+                                size="small"
+                                label={t('products.unsaved')}
+                                color="warning"
+                                variant="outlined"
+                              />
+                            </TableCell>
+                            <TableCell align="right" sx={{ width: 180, minWidth: 180 }}>
+                              <TextField
+                                size="small"
+                                type="number"
+                                value={0}
+                                fullWidth
+                                disabled
+                                inputProps={{ step: 1, inputMode: 'numeric' }}
+                              />
+                            </TableCell>
+                            <TableCell align="right" sx={{ width: 140, minWidth: 140 }}>
+                              <Typography color="text.secondary" variant="body2">
+                                —
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </Box>
+
+                  {/* Cards on xs */}
+                  <Stack spacing={1.5} sx={{ display: { xs: 'flex', sm: 'none' } }}>
                     {sortedVariants.map((v) => {
                       const id = String(v?._id || '');
                       const isSaving = savingVariantId === id;
@@ -613,24 +705,29 @@ export default function ProductDetailsPage({
                         typeof qtyDraftById?.[id] === 'undefined'
                           ? String(v?.qty ?? 0)
                           : qtyDraftById[id];
+                      const title = [v?.size, v?.color].filter(Boolean).join(' • ');
+                      const companyName = v?.companyName || '-';
+
                       return (
-                        <TableRow key={id} hover>
-                          <TableCell>{v.companyName || '-'}</TableCell>
-                          <TableCell>{v.size}</TableCell>
-                          <TableCell>{v.color}</TableCell>
-                          <TableCell>
+                        <ResponsiveListItem
+                          key={id}
+                          title={title || t('common.variant')}
+                          metaStart={
                             <Chip
                               size="small"
                               label={t('common.saved')}
                               color="success"
                               variant="outlined"
                             />
-                          </TableCell>
-                          <TableCell align="right" sx={{ width: 180 }}>
+                          }
+                          metaEnd={companyName}
+                        >
+                          <Stack spacing={1}>
                             <TextField
-                              size="small"
+                              label={t('pos.onHand')}
                               type="number"
                               value={draft}
+                              fullWidth
                               onChange={(e) =>
                                 setQtyDraftById((prev) => ({
                                   ...(prev || {}),
@@ -640,54 +737,53 @@ export default function ProductDetailsPage({
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') onSaveVariantQty(id);
                               }}
-                              inputProps={{ step: 1 }}
+                              inputProps={{ step: 1, inputMode: 'numeric' }}
                             />
-                          </TableCell>
-                          <TableCell align="right" sx={{ width: 140 }}>
                             <Button
-                              size="small"
                               variant="contained"
+                              fullWidth
                               onClick={() => onSaveVariantQty(id)}
                               disabled={isSaving}
                             >
                               {isSaving ? t('common.saving') : t('common.save')}
                             </Button>
-                          </TableCell>
-                        </TableRow>
+                          </Stack>
+                        </ResponsiveListItem>
                       );
                     })}
 
-                    {sortedPendingVariants.map((v) => (
-                      <TableRow key={`pending:${v._key}`} hover sx={{ opacity: 0.85 }}>
-                        <TableCell>{v.companyName || '-'}</TableCell>
-                        <TableCell>{v.sizeLabel}</TableCell>
-                        <TableCell>{v.colorLabel}</TableCell>
-                        <TableCell>
-                          <Chip
-                            size="small"
-                            label={t('products.unsaved')}
-                            color="warning"
-                            variant="outlined"
-                          />
-                        </TableCell>
-                        <TableCell align="right" sx={{ width: 180 }}>
+                    {sortedPendingVariants.map((v) => {
+                      const title = [v?.sizeLabel, v?.colorLabel].filter(Boolean).join(' • ');
+                      const companyName = v?.companyName || '-';
+
+                      return (
+                        <ResponsiveListItem
+                          key={`pending:${v._key}`}
+                          title={title || t('common.variant')}
+                          metaStart={
+                            <Chip
+                              size="small"
+                              label={t('products.unsaved')}
+                              color="warning"
+                              variant="outlined"
+                            />
+                          }
+                          metaEnd={companyName}
+                          sx={{ opacity: 0.9 }}
+                        >
                           <TextField
-                            size="small"
+                            label={t('pos.onHand')}
                             type="number"
                             value={0}
+                            fullWidth
                             disabled
-                            inputProps={{ step: 1 }}
+                            inputProps={{ step: 1, inputMode: 'numeric' }}
                           />
-                        </TableCell>
-                        <TableCell align="right" sx={{ width: 140 }}>
-                          <Typography color="text.secondary" variant="body2">
-                            —
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                        </ResponsiveListItem>
+                      );
+                    })}
+                  </Stack>
+                </>
               )}
             </Stack>
           </Paper>
