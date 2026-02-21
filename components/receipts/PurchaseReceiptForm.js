@@ -485,7 +485,7 @@ export default function PurchaseReceiptForm({
             <Autocomplete
               loading={loadingProducts}
               options={productOptions}
-              getOptionLabel={(o) => o.localCode ? o.localCode : o.code}
+              getOptionLabel={(o) => o?.code || ''}
               onChange={(_, val) => setSelectedProduct(val)}
               value={selectedProduct}
               renderInput={(params) => (

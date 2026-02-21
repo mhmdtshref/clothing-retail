@@ -231,13 +231,6 @@ export default function CartView({
                           {l.code}
                         </Typography>
                         <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
-                        >
-                          {l.localCode || '\u00A0'}
-                        </Typography>
-                        <Typography
                           variant="caption"
                           color="text.secondary"
                           sx={{ display: 'block' }}
@@ -339,13 +332,6 @@ export default function CartView({
                     <TableCell sx={{ overflow: 'hidden' }}>
                       <Typography fontWeight={600} noWrap title={l.code}>
                         {l.code}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
-                      >
-                        {l.localCode || '\u00A0'}
                       </Typography>
                       <Typography
                         variant="caption"

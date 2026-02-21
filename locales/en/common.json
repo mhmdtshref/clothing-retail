@@ -112,7 +112,7 @@
   "products.code": "Code",
   "products.localCode": "Local Code",
   "products.localCodeCostUSD": "Cost (USD)",
-  "products.localCodeCostUSDHelper": "Used to generate Local Code. Saved with the product.",
+  "products.localCodeCostUSDHelper": "Used for internal code generation. Saved with the product.",
   "products.basePrice": "Base Price",
   "products.variants": "Variants",
   "products.created": "Created",

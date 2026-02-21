@@ -152,7 +152,6 @@ export default function ProductDetailsPage({
       setProduct(pJson.product);
       setEditing({
         code: pJson.product.code || '',
-        localCode: pJson.product.localCode || '',
         costUSD: Number(pJson.product.costUSD ?? 0),
         basePrice: Number(pJson.product.basePrice || 0),
         status: pJson.product.status || 'active',
@@ -404,7 +403,6 @@ export default function ProductDetailsPage({
     if (!product) return;
     setEditing({
       code: product.code || '',
-      localCode: product.localCode || '',
       costUSD: Number(product.costUSD ?? 0),
       basePrice: Number(product.basePrice || 0),
       status: product.status || 'active',
@@ -437,12 +435,6 @@ export default function ProductDetailsPage({
                 value={editing.code}
                 onChange={(e) => setEditing((s) => ({ ...s, code: e.target.value }))}
                 fullWidth
-              />
-              <TextField
-                label={t('products.localCode')}
-                value={product.localCode || ''}
-                fullWidth
-                disabled
               />
               <TextField
                 label={t('products.localCodeCostUSD')}

@@ -112,7 +112,7 @@
   "products.code": "الكود",
   "products.localCode": "الرمز المحلي",
   "products.localCodeCostUSD": "التكلفة (دولار)",
-  "products.localCodeCostUSDHelper": "تُستخدم لإنشاء الرمز المحلي ويتم حفظها مع المنتج.",
+  "products.localCodeCostUSDHelper": "تُستخدم لإنشاء رمز داخلي ويتم حفظها مع المنتج.",
   "products.basePrice": "السعر الأساسي",
   "products.variants": "الأنماط",
   "products.created": "تم الإنشاء",

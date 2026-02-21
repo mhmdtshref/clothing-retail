@@ -50,10 +50,15 @@ function useQueryState() {
   const router = useRouter();
   const sp = useSearchParams();
 
+  const rawSort = sp.get('sort') ?? DEFAULTS.sort;
+  const normalizedSort = rawSort === 'localCode' ? 'code' : rawSort;
+  const sort =
+    normalizedSort === 'createdAt' || normalizedSort === 'code' ? normalizedSort : DEFAULTS.sort;
+
   const state = {
     query: sp.get('query') ?? DEFAULTS.query,
     status: sp.get('status') ?? DEFAULTS.status,
-    sort: sp.get('sort') ?? DEFAULTS.sort,
+    sort,
     order: sp.get('order') ?? DEFAULTS.order,
     page: Number(sp.get('page') ?? DEFAULTS.page),
     limit: Number(sp.get('limit') ?? DEFAULTS.limit),
@@ -187,7 +192,6 @@ export default function ProductsListPage() {
           >
             <MenuItem value="createdAt">{t('products.createdAt')}</MenuItem>
             <MenuItem value="code">{t('products.code')}</MenuItem>
-            <MenuItem value="localCode">{t('products.localCode')}</MenuItem>
           </Select>
         </FormControl>
 
@@ -267,7 +271,6 @@ export default function ProductsListPage() {
               >
                 <MenuItem value="createdAt">{t('products.createdAt')}</MenuItem>
                 <MenuItem value="code">{t('products.code')}</MenuItem>
-                <MenuItem value="localCode">{t('products.localCode')}</MenuItem>
               </Select>
             </FormControl>
 
@@ -324,7 +327,6 @@ export default function ProductsListPage() {
               <TableHead>
                 <TableRow>
                   <TableCell>{t('products.code')}</TableCell>
-                  <TableCell>{t('products.localCode')}</TableCell>
                   <TableCell align="right">{t('products.basePrice')}</TableCell>
                   <TableCell>{t('common.status')}</TableCell>
                   <TableCell align="right">{t('products.variants')}</TableCell>
@@ -334,7 +336,7 @@ export default function ProductsListPage() {
               <TableBody>
                 {data.items.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6}>
+                    <TableCell colSpan={5}>
                       <Typography color="text.secondary" sx={{ py: 3 }}>
                         {t('products.none')}
                       </Typography>
@@ -346,7 +348,6 @@ export default function ProductsListPage() {
                     <TableCell>
                       <Typography fontWeight={600}>{p.code}</Typography>
                     </TableCell>
-                    <TableCell>{p.localCode || '-'}</TableCell>
                     <TableCell align="right">
                       {formatNumber(Number(p.basePrice || 0), {
                         minimumFractionDigits: 2,
@@ -371,8 +372,7 @@ export default function ProductsListPage() {
               {data.items.map((p) => (
                 <ResponsiveListItem
                   key={p._id}
-                  title={p.localCode || '-'}
-                  subtitle={p.code}
+                  title={p.code}
                   metaEnd={`${formatNumber(Number(p.basePrice || 0), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                 >
                   <Typography variant="body2" color="text.secondary">

@@ -204,9 +204,6 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
                   <Typography variant="body2" fontWeight={700} noWrap>
                     {option.code}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" noWrap>
-                    {option.localCode || '-'}
-                  </Typography>
                 </Box>
                 <Chip
                   size="small"
@@ -306,9 +303,6 @@ export default function POSCatalog({ onPickVariant, isReturnMode = false, compac
                 <Stack>
                   <Typography variant="subtitle1" fontWeight={700}>
                     {selected.code}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {selected.localCode || '-'}
                   </Typography>
                   <Chip
                     size="small"

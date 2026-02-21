@@ -276,9 +276,6 @@ export default function ProductsGrid({
                   </Box>
                   <Box sx={{ flex: 1 }}>
                     <Typography fontWeight={700}>{p.code}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {p.localCode || '\u00A0'}
-                    </Typography>
                   </Box>
                   <Chip size="small" label={p.status} />
                 </Stack>
