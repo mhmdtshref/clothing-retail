@@ -1,0 +1,7808 @@
+[
+  {
+    "providerAreaId": 1315,
+    "provider": "optimus",
+    "name": "ترابين الصانع",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1314,
+    "provider": "optimus",
+    "name": "ميتار",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1313,
+    "provider": "optimus",
+    "name": "ابو صلب",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1312,
+    "provider": "optimus",
+    "name": "متسبي ريمون",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1311,
+    "provider": "optimus",
+    "name": "يفنئيل",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1310,
+    "provider": "optimus",
+    "name": "تل النصبة",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1309,
+    "provider": "optimus",
+    "name": "الجنيد",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1308,
+    "provider": "optimus",
+    "name": "متسبي رمون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1307,
+    "provider": "optimus",
+    "name": "الخلجان",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1306,
+    "provider": "optimus",
+    "name": "العاد",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1305,
+    "provider": "optimus",
+    "name": "حي الردانة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1304,
+    "provider": "optimus",
+    "name": "شارع 40",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1303,
+    "provider": "optimus",
+    "name": "متسبي ريمون",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1302,
+    "provider": "optimus",
+    "name": "عرب النعيم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1301,
+    "provider": "optimus",
+    "name": "اللطرون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1300,
+    "provider": "optimus",
+    "name": "دوار شويكه",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 1299,
+    "provider": "optimus",
+    "name": "لهافيم",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1298,
+    "provider": "optimus",
+    "name": "عين البيضا",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 1297,
+    "provider": "optimus",
+    "name": "كردلة",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 1296,
+    "provider": "optimus",
+    "name": "بردلة",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 1295,
+    "provider": "optimus",
+    "name": "عزون الشامية",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1294,
+    "provider": "optimus",
+    "name": "بير المشاش",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1293,
+    "provider": "optimus",
+    "name": "تل عراد",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1292,
+    "provider": "optimus",
+    "name": "الفرعه",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1291,
+    "provider": "optimus",
+    "name": "الاطرش",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1290,
+    "provider": "optimus",
+    "name": "السيد",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1289,
+    "provider": "optimus",
+    "name": "المكحول",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1288,
+    "provider": "optimus",
+    "name": "حي المهلل",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1287,
+    "provider": "optimus",
+    "name": "دوار عصفور",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1286,
+    "provider": "optimus",
+    "name": "صباح الخير",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1285,
+    "provider": "optimus",
+    "name": "البيادر",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1284,
+    "provider": "optimus",
+    "name": "سويطات",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1283,
+    "provider": "optimus",
+    "name": "الجربا",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1282,
+    "provider": "optimus",
+    "name": "الجنيد",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1281,
+    "provider": "optimus",
+    "name": "رمات اشكول",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 1280,
+    "provider": "optimus",
+    "name": "هار حوتسفيم",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 1279,
+    "provider": "optimus",
+    "name": "رمات هحيال",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1278,
+    "provider": "optimus",
+    "name": "رمات افيف",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1277,
+    "provider": "optimus",
+    "name": "رمات حوفاف",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1276,
+    "provider": "optimus",
+    "name": "اورعكيفا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1275,
+    "provider": "optimus",
+    "name": "شفاعيم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1274,
+    "provider": "optimus",
+    "name": "حي البشارة -الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1273,
+    "provider": "optimus",
+    "name": "شلومي",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 1272,
+    "provider": "optimus",
+    "name": "مزكيرت باتيا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1271,
+    "provider": "optimus",
+    "name": "عابوود",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1270,
+    "provider": "optimus",
+    "name": "(جمب يهود )سفيون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1269,
+    "provider": "optimus",
+    "name": "رمات راحيل",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 1268,
+    "provider": "optimus",
+    "name": "يروحم",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1267,
+    "provider": "optimus",
+    "name": "حي المسك",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1266,
+    "provider": "optimus",
+    "name": "ابو قرينات",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1265,
+    "provider": "optimus",
+    "name": "ابو قويدر",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1264,
+    "provider": "optimus",
+    "name": "شارع المريج",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1263,
+    "provider": "optimus",
+    "name": "سالم قضاء ام الفحم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1262,
+    "provider": "optimus",
+    "name": "حي الورود ( الناصرة )",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1261,
+    "provider": "optimus",
+    "name": "العاد",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1260,
+    "provider": "optimus",
+    "name": "يروحم",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1259,
+    "provider": "optimus",
+    "name": "كاتسرين",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 1258,
+    "provider": "optimus",
+    "name": "صفورية",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1257,
+    "provider": "optimus",
+    "name": "نابلس",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1256,
+    "provider": "optimus",
+    "name": "شارع بيكر",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1255,
+    "provider": "optimus",
+    "name": "حي شريم",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1254,
+    "provider": "optimus",
+    "name": "شارع الدواوين",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1253,
+    "provider": "optimus",
+    "name": "حي القرعان",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1252,
+    "provider": "optimus",
+    "name": "شارع عماد الدين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1251,
+    "provider": "optimus",
+    "name": "اسكان الكهرباء",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1250,
+    "provider": "optimus",
+    "name": "شارع الحرش",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1249,
+    "provider": "optimus",
+    "name": "ضاحية الأرز",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1248,
+    "provider": "optimus",
+    "name": "طلعة البلوطات",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1247,
+    "provider": "optimus",
+    "name": "شارع الستة متر",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1246,
+    "provider": "optimus",
+    "name": "شارع العدل",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1245,
+    "provider": "optimus",
+    "name": "شارع حطين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1244,
+    "provider": "optimus",
+    "name": "شارع المدارس",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1243,
+    "provider": "optimus",
+    "name": "شارع الحسبة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1242,
+    "provider": "optimus",
+    "name": "شارع الزيوت",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1241,
+    "provider": "optimus",
+    "name": "طلعة الراهبات",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1240,
+    "provider": "optimus",
+    "name": "شارع الارصاد",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1239,
+    "provider": "optimus",
+    "name": "جسر التيتي",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1238,
+    "provider": "optimus",
+    "name": "طلعة زبلح",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1237,
+    "provider": "optimus",
+    "name": "طلعة اسو",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1236,
+    "provider": "optimus",
+    "name": "بليبوس",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1235,
+    "provider": "optimus",
+    "name": "امتداد شارع السكة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1234,
+    "provider": "optimus",
+    "name": "شارع السكة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1233,
+    "provider": "optimus",
+    "name": "خلة الايمان",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1232,
+    "provider": "optimus",
+    "name": "شارع الرشيد",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1231,
+    "provider": "optimus",
+    "name": "شارع مؤتة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1230,
+    "provider": "optimus",
+    "name": "شارع الاتحاد",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1229,
+    "provider": "optimus",
+    "name": "شارع ابوبكر",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1228,
+    "provider": "optimus",
+    "name": "شارع غرناطة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1227,
+    "provider": "optimus",
+    "name": "شارع ابن رشد",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1226,
+    "provider": "optimus",
+    "name": "قصر السر",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1225,
+    "provider": "optimus",
+    "name": "شجرة افرايم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1224,
+    "provider": "optimus",
+    "name": "عابا الغربية (جنين)",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1223,
+    "provider": "optimus",
+    "name": "شارع نابلس",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 1222,
+    "provider": "optimus",
+    "name": "طولكرم الحي الشرقي 2",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 1221,
+    "provider": "optimus",
+    "name": "طولكرم السوق التجاري",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 1220,
+    "provider": "optimus",
+    "name": "طولكرم الحي الشمالي",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 1219,
+    "provider": "optimus",
+    "name": "طولكرم الحي الجنوبي",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 1218,
+    "provider": "optimus",
+    "name": "طولكرم الحي الغربي",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 1217,
+    "provider": "optimus",
+    "name": "طولكرم الحي الشرقي",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 1216,
+    "provider": "optimus",
+    "name": "روميما",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 1215,
+    "provider": "optimus",
+    "name": "مخيم قدورة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1214,
+    "provider": "optimus",
+    "name": "سنهدريا",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 1213,
+    "provider": "optimus",
+    "name": "اسكان نمساوي",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1212,
+    "provider": "optimus",
+    "name": "شارع 24",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1211,
+    "provider": "optimus",
+    "name": "شارع 6 متر",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1210,
+    "provider": "optimus",
+    "name": "شارع 17",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1209,
+    "provider": "optimus",
+    "name": "شارع 16",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1208,
+    "provider": "optimus",
+    "name": "شارع 15",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1207,
+    "provider": "optimus",
+    "name": "المقبرة الغربية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1206,
+    "provider": "optimus",
+    "name": "المقبرة الشرقية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1205,
+    "provider": "optimus",
+    "name": "طلعة الزينبية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1204,
+    "provider": "optimus",
+    "name": "طلعة علاء الدين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1203,
+    "provider": "optimus",
+    "name": "شارع الجامعة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1202,
+    "provider": "optimus",
+    "name": "الشيخ مسلم",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1201,
+    "provider": "optimus",
+    "name": "طلعة الطور",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1200,
+    "provider": "optimus",
+    "name": "شارع ابو عبيدة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1199,
+    "provider": "optimus",
+    "name": "اسكان الكهربا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1198,
+    "provider": "optimus",
+    "name": "شارع الرازي",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1197,
+    "provider": "optimus",
+    "name": "شارع المتنبي",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1196,
+    "provider": "optimus",
+    "name": "شارع شويتره",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1195,
+    "provider": "optimus",
+    "name": "شارع عمر المختار",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1194,
+    "provider": "optimus",
+    "name": "شارع المدارس",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1193,
+    "provider": "optimus",
+    "name": "شارع الغربي",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1192,
+    "provider": "optimus",
+    "name": "النقار",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1191,
+    "provider": "optimus",
+    "name": "شارع الحديقة",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1190,
+    "provider": "optimus",
+    "name": "خلة ياسين",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1189,
+    "provider": "optimus",
+    "name": "شارع نابلس",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1188,
+    "provider": "optimus",
+    "name": "شارع السبع/السوق",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1187,
+    "provider": "optimus",
+    "name": "شارع جلجوليا",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1186,
+    "provider": "optimus",
+    "name": "شارع المحافظة",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1185,
+    "provider": "optimus",
+    "name": "شارع التربية والتعليم",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1184,
+    "provider": "optimus",
+    "name": "شارع النفق",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1183,
+    "provider": "optimus",
+    "name": "خلة نوفل",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1182,
+    "provider": "optimus",
+    "name": "خلة الراعي",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1181,
+    "provider": "optimus",
+    "name": "حي غياظة",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1180,
+    "provider": "optimus",
+    "name": "شارع الواد",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1179,
+    "provider": "optimus",
+    "name": "شارع المياه",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1178,
+    "provider": "optimus",
+    "name": "قرى القدس",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1177,
+    "provider": "optimus",
+    "name": "باب الاسباط",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 1176,
+    "provider": "optimus",
+    "name": "مفاسيرت اتسيون",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 1175,
+    "provider": "optimus",
+    "name": "طبريا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1174,
+    "provider": "optimus",
+    "name": "كفار يونا - نتانيا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1173,
+    "provider": "optimus",
+    "name": "طيرة الكرمل",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1172,
+    "provider": "optimus",
+    "name": "عومر",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 1171,
+    "provider": "optimus",
+    "name": "عصيون",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1170,
+    "provider": "optimus",
+    "name": "خربة النبي زكريا",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1169,
+    "provider": "optimus",
+    "name": "صالة غانم",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1168,
+    "provider": "optimus",
+    "name": "الكسارة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1167,
+    "provider": "optimus",
+    "name": "تل رميدة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1166,
+    "provider": "optimus",
+    "name": "عقبة انجيلة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1165,
+    "provider": "optimus",
+    "name": "قبة الجانب",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1164,
+    "provider": "optimus",
+    "name": "مدارس وصايا الرسول",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1163,
+    "provider": "optimus",
+    "name": "17 مفرق",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1162,
+    "provider": "optimus",
+    "name": "حارة ابو اسنينة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1161,
+    "provider": "optimus",
+    "name": "مفرق العجوري",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1160,
+    "provider": "optimus",
+    "name": "مطعم بيت جدي",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1159,
+    "provider": "optimus",
+    "name": "مسجد نظيرة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1158,
+    "provider": "optimus",
+    "name": "جامعة القدس المفتوحة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1157,
+    "provider": "optimus",
+    "name": "مستشفى الهلال الأحمر",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1156,
+    "provider": "optimus",
+    "name": "عين عرب",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1155,
+    "provider": "optimus",
+    "name": "حبايل الرياح",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1154,
+    "provider": "optimus",
+    "name": "هيبرون سنتر",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1153,
+    "provider": "optimus",
+    "name": "شارع الكاريتاس",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1152,
+    "provider": "optimus",
+    "name": "شارع الجامعة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1151,
+    "provider": "optimus",
+    "name": "شارع اسطيح",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1150,
+    "provider": "optimus",
+    "name": "واد ابو فريحة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1149,
+    "provider": "optimus",
+    "name": "سوق الشعب",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1148,
+    "provider": "optimus",
+    "name": "مستشفى الحسين",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1147,
+    "provider": "optimus",
+    "name": "نزلة غزال",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1146,
+    "provider": "optimus",
+    "name": "شارع جمال عبد الناصر",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1145,
+    "provider": "optimus",
+    "name": "الدهيشة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1144,
+    "provider": "optimus",
+    "name": "YMCAشارع",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1143,
+    "provider": "optimus",
+    "name": "سعادة مول",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1142,
+    "provider": "optimus",
+    "name": "شارع الذهب",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1141,
+    "provider": "optimus",
+    "name": "شارع القدس الخليل",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1140,
+    "provider": "optimus",
+    "name": "جبل هراسة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1139,
+    "provider": "optimus",
+    "name": "شارع النجمة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1138,
+    "provider": "optimus",
+    "name": "مستشفى اليمامة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1137,
+    "provider": "optimus",
+    "name": "كازية النشاش",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1136,
+    "provider": "optimus",
+    "name": "منتجع مراد",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1135,
+    "provider": "optimus",
+    "name": "شارع المنطقة الصناعية",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1134,
+    "provider": "optimus",
+    "name": "العبيات",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1133,
+    "provider": "optimus",
+    "name": "خلايل اللوز",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1132,
+    "provider": "optimus",
+    "name": "جسر قبر حلوة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1131,
+    "provider": "optimus",
+    "name": "شارع كريمزان",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1130,
+    "provider": "optimus",
+    "name": "واد معالي",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1129,
+    "provider": "optimus",
+    "name": "منطقة الصدر",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1128,
+    "provider": "optimus",
+    "name": "قاع الواد",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1127,
+    "provider": "optimus",
+    "name": "DCO شارع",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1126,
+    "provider": "optimus",
+    "name": "شارع السهل",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1125,
+    "provider": "optimus",
+    "name": "بير عونا",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1124,
+    "provider": "optimus",
+    "name": "شارع المسلخ",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1123,
+    "provider": "optimus",
+    "name": "شارع عرفات",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 1122,
+    "provider": "optimus",
+    "name": "0",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 1121,
+    "provider": "optimus",
+    "name": "باب الاسباط",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 1120,
+    "provider": "optimus",
+    "name": "دوار زايد",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1119,
+    "provider": "optimus",
+    "name": "مفرق الحسين",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1118,
+    "provider": "optimus",
+    "name": "دائرة السير",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1117,
+    "provider": "optimus",
+    "name": "مفرق حي الجامعة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1116,
+    "provider": "optimus",
+    "name": "عقبة تفوح",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1115,
+    "provider": "optimus",
+    "name": "الحسبة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1114,
+    "provider": "optimus",
+    "name": "شارع وداد ناصر الدين",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1113,
+    "provider": "optimus",
+    "name": "شارع بئر السبع",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1112,
+    "provider": "optimus",
+    "name": "الهيبرون سنتر",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1111,
+    "provider": "optimus",
+    "name": "طلعة ادعيس",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1110,
+    "provider": "optimus",
+    "name": "شارع العدل",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1109,
+    "provider": "optimus",
+    "name": "مستشفى الأهلي",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1108,
+    "provider": "optimus",
+    "name": "المنشر",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1107,
+    "provider": "optimus",
+    "name": "دوار الشعراوي",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1106,
+    "provider": "optimus",
+    "name": "دوار خباب",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1105,
+    "provider": "optimus",
+    "name": "مفرق الجبان",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1104,
+    "provider": "optimus",
+    "name": "المربعة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1103,
+    "provider": "optimus",
+    "name": "دوار بيسان",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1102,
+    "provider": "optimus",
+    "name": "قرية حداد السياحية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1101,
+    "provider": "optimus",
+    "name": "واد عز الدين",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1100,
+    "provider": "optimus",
+    "name": "مراح سعد",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1099,
+    "provider": "optimus",
+    "name": "حارة الدبوس",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1098,
+    "provider": "optimus",
+    "name": "كراج نابلس",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1097,
+    "provider": "optimus",
+    "name": "شارع النباتات",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1096,
+    "provider": "optimus",
+    "name": "حرش السعادة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1095,
+    "provider": "optimus",
+    "name": "دوار الامباشي‏",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1094,
+    "provider": "optimus",
+    "name": "دوار الحصان",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1093,
+    "provider": "optimus",
+    "name": "مجمع النفاع",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1092,
+    "provider": "optimus",
+    "name": "كراج ابو داوود",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1090,
+    "provider": "optimus",
+    "name": "فطاير",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1089,
+    "provider": "optimus",
+    "name": "شارع المامون",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1088,
+    "provider": "optimus",
+    "name": "كروم عاشور",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1087,
+    "provider": "optimus",
+    "name": "شارع الباشا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1086,
+    "provider": "optimus",
+    "name": "شارع كشيكة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1085,
+    "provider": "optimus",
+    "name": "شارع هواش",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1084,
+    "provider": "optimus",
+    "name": "التعاون الاوسط",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1083,
+    "provider": "optimus",
+    "name": "راس طيرة",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 1082,
+    "provider": "optimus",
+    "name": "تل افيف- تل ابيب",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1081,
+    "provider": "optimus",
+    "name": "جفعات رام",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 1080,
+    "provider": "optimus",
+    "name": "كريات مناحم",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 1079,
+    "provider": "optimus",
+    "name": "الجولان",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 1078,
+    "provider": "optimus",
+    "name": "إيلات",
+    "providerCityId": 24
+  },
+  {
+    "providerAreaId": 1077,
+    "provider": "optimus",
+    "name": "شارع عصيرة / دوار عصيرة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1076,
+    "provider": "optimus",
+    "name": "بجانب حولون ) أزور)",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1075,
+    "provider": "optimus",
+    "name": "ايلات",
+    "providerCityId": 24
+  },
+  {
+    "providerAreaId": 1074,
+    "provider": "optimus",
+    "name": "دوار المنارة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1073,
+    "provider": "optimus",
+    "name": "يافا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1072,
+    "provider": "optimus",
+    "name": "شارع 10",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1071,
+    "provider": "optimus",
+    "name": "نابلس الجديدة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1070,
+    "provider": "optimus",
+    "name": "شارع تل",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1069,
+    "provider": "optimus",
+    "name": "الخوالد",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1068,
+    "provider": "optimus",
+    "name": "حي الفاخورة- الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1067,
+    "provider": "optimus",
+    "name": "حي المطران- الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1066,
+    "provider": "optimus",
+    "name": "حي شنلر- الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1065,
+    "provider": "optimus",
+    "name": "خلة الدير- الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1064,
+    "provider": "optimus",
+    "name": "الحارة الشرقية الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1063,
+    "provider": "optimus",
+    "name": "حي الجليل- الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1062,
+    "provider": "optimus",
+    "name": "كرم الصاحب- الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1061,
+    "provider": "optimus",
+    "name": "حي الروم- الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1060,
+    "provider": "optimus",
+    "name": "حي الكروم- الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1059,
+    "provider": "optimus",
+    "name": "بير الامير- الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1058,
+    "provider": "optimus",
+    "name": "حي بلال - الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1057,
+    "provider": "optimus",
+    "name": "جني تكفا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1056,
+    "provider": "optimus",
+    "name": "جفعتايم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1055,
+    "provider": "optimus",
+    "name": "العقربانية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1054,
+    "provider": "optimus",
+    "name": "فروش بيت دجن",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 1053,
+    "provider": "optimus",
+    "name": "عسكر البلد",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1052,
+    "provider": "optimus",
+    "name": "بلاطة البلد",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 1051,
+    "provider": "optimus",
+    "name": "شارع مسجد جمال عبد التاصر",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1050,
+    "provider": "optimus",
+    "name": "شارع ركب/عماة طنوس-النتشة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1049,
+    "provider": "optimus",
+    "name": "شارع بلدية البيرة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1048,
+    "provider": "optimus",
+    "name": "شارع الحسبة /حسبة رام الله",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1047,
+    "provider": "optimus",
+    "name": "شارع مجمع المحطة الرئيسي",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1046,
+    "provider": "optimus",
+    "name": "شارع الفرندس",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1045,
+    "provider": "optimus",
+    "name": "شارع المكتبة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1044,
+    "provider": "optimus",
+    "name": "دوار المجلس التشريعي",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1043,
+    "provider": "optimus",
+    "name": "دوار مصلحة المياه",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1042,
+    "provider": "optimus",
+    "name": "شارع مستشفى رام الله",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1041,
+    "provider": "optimus",
+    "name": "شارع النهضة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1040,
+    "provider": "optimus",
+    "name": "شارع الكلية الاهلية",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1039,
+    "provider": "optimus",
+    "name": "دوار الساعة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1038,
+    "provider": "optimus",
+    "name": "شارع الاتصالات",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1037,
+    "provider": "optimus",
+    "name": "نزلة البريد",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1036,
+    "provider": "optimus",
+    "name": "شارع ركب",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1035,
+    "provider": "optimus",
+    "name": "شارع بنك فلسطين",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1034,
+    "provider": "optimus",
+    "name": "شارع الشرطة القديم",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1033,
+    "provider": "optimus",
+    "name": "دوار المنارة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1032,
+    "provider": "optimus",
+    "name": "مستشفى الرعاية",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1031,
+    "provider": "optimus",
+    "name": "مجمع عياش مول",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1030,
+    "provider": "optimus",
+    "name": "مجمع رام الله مول",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1029,
+    "provider": "optimus",
+    "name": "الارسال/قصر الحمرا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1028,
+    "provider": "optimus",
+    "name": "سطح مرحبا/الشارع العام",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1027,
+    "provider": "optimus",
+    "name": "شارع القدس/رام الله",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1026,
+    "provider": "optimus",
+    "name": "حي البالوع",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1025,
+    "provider": "optimus",
+    "name": "الشرفة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1024,
+    "provider": "optimus",
+    "name": "دوار وادي النار",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1023,
+    "provider": "optimus",
+    "name": "طريق العيزرية",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1022,
+    "provider": "optimus",
+    "name": "طلعة المعسكر",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1021,
+    "provider": "optimus",
+    "name": "راس شحادة",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1020,
+    "provider": "optimus",
+    "name": "طلوع المعسكر",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1019,
+    "provider": "optimus",
+    "name": "شارع المعهد",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1018,
+    "provider": "optimus",
+    "name": "حي الزغير",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1017,
+    "provider": "optimus",
+    "name": "شارع  المطار",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1016,
+    "provider": "optimus",
+    "name": "شارع القدس",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1015,
+    "provider": "optimus",
+    "name": "المدية",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 1014,
+    "provider": "optimus",
+    "name": "موتسا عيليت",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 1013,
+    "provider": "optimus",
+    "name": "جفعات عدة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1012,
+    "provider": "optimus",
+    "name": "بنيامينا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1011,
+    "provider": "optimus",
+    "name": "مفرق الصاحب",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 1010,
+    "provider": "optimus",
+    "name": "كفار شاليم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1009,
+    "provider": "optimus",
+    "name": "بير نبالا",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 1008,
+    "provider": "optimus",
+    "name": "كريات اونو ( قضاء تل ابيب )",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1007,
+    "provider": "optimus",
+    "name": "بيت دجن بجانب ريشون لتسيون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1006,
+    "provider": "optimus",
+    "name": "ايفن يهودا ( قضاء نتانيا )",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1005,
+    "provider": "optimus",
+    "name": "تل موند ( قضاء نتانيا )",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1004,
+    "provider": "optimus",
+    "name": "نتسيونا ( قضاء تل ابيب )",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1003,
+    "provider": "optimus",
+    "name": "رامات هشارون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1002,
+    "provider": "optimus",
+    "name": "يهود ( قضاء تل ابيب )",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1001,
+    "provider": "optimus",
+    "name": "نوف هجليل",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 1000,
+    "provider": "optimus",
+    "name": "اور يهودا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 999,
+    "provider": "optimus",
+    "name": "بني براك",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 998,
+    "provider": "optimus",
+    "name": "الكفير",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 997,
+    "provider": "optimus",
+    "name": "بير يعقوب",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 996,
+    "provider": "optimus",
+    "name": "شورش",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 995,
+    "provider": "optimus",
+    "name": "بزجات زئيف",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 994,
+    "provider": "optimus",
+    "name": "هار حوما",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 993,
+    "provider": "optimus",
+    "name": "رحافيا",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 992,
+    "provider": "optimus",
+    "name": "جفعات شموئيل ( قضاء تل ابيب )",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 991,
+    "provider": "optimus",
+    "name": "يهود جمب ريشون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 990,
+    "provider": "optimus",
+    "name": "نيشر",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 989,
+    "provider": "optimus",
+    "name": "جفعات نيلي",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 988,
+    "provider": "optimus",
+    "name": "عين الاسد",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 987,
+    "provider": "optimus",
+    "name": "شوهم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 986,
+    "provider": "optimus",
+    "name": "مجدال هعيمك",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 985,
+    "provider": "optimus",
+    "name": "شارع 25",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 984,
+    "provider": "optimus",
+    "name": "شارع الكينج ديفد",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 983,
+    "provider": "optimus",
+    "name": "كريات عكرون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 982,
+    "provider": "optimus",
+    "name": "عتليت /حيفا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 981,
+    "provider": "optimus",
+    "name": "عين حوض",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 980,
+    "provider": "optimus",
+    "name": "بنيامينا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 979,
+    "provider": "optimus",
+    "name": "يوكنعام",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 978,
+    "provider": "optimus",
+    "name": "روش هعاين",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 977,
+    "provider": "optimus",
+    "name": "العصاعصه",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 976,
+    "provider": "optimus",
+    "name": "وادي دعوك",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 975,
+    "provider": "optimus",
+    "name": "شارع فيصل",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 974,
+    "provider": "optimus",
+    "name": "روش بينا",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 973,
+    "provider": "optimus",
+    "name": "اوفوكيم",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 972,
+    "provider": "optimus",
+    "name": "بات يام",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 971,
+    "provider": "optimus",
+    "name": "جان يفني",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 970,
+    "provider": "optimus",
+    "name": "يفني",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 969,
+    "provider": "optimus",
+    "name": "الضاحية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 968,
+    "provider": "optimus",
+    "name": "شارع سفيان",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 967,
+    "provider": "optimus",
+    "name": "جديرا جنوب",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 966,
+    "provider": "optimus",
+    "name": "كفر عقب",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 965,
+    "provider": "optimus",
+    "name": "زخرون يعقوب",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 964,
+    "provider": "optimus",
+    "name": "الدريجات الجنوب",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 963,
+    "provider": "optimus",
+    "name": "راس علي",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 962,
+    "provider": "optimus",
+    "name": "جبل الرحمة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 961,
+    "provider": "optimus",
+    "name": "الفحص",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 960,
+    "provider": "optimus",
+    "name": "دوار البطيخه",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 959,
+    "provider": "optimus",
+    "name": "حولون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 958,
+    "provider": "optimus",
+    "name": "المنطقة الصناعية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 957,
+    "provider": "optimus",
+    "name": "كريات حاييم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 956,
+    "provider": "optimus",
+    "name": "كرني شمرون",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 955,
+    "provider": "optimus",
+    "name": "كريات بياليك",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 954,
+    "provider": "optimus",
+    "name": "كريات يام",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 953,
+    "provider": "optimus",
+    "name": "الاكاديمية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 952,
+    "provider": "optimus",
+    "name": "التعاون العلوي",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 951,
+    "provider": "optimus",
+    "name": "كوازيبا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 950,
+    "provider": "optimus",
+    "name": "العديسة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 949,
+    "provider": "optimus",
+    "name": "البقعة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 948,
+    "provider": "optimus",
+    "name": "الجلاجل",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 947,
+    "provider": "optimus",
+    "name": "فلاميه",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 946,
+    "provider": "optimus",
+    "name": "السوق المركزي",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 945,
+    "provider": "optimus",
+    "name": "الدوار الروسي",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 944,
+    "provider": "optimus",
+    "name": "شارع القدس الخليل",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 943,
+    "provider": "optimus",
+    "name": "شارع الكرتاس",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 942,
+    "provider": "optimus",
+    "name": "القبة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 941,
+    "provider": "optimus",
+    "name": "مفرق الراضي",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 940,
+    "provider": "optimus",
+    "name": "شارع الصف",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 939,
+    "provider": "optimus",
+    "name": "شارع الجبل",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 938,
+    "provider": "optimus",
+    "name": "عش غراب",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 937,
+    "provider": "optimus",
+    "name": "كريسه",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 936,
+    "provider": "optimus",
+    "name": "حدب العلقة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 935,
+    "provider": "optimus",
+    "name": "خرسة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 934,
+    "provider": "optimus",
+    "name": "الدوار",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 933,
+    "provider": "optimus",
+    "name": "مجمع التاج",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 932,
+    "provider": "optimus",
+    "name": "شارع البريد",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 931,
+    "provider": "optimus",
+    "name": "حي البالوع",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 930,
+    "provider": "optimus",
+    "name": "شورش",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 929,
+    "provider": "optimus",
+    "name": "نتيفوت",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 928,
+    "provider": "optimus",
+    "name": "العامرية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 927,
+    "provider": "optimus",
+    "name": "جبل الطور",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 926,
+    "provider": "optimus",
+    "name": "جبل جرزيم",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 925,
+    "provider": "optimus",
+    "name": "بتاح تكفا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 924,
+    "provider": "optimus",
+    "name": "شارع فلسطين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 923,
+    "provider": "optimus",
+    "name": "شارع يافا",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 922,
+    "provider": "optimus",
+    "name": "الجبل الشمالي",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 921,
+    "provider": "optimus",
+    "name": "المنية",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 920,
+    "provider": "optimus",
+    "name": "عزبة الاشقر",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 919,
+    "provider": "optimus",
+    "name": "رحوفوت",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 918,
+    "provider": "optimus",
+    "name": "حريش",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 916,
+    "provider": "optimus",
+    "name": "شارع تونس",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 915,
+    "provider": "optimus",
+    "name": "كريات موتسكين",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 914,
+    "provider": "optimus",
+    "name": "كريات اتا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 913,
+    "provider": "optimus",
+    "name": "بيت فجان",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 912,
+    "provider": "optimus",
+    "name": "اشدود",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 911,
+    "provider": "optimus",
+    "name": "هود هشارون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 910,
+    "provider": "optimus",
+    "name": "موديعين",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 909,
+    "provider": "optimus",
+    "name": "باب حطة",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 908,
+    "provider": "optimus",
+    "name": "بيت اكسا",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 907,
+    "provider": "optimus",
+    "name": "بيت اجزا",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 906,
+    "provider": "optimus",
+    "name": "رامات شلومه",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 905,
+    "provider": "optimus",
+    "name": "كريات موشيه",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 904,
+    "provider": "optimus",
+    "name": "راس العين",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 903,
+    "provider": "optimus",
+    "name": "حتسور هجليل",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 902,
+    "provider": "optimus",
+    "name": "بيت هكيرم",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 901,
+    "provider": "optimus",
+    "name": "ضميدة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 900,
+    "provider": "optimus",
+    "name": "شارع الزهراء",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 899,
+    "provider": "optimus",
+    "name": "شارع صلاح الدين",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 898,
+    "provider": "optimus",
+    "name": "جبل الزيتون",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 897,
+    "provider": "optimus",
+    "name": "ارمون هنتسيف",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 896,
+    "provider": "optimus",
+    "name": "شعاري تصيدك",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 895,
+    "provider": "optimus",
+    "name": "عين كارم",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 894,
+    "provider": "optimus",
+    "name": "جان ساجر",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 893,
+    "provider": "optimus",
+    "name": "باب المغاربه",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 892,
+    "provider": "optimus",
+    "name": "المحطة المركزيه ( شارع يافا )",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 891,
+    "provider": "optimus",
+    "name": "لفتا",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 890,
+    "provider": "optimus",
+    "name": "ماميلا",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 889,
+    "provider": "optimus",
+    "name": "شارع الكينج جورج",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 888,
+    "provider": "optimus",
+    "name": "باب الخليل",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 887,
+    "provider": "optimus",
+    "name": "باب الجديد",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 886,
+    "provider": "optimus",
+    "name": "النبي يعقوب",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 885,
+    "provider": "optimus",
+    "name": "منشية الزبديه",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 884,
+    "provider": "optimus",
+    "name": "صوفين",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 883,
+    "provider": "optimus",
+    "name": "عكا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 882,
+    "provider": "optimus",
+    "name": "شارع القدس",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 881,
+    "provider": "optimus",
+    "name": "شارع عمان",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 880,
+    "provider": "optimus",
+    "name": "خلة العامود",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 879,
+    "provider": "optimus",
+    "name": "كريات يوفيل",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 878,
+    "provider": "optimus",
+    "name": "جيلو",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 877,
+    "provider": "optimus",
+    "name": "بزاريا",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 876,
+    "provider": "optimus",
+    "name": "شارع ابو غنام",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 875,
+    "provider": "optimus",
+    "name": "المنارة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 874,
+    "provider": "optimus",
+    "name": "عرب الرشايدة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 873,
+    "provider": "optimus",
+    "name": "بزاريا",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 872,
+    "provider": "optimus",
+    "name": "كفار افيف",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 871,
+    "provider": "optimus",
+    "name": "جفعات شاؤول",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 870,
+    "provider": "optimus",
+    "name": "التعامرة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 869,
+    "provider": "optimus",
+    "name": "دير ياسين",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 868,
+    "provider": "optimus",
+    "name": "مرج الغزال",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 867,
+    "provider": "optimus",
+    "name": "شارع عمان",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 866,
+    "provider": "optimus",
+    "name": "شارع القدس",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 865,
+    "provider": "optimus",
+    "name": "كريات ملاخي- الجنوب",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 864,
+    "provider": "optimus",
+    "name": "سديروت الجنوب",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 863,
+    "provider": "optimus",
+    "name": "كريات جات- الجنوب",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 862,
+    "provider": "optimus",
+    "name": "كفر سميع",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 861,
+    "provider": "optimus",
+    "name": "بير هداج",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 860,
+    "provider": "optimus",
+    "name": "عراد",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 859,
+    "provider": "optimus",
+    "name": "نيتيفوت",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 858,
+    "provider": "optimus",
+    "name": "مفاسيريت تسيون",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 857,
+    "provider": "optimus",
+    "name": "بيت نقوبا",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 856,
+    "provider": "optimus",
+    "name": "ريشون لتسيون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 855,
+    "provider": "optimus",
+    "name": "رامات جان",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 854,
+    "provider": "optimus",
+    "name": "هرتسيليا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 853,
+    "provider": "optimus",
+    "name": "عين ابراهيم- ام الفحم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 852,
+    "provider": "optimus",
+    "name": "ميسر",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 851,
+    "provider": "optimus",
+    "name": "عسفيا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 850,
+    "provider": "optimus",
+    "name": "كفر سميع",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 849,
+    "provider": "optimus",
+    "name": "عرب الشبلي",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 848,
+    "provider": "optimus",
+    "name": "عرب الدحي",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 847,
+    "provider": "optimus",
+    "name": "قرية  مخماس",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 846,
+    "provider": "optimus",
+    "name": "المالحة",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 845,
+    "provider": "optimus",
+    "name": "التله الفرنسيه",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 844,
+    "provider": "optimus",
+    "name": "صير",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 843,
+    "provider": "optimus",
+    "name": "قيساريه",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 842,
+    "provider": "optimus",
+    "name": "كريات شمونه",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 841,
+    "provider": "optimus",
+    "name": "اشكلون",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 840,
+    "provider": "optimus",
+    "name": "ترقوميا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 839,
+    "provider": "optimus",
+    "name": "دريجات",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 838,
+    "provider": "optimus",
+    "name": "ضاحية الزيتون",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 837,
+    "provider": "optimus",
+    "name": "الريحانيه",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 836,
+    "provider": "optimus",
+    "name": "طيبة الزعبية",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 835,
+    "provider": "optimus",
+    "name": "عراق التايه",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 834,
+    "provider": "optimus",
+    "name": "مخيم الفوار",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 833,
+    "provider": "optimus",
+    "name": "عكبره",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 832,
+    "provider": "optimus",
+    "name": "عرب العرامشة",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 831,
+    "provider": "optimus",
+    "name": "كسرى",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 830,
+    "provider": "optimus",
+    "name": "مسعده",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 829,
+    "provider": "optimus",
+    "name": "عين قنيه",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 828,
+    "provider": "optimus",
+    "name": "بزاريا",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 827,
+    "provider": "optimus",
+    "name": "قرية الطيرة / بيت عور",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 826,
+    "provider": "optimus",
+    "name": "الحرايق",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 825,
+    "provider": "optimus",
+    "name": "جبل هرتزل",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 824,
+    "provider": "optimus",
+    "name": "رعنانا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 823,
+    "provider": "optimus",
+    "name": "معاوية",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 822,
+    "provider": "optimus",
+    "name": "بئر المحجر",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 821,
+    "provider": "optimus",
+    "name": "كرمئيل",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 820,
+    "provider": "optimus",
+    "name": "رموت",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 819,
+    "provider": "optimus",
+    "name": "الجلدة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 818,
+    "provider": "optimus",
+    "name": "القطمون",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 817,
+    "provider": "optimus",
+    "name": "القطمون",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 816,
+    "provider": "optimus",
+    "name": "العساكرة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 815,
+    "provider": "optimus",
+    "name": "واد قدوم",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 814,
+    "provider": "optimus",
+    "name": "الخان الاحمر",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 813,
+    "provider": "optimus",
+    "name": "ام بطين النقب",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 812,
+    "provider": "optimus",
+    "name": "بيت حنينا البلد",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 811,
+    "provider": "optimus",
+    "name": "رمانة البطوف",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 810,
+    "provider": "optimus",
+    "name": "شارع kfc",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 809,
+    "provider": "optimus",
+    "name": "ام الدالية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 808,
+    "provider": "optimus",
+    "name": "شارع الشلالة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 807,
+    "provider": "optimus",
+    "name": "مخيم جنين",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 806,
+    "provider": "optimus",
+    "name": "ابو رمان",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 805,
+    "provider": "optimus",
+    "name": "جنين البلد",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 804,
+    "provider": "optimus",
+    "name": "باقة الحطب",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 803,
+    "provider": "optimus",
+    "name": "دير بحه",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 802,
+    "provider": "optimus",
+    "name": "خلة مناع",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 801,
+    "provider": "optimus",
+    "name": "سميراميس",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 800,
+    "provider": "optimus",
+    "name": "حارة الشيخ",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 799,
+    "provider": "optimus",
+    "name": "المنشية",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 798,
+    "provider": "optimus",
+    "name": "بطن الهوى",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 797,
+    "provider": "optimus",
+    "name": "مخيم الامعري",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 796,
+    "provider": "optimus",
+    "name": "خلة الدار",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 795,
+    "provider": "optimus",
+    "name": "طلوع الغبز",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 794,
+    "provider": "optimus",
+    "name": "الجش",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 793,
+    "provider": "optimus",
+    "name": "صفد",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 792,
+    "provider": "optimus",
+    "name": "مشيرفه",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 791,
+    "provider": "optimus",
+    "name": "بيسان",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 790,
+    "provider": "optimus",
+    "name": "عين رافا",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 789,
+    "provider": "optimus",
+    "name": "المصرارة",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 788,
+    "provider": "optimus",
+    "name": "النصارية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 787,
+    "provider": "optimus",
+    "name": "دوار الصحة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 786,
+    "provider": "optimus",
+    "name": "0",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 785,
+    "provider": "optimus",
+    "name": "الفارعة",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 784,
+    "provider": "optimus",
+    "name": "الناصرة _ حي الصفافره",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 783,
+    "provider": "optimus",
+    "name": "ام القطف",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 782,
+    "provider": "optimus",
+    "name": "شارع الحسبه",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 781,
+    "provider": "optimus",
+    "name": "خلة الصوحه",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 780,
+    "provider": "optimus",
+    "name": "شارع النهضه",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 779,
+    "provider": "optimus",
+    "name": "عيصى",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 778,
+    "provider": "optimus",
+    "name": "الجفتلك",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 777,
+    "provider": "optimus",
+    "name": "عزبة سلمان",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 776,
+    "provider": "optimus",
+    "name": "تل بيوت",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 775,
+    "provider": "optimus",
+    "name": "الجامع الكبير",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 774,
+    "provider": "optimus",
+    "name": "مشفى الرازي",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 773,
+    "provider": "optimus",
+    "name": "شارع مشفى الامل والحكومي",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 772,
+    "provider": "optimus",
+    "name": "شارع المدارس",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 771,
+    "provider": "optimus",
+    "name": "العطاره",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 770,
+    "provider": "optimus",
+    "name": "النمر مول",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 769,
+    "provider": "optimus",
+    "name": "دالية الكرمل",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 768,
+    "provider": "optimus",
+    "name": "المخفية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 767,
+    "provider": "optimus",
+    "name": "بردس حنا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 766,
+    "provider": "optimus",
+    "name": "خروبة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 765,
+    "provider": "optimus",
+    "name": "دوار البطيخة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 764,
+    "provider": "optimus",
+    "name": "الحسينية",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 763,
+    "provider": "optimus",
+    "name": "كفر سابا",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 762,
+    "provider": "optimus",
+    "name": "دوار الجلبوني",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 761,
+    "provider": "optimus",
+    "name": "دوار يحيى عياش",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 760,
+    "provider": "optimus",
+    "name": "الدوارالرئيسي",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 759,
+    "provider": "optimus",
+    "name": "جبل ابو ظهير",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 758,
+    "provider": "optimus",
+    "name": "المنطقه الصناعيه",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 757,
+    "provider": "optimus",
+    "name": "حي الزهراء",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 756,
+    "provider": "optimus",
+    "name": "دوار الداخليه",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 755,
+    "provider": "optimus",
+    "name": "شارع ابو بكر",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 754,
+    "provider": "optimus",
+    "name": "دوار السينما/شارع البريد",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 753,
+    "provider": "optimus",
+    "name": "جبل جوهر",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 752,
+    "provider": "optimus",
+    "name": "ابو نجيم",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 751,
+    "provider": "optimus",
+    "name": "العزير",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 750,
+    "provider": "optimus",
+    "name": "اللبن الغربي",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 749,
+    "provider": "optimus",
+    "name": "ضاحية الزيتون",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 748,
+    "provider": "optimus",
+    "name": "ضاحية الجنان",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 747,
+    "provider": "optimus",
+    "name": "كفار سابا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 746,
+    "provider": "optimus",
+    "name": "الشواورة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 745,
+    "provider": "optimus",
+    "name": "ام طوبا",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 744,
+    "provider": "optimus",
+    "name": "صندلة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 743,
+    "provider": "optimus",
+    "name": "دويربان",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 742,
+    "provider": "optimus",
+    "name": "واد برقين~الهدف",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 741,
+    "provider": "optimus",
+    "name": "حي البساتين~العسكري",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 740,
+    "provider": "optimus",
+    "name": "عطروت",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 739,
+    "provider": "optimus",
+    "name": "واد الحمام",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 738,
+    "provider": "optimus",
+    "name": "عرب الهيب - الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 737,
+    "provider": "optimus",
+    "name": "بسمة طبعون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 736,
+    "provider": "optimus",
+    "name": "عزيز",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 735,
+    "provider": "optimus",
+    "name": "بير السكة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 734,
+    "provider": "optimus",
+    "name": "عين رافا",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 733,
+    "provider": "optimus",
+    "name": "عين نقوبا",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 732,
+    "provider": "optimus",
+    "name": "ابو غوش",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 731,
+    "provider": "optimus",
+    "name": "لوزة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 730,
+    "provider": "optimus",
+    "name": "الحارة التحتا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 729,
+    "provider": "optimus",
+    "name": "فرش الهوى",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 728,
+    "provider": "optimus",
+    "name": "الديوك التحتا",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 727,
+    "provider": "optimus",
+    "name": "الكمينة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 726,
+    "provider": "optimus",
+    "name": "طيرة المثلث",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 725,
+    "provider": "optimus",
+    "name": "جفعات زئيف",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 724,
+    "provider": "optimus",
+    "name": "بسجات زئيف",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 723,
+    "provider": "optimus",
+    "name": "طنطور",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 722,
+    "provider": "optimus",
+    "name": "واد الحمص",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 721,
+    "provider": "optimus",
+    "name": "بيت شيمش",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 720,
+    "provider": "optimus",
+    "name": "ام ليسون",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 719,
+    "provider": "optimus",
+    "name": "عطروت",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 718,
+    "provider": "optimus",
+    "name": "زيمر",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 717,
+    "provider": "optimus",
+    "name": "زلفة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 716,
+    "provider": "optimus",
+    "name": "ابطن - حيفا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 715,
+    "provider": "optimus",
+    "name": "البعنة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 714,
+    "provider": "optimus",
+    "name": "البقيعة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 713,
+    "provider": "optimus",
+    "name": "طبعون - قضاء حيفا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 712,
+    "provider": "optimus",
+    "name": "جلدة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 711,
+    "provider": "optimus",
+    "name": "باب الخليل",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 710,
+    "provider": "optimus",
+    "name": "الحاووز الاول",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 709,
+    "provider": "optimus",
+    "name": "ضاحية الريحان",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 708,
+    "provider": "optimus",
+    "name": "ابو تلول - بئرالسبع",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 707,
+    "provider": "optimus",
+    "name": "النقب",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 706,
+    "provider": "optimus",
+    "name": "مصمص - أم الفحم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 705,
+    "provider": "optimus",
+    "name": "المزرعة - قضاء عكا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 704,
+    "provider": "optimus",
+    "name": "ديمونا",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 703,
+    "provider": "optimus",
+    "name": "عسقلان",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 702,
+    "provider": "optimus",
+    "name": "اللقية",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 701,
+    "provider": "optimus",
+    "name": "الجابريات",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 700,
+    "provider": "optimus",
+    "name": "مثلث الشهدا",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 699,
+    "provider": "optimus",
+    "name": "جبل الشريف",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 698,
+    "provider": "optimus",
+    "name": "المزرعة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 697,
+    "provider": "optimus",
+    "name": "حي المراح",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 696,
+    "provider": "optimus",
+    "name": "بيت حنينا التحتا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 695,
+    "provider": "optimus",
+    "name": "بزاريا",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 694,
+    "provider": "optimus",
+    "name": "عزبة الطبيب",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 693,
+    "provider": "optimus",
+    "name": "المعاجين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 692,
+    "provider": "optimus",
+    "name": "جت المثلث",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 691,
+    "provider": "optimus",
+    "name": "المنطقة الجنوبية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 690,
+    "provider": "optimus",
+    "name": "ترشيحا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 689,
+    "provider": "optimus",
+    "name": "كفر مصر",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 688,
+    "provider": "optimus",
+    "name": "قرية نين",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 687,
+    "provider": "optimus",
+    "name": "الحجاجرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 686,
+    "provider": "optimus",
+    "name": "الكعيبة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 685,
+    "provider": "optimus",
+    "name": "قرية المشهد",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 684,
+    "provider": "optimus",
+    "name": "ام الغنم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 683,
+    "provider": "optimus",
+    "name": "شقيب السلام",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 682,
+    "provider": "optimus",
+    "name": "الغجر",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 681,
+    "provider": "optimus",
+    "name": "الرامة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 680,
+    "provider": "optimus",
+    "name": "رامات غان",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 679,
+    "provider": "optimus",
+    "name": "بعينة نجيدات",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 678,
+    "provider": "optimus",
+    "name": "الجولان",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 677,
+    "provider": "optimus",
+    "name": "الحاووز الثاني",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 676,
+    "provider": "optimus",
+    "name": "المقيبلة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 675,
+    "provider": "optimus",
+    "name": "البقيعة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 674,
+    "provider": "optimus",
+    "name": "الالمانية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 673,
+    "provider": "optimus",
+    "name": "شارع نابلس",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 672,
+    "provider": "optimus",
+    "name": "شارع حيفا",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 671,
+    "provider": "optimus",
+    "name": "ظهر العبد",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 670,
+    "provider": "optimus",
+    "name": "الهاشمية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 669,
+    "provider": "optimus",
+    "name": "بصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 668,
+    "provider": "optimus",
+    "name": "ارتاح",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 667,
+    "provider": "optimus",
+    "name": "كفر رمان",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 666,
+    "provider": "optimus",
+    "name": "عزبة ناصر/الطياح",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 665,
+    "provider": "optimus",
+    "name": "عزبة الجرد",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 664,
+    "provider": "optimus",
+    "name": "ذنابة",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 663,
+    "provider": "optimus",
+    "name": "بير السكة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 662,
+    "provider": "optimus",
+    "name": "بورين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 661,
+    "provider": "optimus",
+    "name": "زبده",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 660,
+    "provider": "optimus",
+    "name": "شارع 22",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 659,
+    "provider": "optimus",
+    "name": "حجة",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 658,
+    "provider": "optimus",
+    "name": "طمرة الجليل",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 657,
+    "provider": "optimus",
+    "name": "كابول",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 656,
+    "provider": "optimus",
+    "name": "عرعرة المثلث",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 655,
+    "provider": "optimus",
+    "name": "عارة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 654,
+    "provider": "optimus",
+    "name": "الناعورة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 653,
+    "provider": "optimus",
+    "name": "شارع 17",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 652,
+    "provider": "optimus",
+    "name": "شارع طولكرم",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 651,
+    "provider": "optimus",
+    "name": "شارع حيفا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 650,
+    "provider": "optimus",
+    "name": "شارع يافا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 649,
+    "provider": "optimus",
+    "name": "شارع عمان",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 648,
+    "provider": "optimus",
+    "name": "زلفة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 647,
+    "provider": "optimus",
+    "name": "باقة الغربية",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 646,
+    "provider": "optimus",
+    "name": "باقة جت",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 645,
+    "provider": "optimus",
+    "name": "الجامعة الامريكية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 644,
+    "provider": "optimus",
+    "name": "عرانه",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 643,
+    "provider": "optimus",
+    "name": "برطعة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 642,
+    "provider": "optimus",
+    "name": "الطيبة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 641,
+    "provider": "optimus",
+    "name": "جيت",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 640,
+    "provider": "optimus",
+    "name": "الجيب",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 639,
+    "provider": "optimus",
+    "name": "بئر السبع",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 638,
+    "provider": "optimus",
+    "name": "ابن رشد",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 637,
+    "provider": "optimus",
+    "name": "السواحرة الغربية",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 636,
+    "provider": "optimus",
+    "name": "شويكة",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 635,
+    "provider": "optimus",
+    "name": "مخيم فحمه",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 634,
+    "provider": "optimus",
+    "name": "العفولة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 633,
+    "provider": "optimus",
+    "name": "سلفيت المدينة",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 632,
+    "provider": "optimus",
+    "name": "الخليل المدينة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 631,
+    "provider": "optimus",
+    "name": "راس الجورة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 630,
+    "provider": "optimus",
+    "name": "مخيم العين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 629,
+    "provider": "optimus",
+    "name": "باب الزاوية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 628,
+    "provider": "optimus",
+    "name": "دوار المنارة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 627,
+    "provider": "optimus",
+    "name": "السهلة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 626,
+    "provider": "optimus",
+    "name": "خاراس",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 625,
+    "provider": "optimus",
+    "name": "واد النيص",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 624,
+    "provider": "optimus",
+    "name": "البصة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 623,
+    "provider": "optimus",
+    "name": "الزعيم",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 622,
+    "provider": "optimus",
+    "name": "صوانة",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 621,
+    "provider": "optimus",
+    "name": "شارع ركب",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 620,
+    "provider": "optimus",
+    "name": "شارع السلام /كازية السلام",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 619,
+    "provider": "optimus",
+    "name": "كتف الواد",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 618,
+    "provider": "optimus",
+    "name": "راس العين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 617,
+    "provider": "optimus",
+    "name": "المساكن الشعبية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 616,
+    "provider": "optimus",
+    "name": "اسدود",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 615,
+    "provider": "optimus",
+    "name": "نتانيا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 614,
+    "provider": "optimus",
+    "name": "الخضيرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 613,
+    "provider": "optimus",
+    "name": "نهاريا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 612,
+    "provider": "optimus",
+    "name": "طبريا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 611,
+    "provider": "optimus",
+    "name": "جولس",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 610,
+    "provider": "optimus",
+    "name": "شفا عمرو",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 609,
+    "provider": "optimus",
+    "name": "طمرة الزعبية",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 608,
+    "provider": "optimus",
+    "name": "عين نقوبة",
+    "providerCityId": 26
+  },
+  {
+    "providerAreaId": 607,
+    "provider": "optimus",
+    "name": "واد سلامة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 606,
+    "provider": "optimus",
+    "name": "شيخ دنون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 605,
+    "provider": "optimus",
+    "name": "سولم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 604,
+    "provider": "optimus",
+    "name": "كفر برا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 603,
+    "provider": "optimus",
+    "name": "الجش",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 602,
+    "provider": "optimus",
+    "name": "معليا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 601,
+    "provider": "optimus",
+    "name": "كفر كما",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 600,
+    "provider": "optimus",
+    "name": "كوكب ابو الهيجاء",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 599,
+    "provider": "optimus",
+    "name": "فسوطة",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 598,
+    "provider": "optimus",
+    "name": "ساجور",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 597,
+    "provider": "optimus",
+    "name": "حرفيش",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 596,
+    "provider": "optimus",
+    "name": "عيلبون",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 595,
+    "provider": "optimus",
+    "name": "البقيعة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 594,
+    "provider": "optimus",
+    "name": "يانوح جت",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 593,
+    "provider": "optimus",
+    "name": "طوبا الزنغيرا",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 592,
+    "provider": "optimus",
+    "name": "بقعاثا",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 590,
+    "provider": "optimus",
+    "name": "شعب",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 589,
+    "provider": "optimus",
+    "name": "زرازير",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 588,
+    "provider": "optimus",
+    "name": "عيلوط",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 587,
+    "provider": "optimus",
+    "name": "بئر المكسور",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 586,
+    "provider": "optimus",
+    "name": "الرملة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 585,
+    "provider": "optimus",
+    "name": "جلجوليا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 584,
+    "provider": "optimus",
+    "name": "كفر ياسيف",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 583,
+    "provider": "optimus",
+    "name": "دبورية",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 582,
+    "provider": "optimus",
+    "name": "دير حنا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 581,
+    "provider": "optimus",
+    "name": "مجدل شمس",
+    "providerCityId": 25
+  },
+  {
+    "providerAreaId": 580,
+    "provider": "optimus",
+    "name": "بيت جن",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 579,
+    "provider": "optimus",
+    "name": "الفريديس",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 578,
+    "provider": "optimus",
+    "name": "حورة",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 577,
+    "provider": "optimus",
+    "name": "نحف",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 576,
+    "provider": "optimus",
+    "name": "كسيفة",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 575,
+    "provider": "optimus",
+    "name": "عين ماهل",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 574,
+    "provider": "optimus",
+    "name": "اعبلين",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 573,
+    "provider": "optimus",
+    "name": "طرعان",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 572,
+    "provider": "optimus",
+    "name": "ابو سنان",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 571,
+    "provider": "optimus",
+    "name": "جسر الزرقاء",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 570,
+    "provider": "optimus",
+    "name": "اكسال",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 569,
+    "provider": "optimus",
+    "name": "عرعرة النقب",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 568,
+    "provider": "optimus",
+    "name": "تل السبع",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 567,
+    "provider": "optimus",
+    "name": "كفر قرع",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 566,
+    "provider": "optimus",
+    "name": "يركا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 565,
+    "provider": "optimus",
+    "name": "عرعرة المثلث",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 564,
+    "provider": "optimus",
+    "name": "الرينة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 563,
+    "provider": "optimus",
+    "name": "مجد الكروم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 562,
+    "provider": "optimus",
+    "name": "يافة - الناصرة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 561,
+    "provider": "optimus",
+    "name": "جديدة المكر",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 560,
+    "provider": "optimus",
+    "name": "كفر قاسم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 559,
+    "provider": "optimus",
+    "name": "كفر كنا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 558,
+    "provider": "optimus",
+    "name": "كفر مندا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 557,
+    "provider": "optimus",
+    "name": "المغار",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 556,
+    "provider": "optimus",
+    "name": "عرابة البطوف",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 555,
+    "provider": "optimus",
+    "name": "الطيرة - طيرة المثلث",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 554,
+    "provider": "optimus",
+    "name": "قلنسوة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 553,
+    "provider": "optimus",
+    "name": "الكرمل",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 552,
+    "provider": "optimus",
+    "name": "سخنين",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 551,
+    "provider": "optimus",
+    "name": "باقة جت",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 550,
+    "provider": "optimus",
+    "name": "طمرة الجليل",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 549,
+    "provider": "optimus",
+    "name": "الطيبة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 548,
+    "provider": "optimus",
+    "name": "رهط",
+    "providerCityId": 28
+  },
+  {
+    "providerAreaId": 547,
+    "provider": "optimus",
+    "name": "الناصرة العليا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 546,
+    "provider": "optimus",
+    "name": "ام الفحم",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 545,
+    "provider": "optimus",
+    "name": "عكا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 544,
+    "provider": "optimus",
+    "name": "الرملة",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 543,
+    "provider": "optimus",
+    "name": "الناصرة- حدد الحي",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 542,
+    "provider": "optimus",
+    "name": "اللد",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 541,
+    "provider": "optimus",
+    "name": "حيفا",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 540,
+    "provider": "optimus",
+    "name": "تل ابيب",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 539,
+    "provider": "optimus",
+    "name": "دير الاسد",
+    "providerCityId": 13
+  },
+  {
+    "providerAreaId": 538,
+    "provider": "optimus",
+    "name": "راس العامود",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 537,
+    "provider": "optimus",
+    "name": "الحردوب",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 536,
+    "provider": "optimus",
+    "name": "شارع المهد",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 535,
+    "provider": "optimus",
+    "name": "رام الله التحتا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 534,
+    "provider": "optimus",
+    "name": "الهلا الحمر",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 533,
+    "provider": "optimus",
+    "name": "الحارة الشرقية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 532,
+    "provider": "optimus",
+    "name": "الشيخ سعد",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 531,
+    "provider": "optimus",
+    "name": "شارع الناصرة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 530,
+    "provider": "optimus",
+    "name": "شارع النفق",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 529,
+    "provider": "optimus",
+    "name": "الشيخ جراح",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 528,
+    "provider": "optimus",
+    "name": "2",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 526,
+    "provider": "optimus",
+    "name": "ابو كتيلا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 525,
+    "provider": "optimus",
+    "name": "سلفيت البلد",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 524,
+    "provider": "optimus",
+    "name": "معبر 300",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 523,
+    "provider": "optimus",
+    "name": "الحرم القديم",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 522,
+    "provider": "optimus",
+    "name": "جامعة النجاح",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 521,
+    "provider": "optimus",
+    "name": "رفيديا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 519,
+    "provider": "optimus",
+    "name": "مستشفى الحسين",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 518,
+    "provider": "optimus",
+    "name": "مخيم بلاطة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 517,
+    "provider": "optimus",
+    "name": "مراح المعلا",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 516,
+    "provider": "optimus",
+    "name": "الخاص",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 515,
+    "provider": "optimus",
+    "name": "دار صلاح",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 514,
+    "provider": "optimus",
+    "name": "عقبة حنا",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 513,
+    "provider": "optimus",
+    "name": "باب الساهرة",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 512,
+    "provider": "optimus",
+    "name": "ضاحية العليا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 511,
+    "provider": "optimus",
+    "name": "راس خميس",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 509,
+    "provider": "optimus",
+    "name": "المدبسة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 508,
+    "provider": "optimus",
+    "name": "مخيم العزة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 507,
+    "provider": "optimus",
+    "name": "دوار السينما",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 506,
+    "provider": "optimus",
+    "name": "واد شاهين",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 505,
+    "provider": "optimus",
+    "name": "الدوحة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 504,
+    "provider": "optimus",
+    "name": "حجيلة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 503,
+    "provider": "optimus",
+    "name": "جورة الشمعة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 502,
+    "provider": "optimus",
+    "name": "رفيديا",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 501,
+    "provider": "optimus",
+    "name": "جبل هندازة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 500,
+    "provider": "optimus",
+    "name": "بيت لحم وسط البلد",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 499,
+    "provider": "optimus",
+    "name": "دوار ارارات",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 498,
+    "provider": "optimus",
+    "name": "الولجة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 497,
+    "provider": "optimus",
+    "name": "مخيم عايدة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 496,
+    "provider": "optimus",
+    "name": "شارع الكركفة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 495,
+    "provider": "optimus",
+    "name": "ساحة المهد",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 494,
+    "provider": "optimus",
+    "name": "باب زقاق",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 493,
+    "provider": "optimus",
+    "name": "الدهيشة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 492,
+    "provider": "optimus",
+    "name": "ابو ديس",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 491,
+    "provider": "optimus",
+    "name": "العبيدية",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 490,
+    "provider": "optimus",
+    "name": "راس العامود",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 489,
+    "provider": "optimus",
+    "name": "العيسوية",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 488,
+    "provider": "optimus",
+    "name": "سلوان",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 487,
+    "provider": "optimus",
+    "name": "واد الجوز",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 486,
+    "provider": "optimus",
+    "name": "شعفاط",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 485,
+    "provider": "optimus",
+    "name": "بيت حنينا",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 484,
+    "provider": "optimus",
+    "name": "شرفات",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 483,
+    "provider": "optimus",
+    "name": "بيت صفافا",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 482,
+    "provider": "optimus",
+    "name": "ام لسون",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 481,
+    "provider": "optimus",
+    "name": "جبل المكبر",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 480,
+    "provider": "optimus",
+    "name": "صور باهر",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 479,
+    "provider": "optimus",
+    "name": "الطور",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 478,
+    "provider": "optimus",
+    "name": "الثوري",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 477,
+    "provider": "optimus",
+    "name": "سلوان",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 476,
+    "provider": "optimus",
+    "name": "باب العامود",
+    "providerCityId": 11
+  },
+  {
+    "providerAreaId": 475,
+    "provider": "optimus",
+    "name": "السواحر الشرقية",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 474,
+    "provider": "optimus",
+    "name": "الجهالين",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 473,
+    "provider": "optimus",
+    "name": "ابوديس",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 472,
+    "provider": "optimus",
+    "name": "العيزرية",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 471,
+    "provider": "optimus",
+    "name": "العلقتين",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 470,
+    "provider": "optimus",
+    "name": "فقيقيس",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 469,
+    "provider": "optimus",
+    "name": "قرن الثور",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 468,
+    "provider": "optimus",
+    "name": "المقاطعة/الخليل",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 467,
+    "provider": "optimus",
+    "name": "الحرس",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 466,
+    "provider": "optimus",
+    "name": "كنار",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 465,
+    "provider": "optimus",
+    "name": "سنجر",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 464,
+    "provider": "optimus",
+    "name": "دوار التحرير",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 463,
+    "provider": "optimus",
+    "name": "واد الجوز",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 462,
+    "provider": "optimus",
+    "name": "الهجرة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 461,
+    "provider": "optimus",
+    "name": "طرامة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 460,
+    "provider": "optimus",
+    "name": "المراجم",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 459,
+    "provider": "optimus",
+    "name": "الطبقة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 458,
+    "provider": "optimus",
+    "name": "شيوخ العروب",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 457,
+    "provider": "optimus",
+    "name": "جالا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 456,
+    "provider": "optimus",
+    "name": "بيت امر",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 455,
+    "provider": "optimus",
+    "name": "مخيم العروب",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 454,
+    "provider": "optimus",
+    "name": "صوريف",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 453,
+    "provider": "optimus",
+    "name": "بيت ساحور",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 452,
+    "provider": "optimus",
+    "name": "بيت جالا",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 451,
+    "provider": "optimus",
+    "name": "بتير",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 450,
+    "provider": "optimus",
+    "name": "واد فوكين",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 449,
+    "provider": "optimus",
+    "name": "حوسان",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 448,
+    "provider": "optimus",
+    "name": "الخضر",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 447,
+    "provider": "optimus",
+    "name": "المينيا",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 446,
+    "provider": "optimus",
+    "name": "كيسان",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 445,
+    "provider": "optimus",
+    "name": "بيت فجار",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 444,
+    "provider": "optimus",
+    "name": "خربة تقوع",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 443,
+    "provider": "optimus",
+    "name": "واد محيميد",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 442,
+    "provider": "optimus",
+    "name": "مراح رباح",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 441,
+    "provider": "optimus",
+    "name": "تقوع",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 440,
+    "provider": "optimus",
+    "name": "ام سلمونة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 439,
+    "provider": "optimus",
+    "name": "خلة عفانا",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 438,
+    "provider": "optimus",
+    "name": "خربة الدير",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 437,
+    "provider": "optimus",
+    "name": "المعصرة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 436,
+    "provider": "optimus",
+    "name": "خلة سكاريا",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 435,
+    "provider": "optimus",
+    "name": "واد رحال",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 434,
+    "provider": "optimus",
+    "name": "خلة البلوطة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 433,
+    "provider": "optimus",
+    "name": "جناتا(بد فلوح)",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 432,
+    "provider": "optimus",
+    "name": "الفريديس",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 431,
+    "provider": "optimus",
+    "name": "زعترة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 430,
+    "provider": "optimus",
+    "name": "الجبعة",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 429,
+    "provider": "optimus",
+    "name": "بيت تعمر",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 428,
+    "provider": "optimus",
+    "name": "نحالين",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 427,
+    "provider": "optimus",
+    "name": "ارطاس",
+    "providerCityId": 4
+  },
+  {
+    "providerAreaId": 426,
+    "provider": "optimus",
+    "name": "البلدة القديمة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 425,
+    "provider": "optimus",
+    "name": "رأس الجورة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 424,
+    "provider": "optimus",
+    "name": "ضاحية اسكان البلدية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 423,
+    "provider": "optimus",
+    "name": "عين بني سليم",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 422,
+    "provider": "optimus",
+    "name": "الشعابة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 421,
+    "provider": "optimus",
+    "name": "مفرق الجامعة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 420,
+    "provider": "optimus",
+    "name": "واد الهرية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 419,
+    "provider": "optimus",
+    "name": "بئر حرم الرامة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 418,
+    "provider": "optimus",
+    "name": "الصبة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 417,
+    "provider": "optimus",
+    "name": "المسكوبية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 416,
+    "provider": "optimus",
+    "name": "نمرة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 415,
+    "provider": "optimus",
+    "name": "قيزون",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 414,
+    "provider": "optimus",
+    "name": "واد التفاح",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 413,
+    "provider": "optimus",
+    "name": "عين سارة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 412,
+    "provider": "optimus",
+    "name": "الرماضين",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 411,
+    "provider": "optimus",
+    "name": "السموع",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 410,
+    "provider": "optimus",
+    "name": "شعب البطم",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 409,
+    "provider": "optimus",
+    "name": "قواويس",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 408,
+    "provider": "optimus",
+    "name": "خربة صفي",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 407,
+    "provider": "optimus",
+    "name": "عناب الكبير",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 406,
+    "provider": "optimus",
+    "name": "التواني",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 405,
+    "provider": "optimus",
+    "name": "اقطيط",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 404,
+    "provider": "optimus",
+    "name": "الظاهرية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 403,
+    "provider": "optimus",
+    "name": "الركيز",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 402,
+    "provider": "optimus",
+    "name": "سوسيا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 401,
+    "provider": "optimus",
+    "name": "الكرمل",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 400,
+    "provider": "optimus",
+    "name": "سدة الثعلبة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 399,
+    "provider": "optimus",
+    "name": "ام الخير",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 398,
+    "provider": "optimus",
+    "name": "البرج",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 397,
+    "provider": "optimus",
+    "name": "البرج",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 396,
+    "provider": "optimus",
+    "name": "رابود",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 395,
+    "provider": "optimus",
+    "name": "خشم الكرم",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 394,
+    "provider": "optimus",
+    "name": "خشم الدرج",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 393,
+    "provider": "optimus",
+    "name": "الرفاعية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 392,
+    "provider": "optimus",
+    "name": "يطا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 391,
+    "provider": "optimus",
+    "name": "خلة المية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 390,
+    "provider": "optimus",
+    "name": "الكعابنة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 389,
+    "provider": "optimus",
+    "name": "كرمة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 388,
+    "provider": "optimus",
+    "name": "بيت عمرة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 387,
+    "provider": "optimus",
+    "name": "البويب",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 386,
+    "provider": "optimus",
+    "name": "اسكيك",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 385,
+    "provider": "optimus",
+    "name": "مريش",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 384,
+    "provider": "optimus",
+    "name": "الريحية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 383,
+    "provider": "optimus",
+    "name": "دير رازح",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 382,
+    "provider": "optimus",
+    "name": "الصرة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 381,
+    "provider": "optimus",
+    "name": "واد الشاجنة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 380,
+    "provider": "optimus",
+    "name": "بيت مرسم",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 379,
+    "provider": "optimus",
+    "name": "بيت الروش الفوقا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 378,
+    "provider": "optimus",
+    "name": "بيت الروش التحتا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 377,
+    "provider": "optimus",
+    "name": "دير العسل الفوقا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 376,
+    "provider": "optimus",
+    "name": "دير العسل التحتا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 375,
+    "provider": "optimus",
+    "name": "حدب الفوار",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 374,
+    "provider": "optimus",
+    "name": "خرسة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 373,
+    "provider": "optimus",
+    "name": "المجد",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 372,
+    "provider": "optimus",
+    "name": "الفوار",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 371,
+    "provider": "optimus",
+    "name": "طراما",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 370,
+    "provider": "optimus",
+    "name": "كرزة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 369,
+    "provider": "optimus",
+    "name": "طواس",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 368,
+    "provider": "optimus",
+    "name": "بيرين",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 367,
+    "provider": "optimus",
+    "name": "سكة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 366,
+    "provider": "optimus",
+    "name": "زيف",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 365,
+    "provider": "optimus",
+    "name": "قلقس",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 364,
+    "provider": "optimus",
+    "name": "البويرة (البقعة)",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 363,
+    "provider": "optimus",
+    "name": "البورية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 362,
+    "provider": "optimus",
+    "name": "قلاع زيتا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 361,
+    "provider": "optimus",
+    "name": "دورا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 360,
+    "provider": "optimus",
+    "name": "بني نعيم",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 359,
+    "provider": "optimus",
+    "name": "بيت عوا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 358,
+    "provider": "optimus",
+    "name": "عرقان عوض",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 357,
+    "provider": "optimus",
+    "name": "ديرسامت",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 356,
+    "provider": "optimus",
+    "name": "الكوم",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 355,
+    "provider": "optimus",
+    "name": "طاروسة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 354,
+    "provider": "optimus",
+    "name": "المورق",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 353,
+    "provider": "optimus",
+    "name": "حمصة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 352,
+    "provider": "optimus",
+    "name": "الخليل المدينة",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 351,
+    "provider": "optimus",
+    "name": "تفوح",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 350,
+    "provider": "optimus",
+    "name": "اذنا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 349,
+    "provider": "optimus",
+    "name": "بيت عنون",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 348,
+    "provider": "optimus",
+    "name": "بيت كاحل",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 347,
+    "provider": "optimus",
+    "name": "ترقومية",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 346,
+    "provider": "optimus",
+    "name": "الشيوخ",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 345,
+    "provider": "optimus",
+    "name": "حلحول",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 344,
+    "provider": "optimus",
+    "name": "سعير",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 343,
+    "provider": "optimus",
+    "name": "بيت اولا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 342,
+    "provider": "optimus",
+    "name": "نوبا",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 341,
+    "provider": "optimus",
+    "name": "حي البالوع\\اجياد مول",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 340,
+    "provider": "optimus",
+    "name": "البيرة\\حي الجنان",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 339,
+    "provider": "optimus",
+    "name": "مدينة البيرة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 338,
+    "provider": "optimus",
+    "name": "الشرفة\\شركة مدى",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 337,
+    "provider": "optimus",
+    "name": "سطح مرحبا\\الوطنية موبايل",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 336,
+    "provider": "optimus",
+    "name": "ام الشرايط",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 335,
+    "provider": "optimus",
+    "name": "حي المصيون\\رام الله",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 334,
+    "provider": "optimus",
+    "name": "عين منجد\\رام الله",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 333,
+    "provider": "optimus",
+    "name": "رام الله",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 332,
+    "provider": "optimus",
+    "name": "حي الطيرة\\رام الله",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 331,
+    "provider": "optimus",
+    "name": "شارع عين مصباح\\رام الله",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 330,
+    "provider": "optimus",
+    "name": "حي المصايف\\رام الله",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 329,
+    "provider": "optimus",
+    "name": "شارع الارسال\\رام الله",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 328,
+    "provider": "optimus",
+    "name": "مخيم شعفاط \\عناتا",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 327,
+    "provider": "optimus",
+    "name": "ضاحية السلام عناتا",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 326,
+    "provider": "optimus",
+    "name": "عناتا",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 325,
+    "provider": "optimus",
+    "name": "حزما البلد",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 324,
+    "provider": "optimus",
+    "name": "مخماس\\الشارع الالتفافي",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 323,
+    "provider": "optimus",
+    "name": "جبع\\رام الله",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 322,
+    "provider": "optimus",
+    "name": "ضاحية الاقباط\\الرام",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 321,
+    "provider": "optimus",
+    "name": "الرام",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 320,
+    "provider": "optimus",
+    "name": "شارع كفرعقب",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 319,
+    "provider": "optimus",
+    "name": "مخيم قلنديا",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 318,
+    "provider": "optimus",
+    "name": "قلنديا البلد",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 317,
+    "provider": "optimus",
+    "name": "رافات",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 315,
+    "provider": "optimus",
+    "name": "الجديرة",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 314,
+    "provider": "optimus",
+    "name": "الجيب",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 313,
+    "provider": "optimus",
+    "name": "بيت دقو",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 312,
+    "provider": "optimus",
+    "name": "بيت اكسا",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 311,
+    "provider": "optimus",
+    "name": "بيت سوريك",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 310,
+    "provider": "optimus",
+    "name": "بدو",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 309,
+    "provider": "optimus",
+    "name": "قطنة",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 308,
+    "provider": "optimus",
+    "name": "القبيبة",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 307,
+    "provider": "optimus",
+    "name": "بيت عنان",
+    "providerCityId": 12
+  },
+  {
+    "providerAreaId": 306,
+    "provider": "optimus",
+    "name": "بيت لقيا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 305,
+    "provider": "optimus",
+    "name": "خربثا المصباح",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 304,
+    "provider": "optimus",
+    "name": "طيرة بيت عور الفوقا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 303,
+    "provider": "optimus",
+    "name": "بيت عور الفوقا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 302,
+    "provider": "optimus",
+    "name": "بيت عور التحتا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 301,
+    "provider": "optimus",
+    "name": "بيت سيرا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 300,
+    "provider": "optimus",
+    "name": "قرية صفا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 299,
+    "provider": "optimus",
+    "name": "بلعين",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 298,
+    "provider": "optimus",
+    "name": "خربثا بني حارث",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 297,
+    "provider": "optimus",
+    "name": "ديرقديس",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 295,
+    "provider": "optimus",
+    "name": "نعلين",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 294,
+    "provider": "optimus",
+    "name": "شبتين",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 293,
+    "provider": "optimus",
+    "name": "بيتللو",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 292,
+    "provider": "optimus",
+    "name": "جمالة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 291,
+    "provider": "optimus",
+    "name": "مخيم دير عمار",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 290,
+    "provider": "optimus",
+    "name": "دير عمار",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 289,
+    "provider": "optimus",
+    "name": "عين ايوب",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 288,
+    "provider": "optimus",
+    "name": "راس كركر",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 287,
+    "provider": "optimus",
+    "name": "كفرنعمة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 286,
+    "provider": "optimus",
+    "name": "الجانية",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 285,
+    "provider": "optimus",
+    "name": "عين قينيا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 284,
+    "provider": "optimus",
+    "name": "دير بزيع",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 283,
+    "provider": "optimus",
+    "name": "عين عريك",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 282,
+    "provider": "optimus",
+    "name": "بيتونيا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 281,
+    "provider": "optimus",
+    "name": "عوفر",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 280,
+    "provider": "optimus",
+    "name": "يبرود",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 279,
+    "provider": "optimus",
+    "name": "مخيم سلواد",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 278,
+    "provider": "optimus",
+    "name": "مخيم سلواد",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 277,
+    "provider": "optimus",
+    "name": "سلواد",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 276,
+    "provider": "optimus",
+    "name": "المزرعة الشرقية",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 275,
+    "provider": "optimus",
+    "name": "كفرمالك",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 274,
+    "provider": "optimus",
+    "name": "ديرجرير",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 273,
+    "provider": "optimus",
+    "name": "الطيبة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 272,
+    "provider": "optimus",
+    "name": "برقة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 271,
+    "provider": "optimus",
+    "name": "رمون",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 270,
+    "provider": "optimus",
+    "name": "برقة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 269,
+    "provider": "optimus",
+    "name": "دير دبوان",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 268,
+    "provider": "optimus",
+    "name": "بيتين",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 267,
+    "provider": "optimus",
+    "name": "عين يبرود",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 266,
+    "provider": "optimus",
+    "name": "دورا القرع",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 265,
+    "provider": "optimus",
+    "name": "بيت ايل",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 264,
+    "provider": "optimus",
+    "name": "سردا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 263,
+    "provider": "optimus",
+    "name": "ابوقش",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 262,
+    "provider": "optimus",
+    "name": "(المزرعة القبلية(الغربية",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 261,
+    "provider": "optimus",
+    "name": "ابوشخيدم",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 260,
+    "provider": "optimus",
+    "name": "كوبر",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 259,
+    "provider": "optimus",
+    "name": "جيبيا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 258,
+    "provider": "optimus",
+    "name": "برهام",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 257,
+    "provider": "optimus",
+    "name": "بيرزيت البلد",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 256,
+    "provider": "optimus",
+    "name": "مخيم الجلزون",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 255,
+    "provider": "optimus",
+    "name": "جفنة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 254,
+    "provider": "optimus",
+    "name": "عين سينيا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 253,
+    "provider": "optimus",
+    "name": "مدينة روابي",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 252,
+    "provider": "optimus",
+    "name": "قرية المغير",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 251,
+    "provider": "optimus",
+    "name": "خربة ابوفلاح",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 250,
+    "provider": "optimus",
+    "name": "قرية ترمسعيا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 249,
+    "provider": "optimus",
+    "name": "عطارة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 248,
+    "provider": "optimus",
+    "name": "عجول",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 247,
+    "provider": "optimus",
+    "name": "ام صفا",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 246,
+    "provider": "optimus",
+    "name": "ديرالسودان",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 245,
+    "provider": "optimus",
+    "name": "بدرس",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 244,
+    "provider": "optimus",
+    "name": "قبية",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 243,
+    "provider": "optimus",
+    "name": "شقبة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 242,
+    "provider": "optimus",
+    "name": "رنتيس",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 241,
+    "provider": "optimus",
+    "name": "ديرابومشعل",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 240,
+    "provider": "optimus",
+    "name": "عابود",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 239,
+    "provider": "optimus",
+    "name": "ديرنظام",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 238,
+    "provider": "optimus",
+    "name": "حلميش",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 237,
+    "provider": "optimus",
+    "name": "النبي صالح",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 236,
+    "provider": "optimus",
+    "name": "بيت ريما",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 235,
+    "provider": "optimus",
+    "name": "ديرغسانة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 234,
+    "provider": "optimus",
+    "name": "كفرعين",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 233,
+    "provider": "optimus",
+    "name": "قراوة بني زيد",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 232,
+    "provider": "optimus",
+    "name": "مزارع النوباني",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 231,
+    "provider": "optimus",
+    "name": "(بني زيد الشرقية(عارورة",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 230,
+    "provider": "optimus",
+    "name": "عبوين",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 229,
+    "provider": "optimus",
+    "name": "جلجلية",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 228,
+    "provider": "optimus",
+    "name": "سنجل",
+    "providerCityId": 1
+  },
+  {
+    "providerAreaId": 227,
+    "provider": "optimus",
+    "name": "النبي موسى",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 226,
+    "provider": "optimus",
+    "name": "ديرحجلة",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 225,
+    "provider": "optimus",
+    "name": "مخيم عقبة جبر",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 224,
+    "provider": "optimus",
+    "name": "دير القلط",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 223,
+    "provider": "optimus",
+    "name": "اريحا",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 222,
+    "provider": "optimus",
+    "name": "مخيم عين السلطان",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 221,
+    "provider": "optimus",
+    "name": "النويعمة",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 220,
+    "provider": "optimus",
+    "name": "العوجا",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 219,
+    "provider": "optimus",
+    "name": "فصايل",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 218,
+    "provider": "optimus",
+    "name": "الزبيدات",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 217,
+    "provider": "optimus",
+    "name": "مرج نعجة",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 216,
+    "provider": "optimus",
+    "name": "دوما",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 215,
+    "provider": "optimus",
+    "name": "عمورية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 214,
+    "provider": "optimus",
+    "name": "جالود",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 213,
+    "provider": "optimus",
+    "name": "قريوت",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 212,
+    "provider": "optimus",
+    "name": "اللبن الشرقية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 211,
+    "provider": "optimus",
+    "name": "مجدل بني فاضل",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 210,
+    "provider": "optimus",
+    "name": "الساوية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 209,
+    "provider": "optimus",
+    "name": "تلفيت",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 208,
+    "provider": "optimus",
+    "name": "قصرة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 207,
+    "provider": "optimus",
+    "name": "جوريش",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 206,
+    "provider": "optimus",
+    "name": "قبلان",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 205,
+    "provider": "optimus",
+    "name": "يتما",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 204,
+    "provider": "optimus",
+    "name": "زعترة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 203,
+    "provider": "optimus",
+    "name": "عقربا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 202,
+    "provider": "optimus",
+    "name": "اوصرين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 201,
+    "provider": "optimus",
+    "name": "جماعين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 200,
+    "provider": "optimus",
+    "name": "زيتا جماعين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 199,
+    "provider": "optimus",
+    "name": "بيتا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 198,
+    "provider": "optimus",
+    "name": "يانون",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 197,
+    "provider": "optimus",
+    "name": "عينبوس",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 196,
+    "provider": "optimus",
+    "name": "حوارة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 195,
+    "provider": "optimus",
+    "name": "اودلا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 194,
+    "provider": "optimus",
+    "name": "خربة طانا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 193,
+    "provider": "optimus",
+    "name": "عوريف",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 192,
+    "provider": "optimus",
+    "name": "عورتا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 191,
+    "provider": "optimus",
+    "name": "عصيرة القبلية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 190,
+    "provider": "optimus",
+    "name": "بيت فوريك",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 189,
+    "provider": "optimus",
+    "name": "مادما",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 188,
+    "provider": "optimus",
+    "name": "قروش بيت دجن",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 187,
+    "provider": "optimus",
+    "name": "كفرقليل",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 186,
+    "provider": "optimus",
+    "name": "روجيب",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 185,
+    "provider": "optimus",
+    "name": "بيت دجن",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 184,
+    "provider": "optimus",
+    "name": "تل",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 183,
+    "provider": "optimus",
+    "name": "عراق بورين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 182,
+    "provider": "optimus",
+    "name": "سالم",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 181,
+    "provider": "optimus",
+    "name": "صرة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 180,
+    "provider": "optimus",
+    "name": "دير الحطب",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 179,
+    "provider": "optimus",
+    "name": "مخيم عسكر الجديد",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 178,
+    "provider": "optimus",
+    "name": "مخيم عسكر القديم",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 177,
+    "provider": "optimus",
+    "name": "نابلس",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 176,
+    "provider": "optimus",
+    "name": "عزموط",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 175,
+    "provider": "optimus",
+    "name": "بيت وزن",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 174,
+    "provider": "optimus",
+    "name": "بيت ايبا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 173,
+    "provider": "optimus",
+    "name": "قوصين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 172,
+    "provider": "optimus",
+    "name": "زواتا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 171,
+    "provider": "optimus",
+    "name": "عصيرة الشمالية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 170,
+    "provider": "optimus",
+    "name": "ديرشرف",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 169,
+    "provider": "optimus",
+    "name": "الباذان",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 168,
+    "provider": "optimus",
+    "name": "الناقورة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 167,
+    "provider": "optimus",
+    "name": "طلوزة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 166,
+    "provider": "optimus",
+    "name": "اجنستيا",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 165,
+    "provider": "optimus",
+    "name": "سبسطية",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 164,
+    "provider": "optimus",
+    "name": "نصف جبيل",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 163,
+    "provider": "optimus",
+    "name": "بيت امرين",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 162,
+    "provider": "optimus",
+    "name": "ياصيد",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 161,
+    "provider": "optimus",
+    "name": "برقة",
+    "providerCityId": 5
+  },
+  {
+    "providerAreaId": 160,
+    "provider": "optimus",
+    "name": "خربة قيس",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 159,
+    "provider": "optimus",
+    "name": "ديربلوط",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 158,
+    "provider": "optimus",
+    "name": "كفر الديك",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 157,
+    "provider": "optimus",
+    "name": "فرخة",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 156,
+    "provider": "optimus",
+    "name": "بروقين",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 155,
+    "provider": "optimus",
+    "name": "رافات",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 154,
+    "provider": "optimus",
+    "name": "الزاوية",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 153,
+    "provider": "optimus",
+    "name": "عزبة ابو ادم",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 152,
+    "provider": "optimus",
+    "name": "سرطة",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 151,
+    "provider": "optimus",
+    "name": "اسكاكا",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 150,
+    "provider": "optimus",
+    "name": "مسحة",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 149,
+    "provider": "optimus",
+    "name": "ياسوف",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 148,
+    "provider": "optimus",
+    "name": "حارس",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 147,
+    "provider": "optimus",
+    "name": "بديا",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 146,
+    "provider": "optimus",
+    "name": "مردا",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 145,
+    "provider": "optimus",
+    "name": "كفل حارس",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 144,
+    "provider": "optimus",
+    "name": "قيرة",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 143,
+    "provider": "optimus",
+    "name": "قراوة بني حسان",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 142,
+    "provider": "optimus",
+    "name": "دير استيا",
+    "providerCityId": 10
+  },
+  {
+    "providerAreaId": 141,
+    "provider": "optimus",
+    "name": "كفرعبوش",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 140,
+    "provider": "optimus",
+    "name": "كفرجمال",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 139,
+    "provider": "optimus",
+    "name": "كفر زيباد",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 138,
+    "provider": "optimus",
+    "name": "كور",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 137,
+    "provider": "optimus",
+    "name": "كفرصور",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 136,
+    "provider": "optimus",
+    "name": "الراس",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 135,
+    "provider": "optimus",
+    "name": "بيت ليد",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 134,
+    "provider": "optimus",
+    "name": "سفارين",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 133,
+    "provider": "optimus",
+    "name": "خربة جبارة",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 132,
+    "provider": "optimus",
+    "name": "شوفة",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 131,
+    "provider": "optimus",
+    "name": "فرعون",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 130,
+    "provider": "optimus",
+    "name": "رامين",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 129,
+    "provider": "optimus",
+    "name": "عزبة شوفة",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 128,
+    "provider": "optimus",
+    "name": "الحفاصي",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 127,
+    "provider": "optimus",
+    "name": "كفراللبد",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 126,
+    "provider": "optimus",
+    "name": "عنبتا",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 125,
+    "provider": "optimus",
+    "name": "طولكرم المدينة",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 124,
+    "provider": "optimus",
+    "name": "مخيم طولكرم",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 123,
+    "provider": "optimus",
+    "name": "مخيم نور شمس",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 122,
+    "provider": "optimus",
+    "name": "اكتابا",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 121,
+    "provider": "optimus",
+    "name": "بلعا",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 120,
+    "provider": "optimus",
+    "name": "المسقوفة",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 119,
+    "provider": "optimus",
+    "name": "الجاروشية",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 118,
+    "provider": "optimus",
+    "name": "دير الغصون",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 117,
+    "provider": "optimus",
+    "name": "عتيل",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 116,
+    "provider": "optimus",
+    "name": "علار",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 115,
+    "provider": "optimus",
+    "name": "صيدا",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 114,
+    "provider": "optimus",
+    "name": "زيتا",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 113,
+    "provider": "optimus",
+    "name": "النزلة الغربية",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 112,
+    "provider": "optimus",
+    "name": "النزلة الوسطى",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 111,
+    "provider": "optimus",
+    "name": "باقة الشرقية",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 110,
+    "provider": "optimus",
+    "name": "النزلة الشرقية",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 109,
+    "provider": "optimus",
+    "name": "نزلة عيسى",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 108,
+    "provider": "optimus",
+    "name": "قفين",
+    "providerCityId": 6
+  },
+  {
+    "providerAreaId": 107,
+    "provider": "optimus",
+    "name": "عزون عتمة",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 106,
+    "provider": "optimus",
+    "name": "سنيريا",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 105,
+    "provider": "optimus",
+    "name": "بيت اميبن",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 104,
+    "provider": "optimus",
+    "name": "المدور",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 103,
+    "provider": "optimus",
+    "name": "عزبةجلعود",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 102,
+    "provider": "optimus",
+    "name": "كفرثلث",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 101,
+    "provider": "optimus",
+    "name": "الضبعة",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 100,
+    "provider": "optimus",
+    "name": "راس عطية",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 99,
+    "provider": "optimus",
+    "name": "حبلة",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 98,
+    "provider": "optimus",
+    "name": "وادي الرشا",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 97,
+    "provider": "optimus",
+    "name": "عسلة",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 96,
+    "provider": "optimus",
+    "name": "عرب الرماضين الجنوبي",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 95,
+    "provider": "optimus",
+    "name": "عزون",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 94,
+    "provider": "optimus",
+    "name": "جنصافوط",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 93,
+    "provider": "optimus",
+    "name": "عرب ابوفردة",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 92,
+    "provider": "optimus",
+    "name": "كفرلاقف",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 91,
+    "provider": "optimus",
+    "name": "النبي الياس",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 90,
+    "provider": "optimus",
+    "name": "قلقيلية البلد",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 89,
+    "provider": "optimus",
+    "name": "الفندق",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 88,
+    "provider": "optimus",
+    "name": "اماتين",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 87,
+    "provider": "optimus",
+    "name": "فرعتا",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 86,
+    "provider": "optimus",
+    "name": "عرب الرماضين الشمالي",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 85,
+    "provider": "optimus",
+    "name": "جيوس",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 84,
+    "provider": "optimus",
+    "name": "كفرقدوم",
+    "providerCityId": 9
+  },
+  {
+    "providerAreaId": 83,
+    "provider": "optimus",
+    "name": "الحديدة",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 82,
+    "provider": "optimus",
+    "name": "خربة عاطوف",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 81,
+    "provider": "optimus",
+    "name": "طمون",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 80,
+    "provider": "optimus",
+    "name": "خربة الراس الاحمر",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 79,
+    "provider": "optimus",
+    "name": "مخيم الفارعة",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 78,
+    "provider": "optimus",
+    "name": "عين الفارعة",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 77,
+    "provider": "optimus",
+    "name": "كشدة",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 76,
+    "provider": "optimus",
+    "name": "طوباس المدينة",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 75,
+    "provider": "optimus",
+    "name": "العقبة",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 74,
+    "provider": "optimus",
+    "name": "تياسير",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 73,
+    "provider": "optimus",
+    "name": "عقابا",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 72,
+    "provider": "optimus",
+    "name": "ابزيق",
+    "providerCityId": 8
+  },
+  {
+    "providerAreaId": 71,
+    "provider": "optimus",
+    "name": "خربة تل الحمة",
+    "providerCityId": 7
+  },
+  {
+    "providerAreaId": 67,
+    "provider": "optimus",
+    "name": "سيلة الظهر",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 66,
+    "provider": "optimus",
+    "name": "الفندقومية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 65,
+    "provider": "optimus",
+    "name": "جبع جنين",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 64,
+    "provider": "optimus",
+    "name": "دوار ابن رشد",
+    "providerCityId": 3
+  },
+  {
+    "providerAreaId": 63,
+    "provider": "optimus",
+    "name": "سيريس",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 62,
+    "provider": "optimus",
+    "name": "الجديدة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 61,
+    "provider": "optimus",
+    "name": "ميثلون",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 60,
+    "provider": "optimus",
+    "name": "الرامة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 59,
+    "provider": "optimus",
+    "name": "صانور",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 58,
+    "provider": "optimus",
+    "name": "عنزة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 57,
+    "provider": "optimus",
+    "name": "عجة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 56,
+    "provider": "optimus",
+    "name": "صير",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 54,
+    "provider": "optimus",
+    "name": "كفر راعي",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 55,
+    "provider": "optimus",
+    "name": "فحمة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 53,
+    "provider": "optimus",
+    "name": "الزاوية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 52,
+    "provider": "optimus",
+    "name": "الزبابدة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 51,
+    "provider": "optimus",
+    "name": "مسلية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 50,
+    "provider": "optimus",
+    "name": "رابا",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 49,
+    "provider": "optimus",
+    "name": "المنصورة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 48,
+    "provider": "optimus",
+    "name": "وادي داعوق",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 47,
+    "provider": "optimus",
+    "name": "مركة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 46,
+    "provider": "optimus",
+    "name": "تلفيت",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 45,
+    "provider": "optimus",
+    "name": "عرابة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 44,
+    "provider": "optimus",
+    "name": "الضميرة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 43,
+    "provider": "optimus",
+    "name": "قباطية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 42,
+    "provider": "optimus",
+    "name": "الحفيرة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 41,
+    "provider": "optimus",
+    "name": "بير الباشا",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 40,
+    "provider": "optimus",
+    "name": "المغير",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 39,
+    "provider": "optimus",
+    "name": "جلقموس",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 38,
+    "provider": "optimus",
+    "name": "ام التوت",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 37,
+    "provider": "optimus",
+    "name": "فراسين",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 36,
+    "provider": "optimus",
+    "name": "امريحة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 35,
+    "provider": "optimus",
+    "name": "كفيرت",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 34,
+    "provider": "optimus",
+    "name": "يعبد",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 33,
+    "provider": "optimus",
+    "name": "عابا الشرقية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 32,
+    "provider": "optimus",
+    "name": "ام دار",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 31,
+    "provider": "optimus",
+    "name": "برقين",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 30,
+    "provider": "optimus",
+    "name": "دير ابوضعيف",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 29,
+    "provider": "optimus",
+    "name": "كفرقود",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 28,
+    "provider": "optimus",
+    "name": "خربة المنطار الشرقية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 27,
+    "provider": "optimus",
+    "name": "جلبون",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 24,
+    "provider": "optimus",
+    "name": "خربة المنطار الغربية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 23,
+    "provider": "optimus",
+    "name": "الطرم",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 22,
+    "provider": "optimus",
+    "name": "نزلة الشيخ زيد",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 21,
+    "provider": "optimus",
+    "name": "طورة الشرقية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 20,
+    "provider": "optimus",
+    "name": "طورة الغربية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 19,
+    "provider": "optimus",
+    "name": "بيت قاد الجنوبي",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 18,
+    "provider": "optimus",
+    "name": "العرقة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 16,
+    "provider": "optimus",
+    "name": "ظهرالمالح",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 15,
+    "provider": "optimus",
+    "name": "مشروع بيت قاد الشمالي",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 14,
+    "provider": "optimus",
+    "name": "خربة عبدالله يونس",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 13,
+    "provider": "optimus",
+    "name": "كفردان",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 12,
+    "provider": "optimus",
+    "name": "ام الريحان",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 11,
+    "provider": "optimus",
+    "name": "اليامون",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 10,
+    "provider": "optimus",
+    "name": "خربة سروج",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 9,
+    "provider": "optimus",
+    "name": "فقوعة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 8,
+    "provider": "optimus",
+    "name": "ديرغزالة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 7,
+    "provider": "optimus",
+    "name": "عانين",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 6,
+    "provider": "optimus",
+    "name": "سيلة الحارثية",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 5,
+    "provider": "optimus",
+    "name": "الجلمة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 4,
+    "provider": "optimus",
+    "name": "عربونة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 3,
+    "provider": "optimus",
+    "name": "رمانة",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 2,
+    "provider": "optimus",
+    "name": "تعنك",
+    "providerCityId": 2
+  },
+  {
+    "providerAreaId": 1,
+    "provider": "optimus",
+    "name": "زبوبا",
+    "providerCityId": 2
+  }
+]

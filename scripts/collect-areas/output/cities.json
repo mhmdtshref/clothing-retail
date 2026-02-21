@@ -1,0 +1,87 @@
+[
+  {
+    "providerCityId": 28,
+    "provider": "optimus",
+    "name": "مناطق جنوب الداخل"
+  },
+  {
+    "providerCityId": 13,
+    "provider": "optimus",
+    "name": "مناطق 48"
+  },
+  {
+    "providerCityId": 12,
+    "provider": "optimus",
+    "name": "قرى القدس"
+  },
+  {
+    "providerCityId": 5,
+    "provider": "optimus",
+    "name": "نابلس"
+  },
+  {
+    "providerCityId": 2,
+    "provider": "optimus",
+    "name": "جنين"
+  },
+  {
+    "providerCityId": 1,
+    "provider": "optimus",
+    "name": "رام الله"
+  },
+  {
+    "providerCityId": 6,
+    "provider": "optimus",
+    "name": "طولكرم"
+  },
+  {
+    "providerCityId": 8,
+    "provider": "optimus",
+    "name": "اريحا"
+  },
+  {
+    "providerCityId": 9,
+    "provider": "optimus",
+    "name": "قلقيلية"
+  },
+  {
+    "providerCityId": 11,
+    "provider": "optimus",
+    "name": "القدس"
+  },
+  {
+    "providerCityId": 25,
+    "provider": "optimus",
+    "name": "الجولان"
+  },
+  {
+    "providerCityId": 26,
+    "provider": "optimus",
+    "name": "مناطق ال 67"
+  },
+  {
+    "providerCityId": 4,
+    "provider": "optimus",
+    "name": "بيت لحم"
+  },
+  {
+    "providerCityId": 3,
+    "provider": "optimus",
+    "name": "الخليل"
+  },
+  {
+    "providerCityId": 24,
+    "provider": "optimus",
+    "name": "إيلات"
+  },
+  {
+    "providerCityId": 7,
+    "provider": "optimus",
+    "name": "طوباس"
+  },
+  {
+    "providerCityId": 10,
+    "provider": "optimus",
+    "name": "سلفيت"
+  }
+]
