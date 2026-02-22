@@ -44,7 +44,8 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
             margin: 0 !important;
             padding: 0 !important;
             width: 80mm;
-            overflow: hidden !important;
+            /* Avoid CSS-level clipping; rely on the receipt box width + wrapping. */
+            overflow: visible !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
@@ -61,10 +62,13 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
         }
         .receipt-80mm {
           box-sizing: border-box;
-          /* Use a slightly smaller width to avoid right-edge clipping on many 80mm drivers. */
-          width: 76mm;
-          max-width: 76mm;
-          padding: 6px 6px 12px;
+          /*
+            OCOM OCPP-80K-URL (and many 80mm drivers) have ~72mm printable width.
+            Use a <=72mm box to prevent right-edge clipping.
+          */
+          width: 72mm;
+          max-width: 72mm;
+          padding: 4px 4px 10px;
           font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
             'Courier New', monospace;
           font-size: 14px;
@@ -80,12 +84,28 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
         .row > :last-child { flex: 0 0 auto; white-space: nowrap; }
         .sep { border-top: 1px dashed #000; margin: 6px 0; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th, td { padding: 2px 0; overflow-wrap: anywhere; word-break: break-word; }
-        th:first-child, td:first-child { width: 46%; }
-        th:nth-child(2), td:nth-child(2) { width: 14%; }
+        th, td { padding: 2px 2px; overflow-wrap: anywhere; word-break: break-word; }
+        /* Rebalance widths so Arabic headers don't collide (Qty was too narrow). */
+        th:first-child, td:first-child { width: 40%; }
+        th:nth-child(2), td:nth-child(2) { width: 20%; }
         th:nth-child(3), td:nth-child(3) { width: 20%; }
         th:nth-child(4), td:nth-child(4) { width: 20%; }
-        th.r, td.r { text-align: right; white-space: nowrap; }
+        th.r { text-align: right; white-space: normal; }
+        td.r {
+          text-align: right;
+          white-space: nowrap;
+          /* Keep numbers readable in RTL (minus sign, decimals). */
+          direction: ltr;
+          unicode-bidi: isolate;
+          font-variant-numeric: tabular-nums;
+        }
+        .num {
+          direction: ltr;
+          unicode-bidi: isolate;
+          font-variant-numeric: tabular-nums;
+          white-space: nowrap;
+        }
+        thead th { font-size: 13px; line-height: 1.15; }
         th { font-weight: 800; }
         .title { font-weight: 800; }
         .row.title { font-weight: 800; font-size: 15px; }
@@ -180,25 +200,25 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
       <div className="sep" />
       <div className="row">
         <div>{t('receipt.subtotal')}</div>
-        <div>{currency(totals?.itemSubtotal)}</div>
+        <div className="num">{currency(totals?.itemSubtotal)}</div>
       </div>
       <div className="row">
         <div>{t('receipt.itemDiscounts')}</div>
-        <div>-{currency(totals?.itemDiscountTotal)}</div>
+        <div className="num">-{currency(totals?.itemDiscountTotal)}</div>
       </div>
       <div className="row">
         <div>{t('receipt.billDiscount')}</div>
-        <div>-{currency(totals?.billDiscountTotal)}</div>
+        <div className="num">-{currency(totals?.billDiscountTotal)}</div>
       </div>
       <div className="row">
         <div>
           {t('receipt.tax')} ({Number(totals?.taxPercent || 0)}%)
         </div>
-        <div>{currency(totals?.taxTotal)}</div>
+        <div className="num">{currency(totals?.taxTotal)}</div>
       </div>
       <div className="row title">
         <div>{t('receipt.grandTotal')}</div>
-        <div>{currency(totals?.grandTotal)}</div>
+        <div className="num">{currency(totals?.grandTotal)}</div>
       </div>
       {isDelivery && (
         <>
@@ -209,12 +229,12 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
           {deliveryFees > 0 && (
             <div className="row">
               <div>{t('receipt.deliveryFees')}</div>
-              <div>{currency(deliveryFees)}</div>
+              <div className="num">{currency(deliveryFees)}</div>
             </div>
           )}
           <div className="row title">
             <div>{t('receipt.codTotal')}</div>
-            <div>{currency(codTotal)}</div>
+            <div className="num">{currency(codTotal)}</div>
           </div>
         </>
       )}
@@ -222,11 +242,11 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
         <>
           <div className="row">
             <div>{t('receipt.paid')}</div>
-            <div>{currency(paidTotal)}</div>
+            <div className="num">{currency(paidTotal)}</div>
           </div>
           <div className="row">
             <div>{t('receipt.balance')}</div>
-            <div>{currency(dueTotal)}</div>
+            <div className="num">{currency(dueTotal)}</div>
           </div>
         </>
       )}
