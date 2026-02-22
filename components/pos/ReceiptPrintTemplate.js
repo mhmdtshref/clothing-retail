@@ -66,9 +66,14 @@ export default function ReceiptPrintTemplate({ receipt, totals, autoPrint = fals
             OCOM OCPP-80K-URL (and many 80mm drivers) have ~72mm printable width.
             Use a <=72mm box to prevent right-edge clipping.
           */
-          width: 72mm;
-          max-width: 72mm;
-          padding: 4px 4px 10px;
+          /*
+            This specific printer/driver is clipping the physical right edge in practice.
+            Make the box a bit narrower and add extra right-side safe padding so RTL text
+            (which aligns to the right) does not lose characters.
+          */
+          width: 70mm;
+          max-width: 70mm;
+          padding: 1mm 3mm 2.5mm 1mm;
           font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
             'Courier New', monospace;
           font-size: 14px;
